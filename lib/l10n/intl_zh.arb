@@ -1,6 +1,6 @@
 {
     "@@locale": "zh",
-    "@@last_modified": "2021-08-14 12:41:09.767805",
+    "@@last_modified": "2025-05-30 12:41:09.767805",
     "about": "关于",
     "@about": {
         "type": "String",
@@ -25,7 +25,7 @@
         "type": "String",
         "placeholders": {}
     },
-    "activatedEndToEndEncryption": "🔐 {username} 激活了端到端加密",
+    "activatedEndToEndEncryption": "🔐 {username} 激活了严格端到端加密",
     "@activatedEndToEndEncryption": {
         "type": "String",
         "placeholders": {
@@ -513,7 +513,7 @@
         "type": "String",
         "placeholders": {}
     },
-    "contentHasBeenReported": "此内容已被报告至服务器管理员处",
+    "contentHasBeenReported": "针对此内容的报告已提交",
     "@contentHasBeenReported": {
         "type": "String",
         "placeholders": {}
@@ -2288,7 +2288,7 @@
             }
         }
     },
-    "youAcceptedTheInvitation": "👍 你接受了邀请",
+    "youAcceptedTheInvitation": "📩 你接受了邀请",
     "@youAcceptedTheInvitation": {},
     "youHaveWithdrawnTheInvitationFor": "你撤回了对 {user} 的邀请",
     "@youHaveWithdrawnTheInvitationFor": {
@@ -2318,7 +2318,7 @@
     "@recoveryKey": {},
     "recoveryKeyLost": "丢失了恢复密钥？",
     "@recoveryKeyLost": {},
-    "pleaseEnterRecoveryKeyDescription": "要解锁你的旧邮件，请输入你在之前会话中生成的恢复密钥。 你的恢复密钥不是你的密码。",
+    "pleaseEnterRecoveryKeyDescription": "要解锁以前的聊天记录，请输入你在之前会话中生成的恢复密钥。备注：“恢复密钥”不是你的账号密码哦。",
     "@pleaseEnterRecoveryKeyDescription": {},
     "saveKeyManuallyDescription": "通过触发系统共享对话框或剪贴板手动保存此密钥。",
     "@saveKeyManuallyDescription": {},
@@ -2336,11 +2336,11 @@
             }
         }
     },
-    "dehydrateTor": "TOR 用户：导出会话",
+    "dehydrateTor": "Tor 用户：导出会话",
     "@dehydrateTor": {},
-    "dehydrateTorLong": "建议 TOR 用户在关闭窗口之前导出会话。",
+    "dehydrateTorLong": "建议 Tor 用户在关闭窗口之前导出会话。",
     "@dehydrateTorLong": {},
-    "hydrateTor": "TOR 用户：导入会话导出",
+    "hydrateTor": "Tor 用户：导入会话导出",
     "@hydrateTor": {},
     "hydrate": "从备份文件恢复",
     "@hydrate": {},
@@ -2466,7 +2466,7 @@
     "@newSpaceDescription": {},
     "encryptThisChat": "加密此聊天",
     "@encryptThisChat": {},
-    "disableEncryptionWarning": "出于安全考虑 ，你不能在之前已启用加密的聊天中禁用加密。",
+    "disableEncryptionWarning": "出于安全考虑，你不能在之前已启用加密的聊天中禁用加密。",
     "@disableEncryptionWarning": {},
     "sorryThatsNotPossible": "非常抱歉……这是做不到的",
     "@sorryThatsNotPossible": {},
@@ -2474,7 +2474,7 @@
     "@deviceKeys": {},
     "report": "报错",
     "@report": {},
-    "fileIsTooBigForServer": "无法发送！服务器只支持最大 {max} 的文件。",
+    "fileIsTooBigForServer": "无法发送……服务器只支持最大 {max} 的文件。",
     "@fileIsTooBigForServer": {},
     "noOtherDevicesFound": "未找到其它设备",
     "@noOtherDevicesFound": {},
@@ -2509,7 +2509,7 @@
             }
         }
     },
-    "reportErrorDescription": "😭 哦不。出了点差错。如果你愿意，可以向开发人员报告此错误。",
+    "reportErrorDescription": "😭 哦不！出了点儿差错。如果你愿意，请报告此错误。",
     "@reportErrorDescription": {},
     "noBackupWarning": "警告！如果不启用聊天备份，你将无法访问加密消息。强烈建议在注销前先启用聊天备份。",
     "@noBackupWarning": {},
@@ -3069,7 +3069,7 @@
     },
     "sendCanceled": "发送被取消",
     "@sendCanceled": {},
-    "noChatsFoundHere": "此处尚未找到聊天。使用下方按钮 ⤵️ 开始和某人的新聊天",
+    "noChatsFoundHere": "聊天列表空空的。试试使用下方按钮 ⤵️ 开始一个新聊天吧！",
     "@noChatsFoundHere": {},
     "loginWithMatrixId": "使用 Matrix-ID 登录",
     "@loginWithMatrixId": {},

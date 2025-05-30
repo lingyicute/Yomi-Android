@@ -48,47 +48,90 @@ abstract class PlatformInfos {
 
   static void showDialog(BuildContext context) async {
     final version = await PlatformInfos.getVersion();
-    showAboutDialog(
+
+    showDialog<void>(
       context: context,
-      children: [
-        Text('Version: $version'),
-        TextButton.icon(
-          onPressed: () => launchUrlString(AppConfig.sourceCodeUrl),
-          icon: const Icon(Icons.source_outlined),
-          label: Text(L10n.of(context).sourceCode),
-        ),
-        Builder(
-          builder: (innerContext) {
-            return TextButton.icon(
-              onPressed: () {
-                context.go('/logs');
-                Navigator.of(innerContext).pop();
-              },
-              icon: const Icon(Icons.list_outlined),
-              label: const Text('Logs'),
-            );
-          },
-        ),
-        Builder(
-          builder: (innerContext) {
-            return TextButton.icon(
-              onPressed: () {
-                context.go('/configs');
-                Navigator.of(innerContext).pop();
-              },
-              icon: const Icon(Icons.settings_applications_outlined),
-              label: const Text('Advanced Configs'),
-            );
-          },
-        ),
-      ],
-      applicationIcon: Image.asset(
-        'assets/logo.png',
-        width: 64,
-        height: 64,
-        filterQuality: FilterQuality.medium,
-      ),
-      applicationName: AppConfig.applicationName,
+      builder: (BuildContext context) {
+        return Dialog(
+          insetPadding: const EdgeInsets.symmetric(horizontal: 40, vertical: 24),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // 上方空白
+                const SizedBox(height: 24),
+                // 图标居中显示
+                Center(
+                  child: Image.asset(
+                    'assets/logo.png',
+                    width: 64,
+                    height: 64,
+                    filterQuality: FilterQuality.medium,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                // 应用名称
+                Center(
+                  child: Text(
+                    AppConfig.applicationName,
+                    style: Theme.of(context).textTheme.headline6,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                // 版本号
+                Center(
+                  child: Text(
+                    'Version: $version',
+                    style: Theme.of(context).textTheme.bodyText2,
+                  ),
+                ),
+                const SizedBox(height: 24),
+                // 底部按钮区域
+                Wrap(
+                  alignment: WrapAlignment.center,
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    TextButton.icon(
+                      onPressed: () {
+                        launchUrlString(AppConfig.sourceCodeUrl);
+                      },
+                      icon: const Icon(Icons.source_outlined),
+                      label: Text(L10n.of(context).sourceCode),
+                    ),
+                    TextButton.icon(
+                      onPressed: () {
+                        context.go('/logs');
+                        Navigator.of(context).pop();
+                      },
+                      icon: const Icon(Icons.list_outlined),
+                      label: const Text('日志'),
+                    ),
+                    TextButton.icon(
+                      onPressed: () {
+                        context.go('/configs');
+                        Navigator.of(context).pop();
+                      },
+                      icon: const Icon(Icons.settings_applications_outlined),
+                      label: const Text('调试选项'),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                // 关闭按钮
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text('关闭'),
+                ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 }
