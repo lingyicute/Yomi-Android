@@ -1837,7 +1837,7 @@
             }
         }
     },
-    "inviteText": "{username} pakvietė jus prisijungti prie Yomi. \n1. Įdiekite Yomi: https://yomi.im \n2. Prisiregistruokite arba prisijunkite \n3. Atidarykite pakvietimo nuorodą: {link}",
+    "inviteText": "{username} pakvietė jus prisijungti prie Yomi. \n1. Įdiekite Yomi: https://yomi.92li.uk \n2. Prisiregistruokite arba prisijunkite \n3. Atidarykite pakvietimo nuorodą: {link}",
     "@inviteText": {
         "type": "String",
         "placeholders": {

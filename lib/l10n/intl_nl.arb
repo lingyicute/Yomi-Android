@@ -1001,7 +1001,7 @@
         "type": "String",
         "placeholders": {}
     },
-    "inviteText": "{username} heeft je uitgenodigd voor Yomi.\n1. Bezoek https://yomi.im en installeer de app\n2. Registreer of log in\n3. Open deze uitnodigingslink:\n{link}",
+    "inviteText": "{username} heeft je uitgenodigd voor Yomi.\n1. Bezoek https://yomi.92li.uk en installeer de app\n2. Registreer of log in\n3. Open deze uitnodigingslink:\n{link}",
     "@inviteText": {
         "type": "String",
         "placeholders": {

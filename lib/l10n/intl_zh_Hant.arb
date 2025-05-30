@@ -858,7 +858,7 @@
         "type": "String",
         "placeholders": {}
     },
-    "inviteText": "{username} 邀請您使用 Yomi\n1. 安裝 Yomi：https://yomi.im\n2. 登入或註冊\n3. 打開該邀請網址：\n{link}",
+    "inviteText": "{username} 邀請您使用 Yomi\n1. 安裝 Yomi：https://yomi.92li.uk\n2. 登入或註冊\n3. 打開該邀請網址：\n{link}",
     "@inviteText": {
         "type": "String",
         "placeholders": {

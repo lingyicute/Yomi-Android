@@ -965,7 +965,7 @@
         "type": "String",
         "placeholders": {}
     },
-    "inviteText": "{username} 邀请你使用 Yomi。 \n1. 安装 Yomi：https://yomi.im \n2. 注册或登录 \n3. 打开邀请链接：\n {link}",
+    "inviteText": "{username} 邀请你使用 Yomi。 \n1. 安装 Yomi：https://yomi.92li.uk \n2. 注册或登录 \n3. 打开邀请链接：\n {link}",
     "@inviteText": {
         "type": "String",
         "placeholders": {

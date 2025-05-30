@@ -987,7 +987,7 @@
         "type": "String",
         "placeholders": {}
     },
-    "inviteText": "{username} invitis vin al Yomi. \n1. Instalu la aplikaĵon Yomi: https://yomi.im \n2. Registriĝu aŭ salutu \n3. Malfermu la invitan ligilon: {link}",
+    "inviteText": "{username} invitis vin al Yomi. \n1. Instalu la aplikaĵon Yomi: https://yomi.92li.uk \n2. Registriĝu aŭ salutu \n3. Malfermu la invitan ligilon: {link}",
     "@inviteText": {
         "type": "String",
         "placeholders": {

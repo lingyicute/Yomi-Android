@@ -22,31 +22,31 @@ abstract class AppConfig {
   static const Color primaryColorLight = Color(0xFFCCBDEA);
   static const Color secondaryColor = Color(0xFF41a2bc);
   static String _privacyUrl =
-      'https://github.com/krille-chan/yomi/blob/main/PRIVACY.md';
+      'https://github.com/lingyicute/yomi-android/blob/main/PRIVACY.md';
 
   static String get privacyUrl => _privacyUrl;
-  static const String website = 'https://yomi.im';
+  static const String website = 'https://yomi.92li.uk';
   static const String enablePushTutorial =
-      'https://github.com/krille-chan/yomi/wiki/Push-Notifications-without-Google-Services';
+      'https://github.com/lingyicute/yomi-android/wiki/Push-Notifications-without-Google-Services';
   static const String encryptionTutorial =
-      'https://github.com/krille-chan/yomi/wiki/How-to-use-end-to-end-encryption-in-Yomi';
+      'https://github.com/lingyicute/yomi-android/wiki/How-to-use-end-to-end-encryption-in-Yomi';
   static const String startChatTutorial =
-      'https://github.com/krille-chan/yomi/wiki/How-to-Find-Users-in-Yomi';
+      'https://github.com/lingyicute/yomi-android/wiki/How-to-Find-Users-in-Yomi';
   static const String appId = 'im.yomi.Yomi';
   static const String appOpenUrlScheme = 'im.yomi';
-  static String _webBaseUrl = 'https://yomi.im/web';
+  static String _webBaseUrl = 'https://yomi.92li.uk/web';
 
   static String get webBaseUrl => _webBaseUrl;
   static const String sourceCodeUrl =
-      'https://github.com/krille-chan/yomi';
+      'https://github.com/lingyicute/yomi-android';
   static const String supportUrl =
-      'https://github.com/krille-chan/yomi/issues';
+      'https://github.com/lingyicute/yomi-android/issues';
   static const String changelogUrl =
-      'https://github.com/krille-chan/yomi/blob/main/CHANGELOG.md';
+      'https://github.com/lingyicute/yomi-android/blob/main/CHANGELOG.md';
   static final Uri newIssueUrl = Uri(
     scheme: 'https',
     host: 'github.com',
-    path: '/krille-chan/yomi/issues/new',
+    path: '/lingyicute/yomi-android/issues/new',
   );
   static bool renderHtml = true;
   static bool hideRedactedEvents = false;

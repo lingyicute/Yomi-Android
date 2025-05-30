@@ -876,7 +876,7 @@
         "type": "String",
         "placeholders": {}
     },
-    "inviteText": "{username}がYomiにあなたを招待しました. \n1. Yomiをインストールしてください: https://yomi.im \n2. 新しくアカウントを作成するかサインインしてください\n3. 招待リンクを開いてください: {link}",
+    "inviteText": "{username}がYomiにあなたを招待しました. \n1. Yomiをインストールしてください: https://yomi.92li.uk \n2. 新しくアカウントを作成するかサインインしてください\n3. 招待リンクを開いてください: {link}",
     "@inviteText": {
         "type": "String",
         "placeholders": {
