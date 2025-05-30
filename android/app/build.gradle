@@ -51,25 +51,13 @@ android {
         multiDexEnabled true
     }
 
-    signingConfigs {
-        release {
-            if (keystorePropertiesFile.exists()) {
-                keyAlias keystoreProperties['keyAlias']
-                keyPassword keystoreProperties['keyPassword']
-                storeFile file(keystoreProperties['storeFile'])
-                storePassword keystoreProperties['storePassword']
-            }
-        }
-    }
     buildTypes {
         debug {
-            signingConfig signingConfigs.debug
             versionNameSuffix "-debug"
         }
         release {
             minifyEnabled false
             shrinkResources false
-            signingConfig signingConfigs.release
         }
     }
     // https://stackoverflow.com/a/77494454/8222484
