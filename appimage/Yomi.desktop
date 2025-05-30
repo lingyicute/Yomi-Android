@@ -2,7 +2,7 @@
 Type=Application
 Version=1.0
 Name=Yomi
-Comment=Matrix Client. Chat with your friends
+Comment=Chat with your friends
 Exec=AppRun
 Icon=yomi
 Terminal=false
