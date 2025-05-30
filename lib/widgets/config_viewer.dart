@@ -48,7 +48,7 @@ class ConfigViewer extends StatelessWidget {
     final theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Advanced configurations'),
+        title: const Text('调试选项'),
         leading: BackButton(
           onPressed: () => context.go('/'),
         ),
@@ -60,7 +60,7 @@ class ConfigViewer extends StatelessWidget {
             padding: const EdgeInsets.all(16),
             color: theme.colorScheme.errorContainer,
             child: Text(
-              'Changing configs by hand is untested! Use without any warranty!',
+              '这些选项只适用于调试用途，请小心操作！',
               style: TextStyle(
                 color: theme.colorScheme.onErrorContainer,
               ),
