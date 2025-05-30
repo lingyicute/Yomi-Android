@@ -49,7 +49,7 @@ abstract class PlatformInfos {
   static void showDialog(BuildContext context) async {
     final version = await PlatformInfos.getVersion();
 
-    showDialog<void>(
+    await showDialog<void>(
       context: context,
       builder: (BuildContext context) {
         return Dialog(
