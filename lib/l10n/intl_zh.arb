@@ -965,7 +965,7 @@
         "type": "String",
         "placeholders": {}
     },
-    "inviteText": "{username} 邀请你使用 Yomi。 \n1. 安装 Yomi：https://yomi.92li.uk \n2. 注册或登录 \n3. 打开邀请链接：\n {link}",
+    "inviteText": "{username} 邀请你用 Yomi 聊天～\n请安装 Yomi，注册并打开邀请链接：\n{link}",
     "@inviteText": {
         "type": "String",
         "placeholders": {
@@ -996,7 +996,7 @@
         "type": "String",
         "placeholders": {}
     },
-    "kicked": "👞 {username} 踢出了 {targetName}",
+    "kicked": "🙅 {username} 踢掉了 {targetName}",
     "@kicked": {
         "type": "String",
         "placeholders": {
@@ -1008,7 +1008,7 @@
             }
         }
     },
-    "kickedAndBanned": "🙅 {username} 踢出并封禁了 {targetName}",
+    "kickedAndBanned": "🙅 {username} 踢掉并封禁了 {targetName}",
     "@kickedAndBanned": {
         "type": "String",
         "placeholders": {
@@ -1063,7 +1063,7 @@
             }
         }
     },
-    "loadingPleaseWait": "加载中…请等待。",
+    "loadingPleaseWait": "加载中…请稍候。",
     "@loadingPleaseWait": {
         "type": "String",
         "placeholders": {}
