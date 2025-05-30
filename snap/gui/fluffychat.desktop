@@ -1,9 +1,0 @@
-[Desktop Entry]
-Name=Yomi
-GenericName=Matrix Client
-Comment=Chat with your friends
-Exec=yomi
-Icon=${SNAP}/meta/gui/yomi.png
-Terminal=false
-Type=Application
-Categories=Network;Chat;InstantMessaging;
