@@ -1,6 +1,6 @@
-![Screenshot](https://github.com/krille-chan/yomi/blob/main/assets/banner_transparent.png?raw=true)
+![Screenshot](https://github.com/lingyicute/yomi-android/blob/main/assets/banner_transparent.png?raw=true)
 
-[Yomi](https://yomi.im) is an open source, nonprofit and cute [[matrix](https://matrix.org)] client written in [Flutter](https://flutter.dev). The goal of the app is to create an easy to use instant messenger which is open source and accessible for everyone.
+[Yomi](https://yomi.92li.uk) is an open source, nonprofit and cute [[matrix](https://matrix.org)] client written in [Flutter](https://flutter.dev). The goal of the app is to create an easy to use instant messenger which is open source and accessible for everyone.
 
 ### Links:
 
@@ -14,7 +14,7 @@
 
 ### Screenshots:
 
-![Screenshot](https://github.com/krille-chan/yomi/blob/main/docs/screenshots/product.jpeg?raw=true)
+![Screenshot](https://github.com/lingyicute/yomi-android/blob/main/docs/screenshots/product.jpeg?raw=true)
 
 # Features
 
@@ -43,13 +43,13 @@
 
 Please visit the website for installation instructions:
 
-- https://yomi.im
+- https://yomi.92li.uk
 
 # How to build
 
-Please visit the [Wiki](https://github.com/krille-chan/yomi/wiki) for build instructions:
+Please visit the [Wiki](https://github.com/lingyicute/yomi-android/wiki) for build instructions:
 
-- https://github.com/krille-chan/yomi/wiki/How-To-Build
+- https://github.com/lingyicute/yomi-android/wiki/How-To-Build
 
 
 # Special thanks

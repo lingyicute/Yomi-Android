@@ -977,7 +977,7 @@
             }
         }
     },
-    "inviteText": "{username} v-a invitat la Yomi.\n1. Instalați Yomi: https://yomi.im\n2. Înregistrați-vă sau conectați-vă\n3. Deschideți invitația: {link}",
+    "inviteText": "{username} v-a invitat la Yomi.\n1. Instalați Yomi: https://yomi.92li.uk\n2. Înregistrați-vă sau conectați-vă\n3. Deschideți invitația: {link}",
     "@inviteText": {
         "type": "String",
         "placeholders": {

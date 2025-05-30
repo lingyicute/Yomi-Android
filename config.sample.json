@@ -1,9 +1,9 @@
 {
   "application_name": "Yomi",
   "application_welcome_message": null,
-  "default_homeserver": "matrix.org",
-  "web_base_url": "https://yomi.im/web",
-  "privacy_url": "https://yomi.im/en/privacy.html",
+  "default_homeserver": "chat.92li.uk",
+  "web_base_url": "https://yomi.92li.uk/web",
+  "privacy_url": "https://yomi.92li.uk/en/privacy.html",
   "render_html": false,
   "hide_redacted_events": false,
   "hide_unknown_events": false

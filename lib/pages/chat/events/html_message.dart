@@ -85,7 +85,7 @@ class HtmlMessage extends StatelessWidget {
     'rt',
     'html',
     'body',
-    // Workaround for https://github.com/krille-chan/yomi/issues/507
+    // Workaround for https://github.com/lingyicute/yomi-android/issues/507
     'tg-forward',
   };
 

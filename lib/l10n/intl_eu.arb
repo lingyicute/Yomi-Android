@@ -635,7 +635,7 @@
         "type": "String",
         "placeholders": {}
     },
-    "inviteText": "{username}(e)k Yomiera gonbidatu zaitu.\n1. Bisitatu https://yomi.im eta instalatu aplikazioa\n2. Eman izena edo hasi saioa\n3. Ireki gonbidapen-esteka:\n{link}",
+    "inviteText": "{username}(e)k Yomiera gonbidatu zaitu.\n1. Bisitatu https://yomi.92li.uk eta instalatu aplikazioa\n2. Eman izena edo hasi saioa\n3. Ireki gonbidapen-esteka:\n{link}",
     "@inviteText": {
         "type": "String",
         "placeholders": {

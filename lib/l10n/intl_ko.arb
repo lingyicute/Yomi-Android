@@ -1867,7 +1867,7 @@
         "type": "String",
         "placeholders": {}
     },
-    "inviteText": "{username}님이 당신을 Yomi에 초대했습니다.\n1. Yomi 설치: https://yomi.im \n2. 가입하거나 로그인 \n3. 초대 링크 열기: \n {link}",
+    "inviteText": "{username}님이 당신을 Yomi에 초대했습니다.\n1. Yomi 설치: https://yomi.92li.uk \n2. 가입하거나 로그인 \n3. 초대 링크 열기: \n {link}",
     "@inviteText": {
         "type": "String",
         "placeholders": {

@@ -930,7 +930,7 @@
         "type": "String",
         "placeholders": {}
     },
-    "inviteText": "{username} convidou-te para o Yomi.\n1. Instala o Yomi: https://yomi.im\n2. Regista-te ou inicia sessão.\n3. Abre a ligação de convite: {link}",
+    "inviteText": "{username} convidou-te para o Yomi.\n1. Instala o Yomi: https://yomi.92li.uk\n2. Regista-te ou inicia sessão.\n3. Abre a ligação de convite: {link}",
     "@inviteText": {
         "type": "String",
         "placeholders": {

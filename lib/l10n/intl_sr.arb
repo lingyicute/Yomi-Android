@@ -945,7 +945,7 @@
         "type": "String",
         "placeholders": {}
     },
-    "inviteText": "{username} вас позива у Yomi. \n1. Инсталирајте Yomi: https://yomi.im \n2. Региструјте се или пријавите \n3. Отворите везу позивнице: {link}",
+    "inviteText": "{username} вас позива у Yomi. \n1. Инсталирајте Yomi: https://yomi.92li.uk \n2. Региструјте се или пријавите \n3. Отворите везу позивнице: {link}",
     "@inviteText": {
         "type": "String",
         "placeholders": {
