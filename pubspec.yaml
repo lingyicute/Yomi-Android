@@ -129,9 +129,9 @@ flutter:
     - assets/js/package/
     
   fonts:
-    - family: Segoe-UI-Emoji
+    - family: Yomi-UI-Emoji
       fonts:
-        - asset: assets/Segoe-UI-Emoji.ttf
+        - asset: assets/Yomi-UI-Emoji.ttf
 
 msix_config:
   display_name: Yomi

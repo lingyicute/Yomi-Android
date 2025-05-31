@@ -48,9 +48,16 @@ class LoginView extends StatelessWidget {
             child: ListView(
               padding: const EdgeInsets.symmetric(horizontal: 8),
               children: <Widget>[
-                Hero(
-                  tag: 'info-logo',
-                  child: Image.asset('assets/banner_transparent.png'),
+                const Spacer(flex: 1),
+                Center(
+                  child: Hero(
+                    tag: 'info-logo',
+                    child: Image.asset('assets/logo.png',
+                      width: 120,
+                      height: 120,
+                      fit: BoxFit.contain,
+                    ),
+                  ),
                 ),
                 const SizedBox(height: 16),
                 Padding(
@@ -107,31 +114,23 @@ class LoginView extends StatelessWidget {
                 const SizedBox(height: 16),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: theme.colorScheme.primary,
-                      foregroundColor: theme.colorScheme.onPrimary,
+                  child: Center(
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: theme.colorScheme.primary,
+                        foregroundColor: theme.colorScheme.onPrimary,
+                        minimumSize: Size.zero,
+                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                      ),
+                      onPressed: controller.loading ? null : controller.login,
+                      child: controller.loading
+                          ? const LinearProgressIndicator()
+                          : Text(L10n.of(context).login),
                     ),
-                    onPressed: controller.loading ? null : controller.login,
-                    child: controller.loading
-                        ? const LinearProgressIndicator()
-                        : Text(L10n.of(context).login),
                   ),
                 ),
                 const SizedBox(height: 16),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                  child: TextButton(
-                    onPressed: controller.loading
-                        ? () {}
-                        : controller.passwordForgotten,
-                    style: TextButton.styleFrom(
-                      foregroundColor: theme.colorScheme.error,
-                    ),
-                    child: Text(L10n.of(context).passwordForgotten),
-                  ),
-                ),
-                const SizedBox(height: 16),
+                const Spacer(flex: 1),
               ],
             ),
           );
