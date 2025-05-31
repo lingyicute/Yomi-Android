@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:matrix/matrix.dart';
 
+import 'package:yomi/config/app_config.dart';
 import 'package:yomi/config/themes.dart';
 import 'package:yomi/l10n/l10n.dart';
 import 'package:yomi/pages/chat/sticker_picker_dialog.dart';

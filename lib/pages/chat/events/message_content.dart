@@ -277,6 +277,12 @@ class MessageContent extends StatelessWidget {
                 fontSize: AppConfig.fontSizeFactor *
                     AppConfig.messageFontSize *
                     (bigEmotes ? 5 : 1),
+                textStyle: AppConfig.emojiTextStyle(
+                  style: TextStyle(
+                    color: textColor,
+                    fontSize: AppConfig.fontSizeFactor * AppConfig.messageFontSize * (bigEmotes ? 5 : 1),
+                  ),
+                ),
                 limitHeight: !selected,
                 linkStyle: TextStyle(
                   color: linkColor,
@@ -357,9 +363,11 @@ class _ButtonContent extends StatelessWidget {
         onTap: onPressed,
         child: Text(
           '$icon  $label',
-          style: TextStyle(
-            color: textColor,
-            fontSize: fontSize,
+          style: AppConfig.emojiTextStyle(
+            style: TextStyle(
+              color: textColor,
+              fontSize: fontSize,
+            ),
           ),
         ),
       ),
