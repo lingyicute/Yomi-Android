@@ -1,5 +1,6 @@
-import 'dart:ui';
+import 'dart:ui' as ui;
 
+import 'package:flutter/material.dart';
 import 'package:matrix/matrix.dart';
 
 abstract class AppConfig {
@@ -74,6 +75,21 @@ abstract class AppConfig {
     host: 'servers.joinmatrix.org',
     path: 'servers.json',
   );
+
+  // Widget safety margin to add at the end of the currently displayed
+  // decryption lifespan. The progress animation should not be shown until
+  // this time is reached.
+  static const Duration keyBackupSafetyMarginLifespan = Duration(days: 7);
+
+  // The TextStyle to use for emoji rendering
+  static TextStyle emojiTextStyle({TextStyle? style}) {
+    return TextStyle(
+      fontFamily: 'Segoe-UI-Emoji',
+      fontSize: style?.fontSize,
+      color: style?.color,
+      fontWeight: style?.fontWeight,
+    );
+  }
 
   static void loadFromJson(Map<String, dynamic> json) {
     if (json['chat_color'] != null) {

@@ -31,10 +31,12 @@ class StateMessage extends StatelessWidget {
                 textAlign: TextAlign.center,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  fontSize: 12 * AppConfig.fontSizeFactor,
-                  decoration:
-                      event.redacted ? TextDecoration.lineThrough : null,
+                style: AppConfig.emojiTextStyle(
+                  style: TextStyle(
+                    fontSize: 12 * AppConfig.fontSizeFactor,
+                    decoration:
+                        event.redacted ? TextDecoration.lineThrough : null,
+                  ),
                 ),
               ),
             ),

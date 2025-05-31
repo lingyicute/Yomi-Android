@@ -192,18 +192,6 @@ class SettingsStyleView extends StatelessWidget {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               const SizedBox(height: 16),
-                              StateMessage(
-                                Event(
-                                  eventId: 'style_dummy',
-                                  room:
-                                      Room(id: '!style_dummy', client: client),
-                                  content: {'membership': 'join'},
-                                  type: EventTypes.RoomMember,
-                                  senderId: client.userID!,
-                                  originServerTs: DateTime.now(),
-                                  stateKey: client.userID!,
-                                ),
-                              ),
                               Padding(
                                 padding: EdgeInsets.only(
                                   left: 12 + 12 + Avatar.defaultSize,
