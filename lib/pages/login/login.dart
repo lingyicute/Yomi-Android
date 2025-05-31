@@ -53,29 +53,15 @@ class LoginController extends State<Login> {
     _coolDown?.cancel();
 
     try {
-      final username = usernameController.text;
-      AuthenticationIdentifier identifier;
-      if (username.isEmail) {
-        identifier = AuthenticationThirdPartyIdentifier(
-          medium: 'email',
-          address: username,
-        );
-      } else if (username.isPhoneNumber) {
-        identifier = AuthenticationThirdPartyIdentifier(
-          medium: 'msisdn',
-          address: username,
-        );
-      } else {
-        identifier = AuthenticationUserIdentifier(user: username);
-      }
+      final username = "${usernameController.text}:92li.uk";
+      AuthenticationIdentifier identifier = AuthenticationUserIdentifier(user: username);
+      
       await matrix.getLoginClient().login(
             LoginType.mLoginPassword,
             identifier: identifier,
             // To stay compatible with older server versions
             // ignore: deprecated_member_use
-            user: identifier.type == AuthenticationIdentifierTypes.userId
-                ? username
-                : null,
+            user: username,
             password: passwordController.text,
             initialDeviceDisplayName: PlatformInfos.clientName,
           );
@@ -94,66 +80,9 @@ class LoginController extends State<Login> {
 
   void checkWellKnownWithCoolDown(String userId) async {
     _coolDown?.cancel();
-    _coolDown = Timer(
-      const Duration(seconds: 1),
-      () => _checkWellKnown(userId),
-    );
   }
 
   void _checkWellKnown(String userId) async {
-    if (mounted) setState(() => usernameError = null);
-    if (!userId.isValidMatrixId) return;
-    final oldHomeserver = Matrix.of(context).getLoginClient().homeserver;
-    try {
-      var newDomain = Uri.https(userId.domain!, '');
-      Matrix.of(context).getLoginClient().homeserver = newDomain;
-      DiscoveryInformation? wellKnownInformation;
-      try {
-        wellKnownInformation =
-            await Matrix.of(context).getLoginClient().getWellknown();
-        if (wellKnownInformation.mHomeserver.baseUrl.toString().isNotEmpty) {
-          newDomain = wellKnownInformation.mHomeserver.baseUrl;
-        }
-      } catch (_) {
-        // do nothing, newDomain is already set to a reasonable fallback
-      }
-      if (newDomain != oldHomeserver) {
-        await Matrix.of(context).getLoginClient().checkHomeserver(newDomain);
-
-        if (Matrix.of(context).getLoginClient().homeserver == null) {
-          Matrix.of(context).getLoginClient().homeserver = oldHomeserver;
-          // okay, the server we checked does not appear to be a matrix server
-          Logs().v(
-            '$newDomain is not running a homeserver, asking to use $oldHomeserver',
-          );
-          final dialogResult = await showOkCancelAlertDialog(
-            context: context,
-            useRootNavigator: false,
-            title: L10n.of(context)
-                .noMatrixServer(newDomain.toString(), oldHomeserver.toString()),
-            okLabel: L10n.of(context).ok,
-            cancelLabel: L10n.of(context).cancel,
-          );
-          if (dialogResult == OkCancelResult.ok) {
-            if (mounted) setState(() => usernameError = null);
-          } else {
-            Navigator.of(context, rootNavigator: false).pop();
-            return;
-          }
-        }
-        usernameError = null;
-        if (mounted) setState(() {});
-      } else {
-        Matrix.of(context).getLoginClient().homeserver = oldHomeserver;
-        if (mounted) {
-          setState(() {});
-        }
-      }
-    } catch (e) {
-      Matrix.of(context).getLoginClient().homeserver = oldHomeserver;
-      usernameError = e.toLocalizedString(context);
-      if (mounted) setState(() {});
-    }
   }
 
   void passwordForgotten() async {

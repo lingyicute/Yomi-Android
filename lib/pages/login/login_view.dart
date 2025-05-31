@@ -19,7 +19,7 @@ class LoginView extends StatelessWidget {
         .homeserver
         .toString()
         .replaceFirst('https://', '');
-    final title = L10n.of(context).logInTo(homeserver);
+    final title = L10n.of(context).login;
     final titleParts = title.split(homeserver);
 
     return LoginScaffold(
@@ -28,17 +28,8 @@ class LoginView extends StatelessWidget {
         leading: controller.loading ? null : const Center(child: BackButton()),
         automaticallyImplyLeading: !controller.loading,
         titleSpacing: !controller.loading ? 0 : null,
-        title: Text.rich(
-          TextSpan(
-            children: [
-              TextSpan(text: titleParts.first),
-              TextSpan(
-                text: homeserver,
-                style: const TextStyle(fontWeight: FontWeight.bold),
-              ),
-              TextSpan(text: titleParts.last),
-            ],
-          ),
+        title: Text(
+          title,
           style: const TextStyle(fontSize: 18),
         ),
       ),
@@ -73,11 +64,12 @@ class LoginView extends StatelessWidget {
                     autofillHints:
                         controller.loading ? null : [AutofillHints.username],
                     decoration: InputDecoration(
+                      prefixText: '@',
                       prefixIcon: const Icon(Icons.account_box_outlined),
                       errorText: controller.usernameError,
                       errorStyle: const TextStyle(color: Colors.orange),
-                      hintText: '@username:domain',
-                      labelText: L10n.of(context).emailOrUsername,
+                      hintText: '用户名',
+                      labelText: L10n.of(context).username,
                     ),
                   ),
                 ),
