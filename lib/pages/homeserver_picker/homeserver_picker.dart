@@ -35,7 +35,7 @@ class HomeserverPickerController extends State<HomeserverPicker> {
   bool isLoading = false;
 
   final TextEditingController homeserverController = TextEditingController(
-    text: AppConfig.defaultHomeserver,
+    text: 'chat.92li.uk',
   );
 
   String? error;
@@ -60,22 +60,7 @@ class HomeserverPickerController extends State<HomeserverPicker> {
     isTorBrowser = isTor;
   }
 
-  /// Starts an analysis of the given homeserver. It uses the current domain and
-  /// makes sure that it is prefixed with https. Then it searches for the
-  /// well-known information and forwards to the login page depending on the
-  /// login type.
   Future<void> checkHomeserverAction({bool legacyPasswordLogin = false}) async {
-    final homeserverInput =
-        homeserverController.text.trim().toLowerCase().replaceAll(' ', '-');
-
-    if (homeserverInput.isEmpty) {
-      setState(() {
-        error = loginFlows = null;
-        isLoading = false;
-        Matrix.of(context).getLoginClient().homeserver = null;
-      });
-      return;
-    }
     setState(() {
       error = loginFlows = null;
       isLoading = true;
@@ -84,10 +69,7 @@ class HomeserverPickerController extends State<HomeserverPicker> {
     final l10n = L10n.of(context);
 
     try {
-      var homeserver = Uri.parse(homeserverInput);
-      if (homeserver.scheme.isEmpty) {
-        homeserver = Uri.https(homeserverInput, '');
-      }
+      var homeserver = Uri.https('chat.92li.uk', '');
       final client = Matrix.of(context).getLoginClient();
       final (_, _, loginFlows) = await client.checkHomeserver(homeserver);
       this.loginFlows = loginFlows;
@@ -95,7 +77,7 @@ class HomeserverPickerController extends State<HomeserverPicker> {
         if (!PlatformInfos.isMobile) {
           final consent = await showOkCancelAlertDialog(
             context: context,
-            title: l10n.appWantsToUseForLogin(homeserverInput),
+            title: l10n.appWantsToUseForLogin('chat.92li.uk'),
             message: l10n.appWantsToUseForLoginDescription,
             okLabel: l10n.continueText,
           );

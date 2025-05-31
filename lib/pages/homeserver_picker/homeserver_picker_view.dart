@@ -140,75 +140,6 @@ class HomeserverPickerView extends StatelessWidget {
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          TextField(
-                            onSubmitted: (_) =>
-                                controller.checkHomeserverAction(),
-                            controller: controller.homeserverController,
-                            autocorrect: false,
-                            keyboardType: TextInputType.url,
-                            decoration: InputDecoration(
-                              prefixIcon: const Icon(Icons.search_outlined),
-                              filled: false,
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(
-                                  AppConfig.borderRadius,
-                                ),
-                              ),
-                              hintText: AppConfig.defaultHomeserver,
-                              hintStyle: TextStyle(
-                                color: theme.colorScheme.surfaceTint,
-                              ),
-                              labelText: 'Sign in with:',
-                              errorText: controller.error,
-                              errorMaxLines: 4,
-                              suffixIcon: IconButton(
-                                onPressed: () {
-                                  showDialog(
-                                    context: context,
-                                    builder: (context) => AlertDialog.adaptive(
-                                      title: Text(
-                                        L10n.of(context).whatIsAHomeserver,
-                                      ),
-                                      content: Linkify(
-                                        text: L10n.of(context)
-                                            .homeserverDescription,
-                                        textScaleFactor:
-                                            MediaQuery.textScalerOf(context)
-                                                .scale(1),
-                                        options: const LinkifyOptions(
-                                          humanize: false,
-                                        ),
-                                        linkStyle: TextStyle(
-                                          color: theme.colorScheme.primary,
-                                          decorationColor:
-                                              theme.colorScheme.primary,
-                                        ),
-                                        onOpen: (link) =>
-                                            launchUrlString(link.url),
-                                      ),
-                                      actions: [
-                                        AdaptiveDialogAction(
-                                          onPressed: () => launchUrl(
-                                            Uri.https('servers.joinmatrix.org'),
-                                          ),
-                                          child: Text(
-                                            L10n.of(context)
-                                                .discoverHomeservers,
-                                          ),
-                                        ),
-                                        AdaptiveDialogAction(
-                                          onPressed: Navigator.of(context).pop,
-                                          child: Text(L10n.of(context).close),
-                                        ),
-                                      ],
-                                    ),
-                                  );
-                                },
-                                icon: const Icon(Icons.info_outlined),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 32),
                           ElevatedButton(
                             style: ElevatedButton.styleFrom(
                               backgroundColor: theme.colorScheme.primary,
@@ -219,19 +150,7 @@ class HomeserverPickerView extends StatelessWidget {
                                 : controller.checkHomeserverAction,
                             child: controller.isLoading
                                 ? const LinearProgressIndicator()
-                                : Text(L10n.of(context).continueText),
-                          ),
-                          TextButton(
-                            style: TextButton.styleFrom(
-                              foregroundColor: theme.colorScheme.secondary,
-                              textStyle: theme.textTheme.labelMedium,
-                            ),
-                            onPressed: controller.isLoading
-                                ? null
-                                : () => controller.checkHomeserverAction(
-                                      legacyPasswordLogin: true,
-                                    ),
-                            child: Text(L10n.of(context).loginWithMatrixId),
+                                : Text('让我们开始吧'),
                           ),
                         ],
                       ),
