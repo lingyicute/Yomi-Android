@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 import 'package:yomi/config/themes.dart';
 import 'package:yomi/l10n/l10n.dart';
@@ -77,8 +78,8 @@ class _LockScreenState extends State<LockScreen> {
               shrinkWrap: true,
               children: [
                 Center(
-                  child: Image.asset(
-                    'assets/info-logo.png',
+                  child: SvgPicture.asset(
+                    'assets/logo.svg',
                     width: 256,
                   ),
                 ),
