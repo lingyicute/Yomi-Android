@@ -107,14 +107,17 @@ class HomeserverPickerView extends StatelessWidget {
                         ),
                       ),
                     ),
+                    const Spacer(flex: 1),
                     Container(
                       alignment: Alignment.center,
                       padding: const EdgeInsets.symmetric(horizontal: 8.0),
                       child: Hero(
                         tag: 'info-logo',
                         child: Image.asset(
-                          './assets/banner_transparent.png',
-                          fit: BoxFit.fitWidth,
+                          './assets/logo.png',
+                          fit: BoxFit.contain,
+                          width: 120,
+                          height: 120,
                         ),
                       ),
                     ),
@@ -133,28 +136,33 @@ class HomeserverPickerView extends StatelessWidget {
                         onOpen: (link) => launchUrlString(link.url),
                       ),
                     ),
-                    const Spacer(),
+                    const Spacer(flex: 1),
                     Padding(
                       padding: const EdgeInsets.all(32.0),
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: theme.colorScheme.primary,
-                              foregroundColor: theme.colorScheme.onPrimary,
+                          Center(
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: theme.colorScheme.primary,
+                                foregroundColor: theme.colorScheme.onPrimary,
+                                minimumSize: Size.zero,
+                                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                              ),
+                              onPressed: controller.isLoading
+                                  ? null
+                                  : controller.checkHomeserverAction,
+                              child: controller.isLoading
+                                  ? const LinearProgressIndicator()
+                                  : Text('让我们开始吧'),
                             ),
-                            onPressed: controller.isLoading
-                                ? null
-                                : controller.checkHomeserverAction,
-                            child: controller.isLoading
-                                ? const LinearProgressIndicator()
-                                : Text('让我们开始吧'),
                           ),
                         ],
                       ),
                     ),
+                    const Spacer(flex: 1),
                   ],
                 ),
               ),

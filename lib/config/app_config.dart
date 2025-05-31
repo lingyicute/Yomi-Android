@@ -84,7 +84,7 @@ abstract class AppConfig {
   // The TextStyle to use for emoji rendering
   static TextStyle emojiTextStyle({TextStyle? style}) {
     return TextStyle(
-      fontFamily: 'Segoe-UI-Emoji',
+      fontFamily: 'Yomi-UI-Emoji',
       fontSize: style?.fontSize,
       color: style?.color,
       fontWeight: style?.fontWeight,

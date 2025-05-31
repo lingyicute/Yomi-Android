@@ -11,7 +11,7 @@
         "type": "String",
         "placeholders": {}
     },
-    "acceptedTheInvitation": "👍 {username} 接受了邀请",
+    "acceptedTheInvitation": "📩 {username} 接受了邀请",
     "@acceptedTheInvitation": {
         "type": "String",
         "placeholders": {
@@ -1063,7 +1063,7 @@
             }
         }
     },
-    "loadingPleaseWait": "加载中…请稍候。",
+    "loadingPleaseWait": "请稍候…",
     "@loadingPleaseWait": {
         "type": "String",
         "placeholders": {}
@@ -1112,7 +1112,7 @@
         "type": "String",
         "placeholders": {}
     },
-    "muteChat": "静音聊天",
+    "muteChat": "免打扰",
     "@muteChat": {
         "type": "String",
         "placeholders": {}
@@ -1789,7 +1789,7 @@
             }
         }
     },
-    "unmuteChat": "取消静音聊天",
+    "unmuteChat": "关闭免打扰",
     "@unmuteChat": {
         "type": "String",
         "placeholders": {}
@@ -3206,7 +3206,7 @@
             }
         }
     },
-    "appIntroduction": "Yomi 让使用不同即时通信工具的你和你的好友得以聊天。 访问 https://matrix.org 了解详情或轻按 *继续*。",
+    "appIntroduction": "嗨，亲爱的朋友！欢迎来到 Yomi。\n安心分享，轻松畅聊，重拾社交最纯粹的美好。",
     "@appIntroduction": {},
     "newChatRequest": "📩 新的聊天请求",
     "@newChatRequest": {},
