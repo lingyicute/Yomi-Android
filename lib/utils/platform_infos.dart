@@ -46,24 +46,17 @@ abstract class PlatformInfos {
     return version;
   }
 
-  static void showDialog(BuildContext context) async {
+  static void showAboutAppDialog(BuildContext context) async {
     final version = await PlatformInfos.getVersion();
-
-    await showDialog<void>(
+    showDialog(
       context: context,
       builder: (BuildContext context) {
-        return Dialog(
-          insetPadding: const EdgeInsets.symmetric(horizontal: 40, vertical: 24),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-          child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(16),
+        return AlertDialog(
+          content: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                // 上方空白
-                const SizedBox(height: 24),
-                // 图标居中显示
+                const SizedBox(height: 16),
                 Center(
                   child: Image.asset(
                     'assets/logo.png',
@@ -72,62 +65,42 @@ abstract class PlatformInfos {
                     filterQuality: FilterQuality.medium,
                   ),
                 ),
-                const SizedBox(height: 16),
-                // 应用名称
+                const SizedBox(height: 8),
                 Center(
                   child: Text(
                     AppConfig.applicationName,
-                    style: Theme.of(context).textTheme.headline6,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
-                const SizedBox(height: 8),
-                // 版本号
                 Center(
-                  child: Text(
-                    'Version: $version',
-                    style: Theme.of(context).textTheme.bodyText2,
-                  ),
+                  child: Text('版本: $version'),
                 ),
-                const SizedBox(height: 24),
-                // 底部按钮区域
-                Wrap(
-                  alignment: WrapAlignment.center,
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: [
-                    TextButton.icon(
-                      onPressed: () {
-                        launchUrlString(AppConfig.sourceCodeUrl);
-                      },
-                      icon: const Icon(Icons.source_outlined),
-                      label: Text(L10n.of(context).sourceCode),
-                    ),
-                    TextButton.icon(
-                      onPressed: () {
-                        context.go('/logs');
-                        Navigator.of(context).pop();
-                      },
-                      icon: const Icon(Icons.list_outlined),
-                      label: const Text('日志'),
-                    ),
-                    TextButton.icon(
-                      onPressed: () {
-                        context.go('/configs');
-                        Navigator.of(context).pop();
-                      },
-                      icon: const Icon(Icons.settings_applications_outlined),
-                      label: const Text('调试选项'),
-                    ),
-                  ],
+                const SizedBox(height: 16),
+                TextButton.icon(
+                  onPressed: () => launchUrlString(AppConfig.sourceCodeUrl),
+                  icon: const Icon(Icons.source_outlined),
+                  label: Text(L10n.of(context).sourceCode),
                 ),
-                const SizedBox(height: 8),
-                // 关闭按钮
-                TextButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  child: const Text('关闭'),
+                TextButton.icon(
+                  onPressed: () {
+                    context.go('/logs');
+                    Navigator.of(context).pop();
+                  },
+                  icon: const Icon(Icons.list_outlined),
+                  label: const Text('日志'),
                 ),
-                ],
-              ),
+                TextButton.icon(
+                  onPressed: () {
+                    context.go('/configs');
+                    Navigator.of(context).pop();
+                  },
+                  icon: const Icon(Icons.settings_applications_outlined),
+                  label: const Text('调试选项'),
+                ),
+              ],
             ),
           ),
         );

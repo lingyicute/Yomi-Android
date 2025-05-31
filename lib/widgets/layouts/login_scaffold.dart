@@ -114,7 +114,7 @@ class _PrivacyButtons extends StatelessWidget {
               ),
             ),
             TextButton(
-              onPressed: () => PlatformInfos.showDialog(context),
+              onPressed: () => PlatformInfos.showAboutAppDialog(context),
               child: Text(
                 L10n.of(context).about,
                 style: shadowTextStyle,
