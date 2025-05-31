@@ -226,7 +226,7 @@ class SettingsStyleView extends StatelessWidget {
                                       vertical: 8,
                                     ),
                                     child: Text(
-                                      'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor',
+                                      '救命！我的猫主子🐱刚刚用尾巴蘸墨水在合同上签了个名，现在它宣布自己是公司CEO了！',
                                       style: TextStyle(
                                         color: theme.onBubbleColor,
                                         fontSize: AppConfig.messageFontSize *
@@ -259,7 +259,7 @@ class SettingsStyleView extends StatelessWidget {
                                         vertical: 8,
                                       ),
                                       child: Text(
-                                        'Lorem ipsum dolor sit amet',
+                                        '恭喜新CEO上任！记得给它发小鱼干当工资～需要我帮你起草一份《猫CEO管理章程》吗？📝',
                                         style: TextStyle(
                                           color: theme.colorScheme.onSurface,
                                           fontSize: AppConfig.messageFontSize *

@@ -332,7 +332,7 @@
         "type": "String",
         "placeholders": {}
     },
-    "changeTheme": "改变风格",
+    "changeTheme": "外观",
     "@changeTheme": {
         "type": "String",
         "placeholders": {}
@@ -533,7 +533,7 @@
         "type": "String",
         "placeholders": {}
     },
-    "couldNotDecryptMessage": "不能解密消息: {error}",
+    "couldNotDecryptMessage": "消息解密失败: {error}",
     "@couldNotDecryptMessage": {
         "type": "String",
         "placeholders": {
@@ -2310,7 +2310,7 @@
     "@storeInSecureStorageDescription": {},
     "storeInAppleKeyChain": "存储在 Apple KeyChain 中",
     "@storeInAppleKeyChain": {},
-    "unlockOldMessages": "解锁旧消息",
+    "unlockOldMessages": "解密旧消息",
     "@unlockOldMessages": {},
     "pleaseEnterRecoveryKey": "请输入你的恢复密钥：",
     "@pleaseEnterRecoveryKey": {},
@@ -2318,7 +2318,7 @@
     "@recoveryKey": {},
     "recoveryKeyLost": "丢失了恢复密钥？",
     "@recoveryKeyLost": {},
-    "pleaseEnterRecoveryKeyDescription": "要解锁以前的聊天记录，请输入你在之前会话中生成的恢复密钥。备注：“恢复密钥”不是你的账号密码哦。",
+    "pleaseEnterRecoveryKeyDescription": "要解密以前的聊天记录，请输入你在之前会话中生成的恢复密钥。备注：“恢复密钥”不是你的账号密码哦。",
     "@pleaseEnterRecoveryKeyDescription": {},
     "saveKeyManuallyDescription": "通过触发系统共享对话框或剪贴板手动保存此密钥。",
     "@saveKeyManuallyDescription": {},
@@ -2375,7 +2375,7 @@
     "@commandHint_markasdm": {},
     "whyIsThisMessageEncrypted": "为什么此消息不可读？",
     "@whyIsThisMessageEncrypted": {},
-    "noKeyForThisMessage": "如果消息是在你在此设备上登录账户前发送的，就可能发生这种情况。\n\n也有可能是发送者屏蔽了你的设备或网络连接出了问题。\n\n你能在另一个会话中读取消息吗？如果是的话，你可以从它那里传递信息！点击设置 > 设备，并确保你的设备已经相互验证。当你下次打开聊天室，且两个会话都在前台，密钥就会自动传输。\n\n你不想在注销或切换设备时丢失密钥？请确保在设置中启用了聊天备份。",
+    "noKeyForThisMessage": "如果这条消息是在你登录此设备之前产生的，就可能发生这种情况。\n\n不过，也有可能是网络连接出了点儿问题。\n\n你能在另一个会话中读取消息吗？如果是的话，你可以从它那里获得密钥。请点击设置 > 设备，并确保你的设备已经相互验证。当你下次打开聊天，且两个会话都在前台，密钥就会被自动传输。\n\n小提示：如果不想在注销或切换设备的时候丢失密钥，请确保在设置中启用了聊天备份。",
     "@noKeyForThisMessage": {},
     "newGroup": "新群组",
     "@newGroup": {},
@@ -2389,7 +2389,7 @@
     "@allSpaces": {},
     "appearOnTop": "显示在其它应用上方",
     "@appearOnTop": {},
-    "appearOnTopDetails": "允许应用显示在顶部（如果你已经将 Yomi 设置为呼叫账户，则不需要授予此权限）",
+    "appearOnTopDetails": "允许应用显示在顶部",
     "@appearOnTopDetails": {},
     "otherCallingPermissions": "麦克风、摄像头和其它 Yomi 权限",
     "@otherCallingPermissions": {},
@@ -3079,7 +3079,7 @@
     "@whatIsAHomeserver": {},
     "homeserverDescription": "主服务器上就像电子邮件提供商，你的所有数据都存储在上面。你可以选择你想使用哪个主服务器。在 https://matrix.org 上了解更多信息。",
     "@homeserverDescription": {},
-    "doesNotSeemToBeAValidHomeserver": "似乎不是兼容的主服务器。URL 不正确？",
+    "doesNotSeemToBeAValidHomeserver": "这似乎不是一个兼容的主服务器。",
     "@doesNotSeemToBeAValidHomeserver": {},
     "prepareSendingAttachment": "准备发送附件…",
     "@prepareSendingAttachment": {},
@@ -3103,7 +3103,7 @@
             }
         }
     },
-    "serverLimitReached": "达到了服务器限制！等待 {seconds} 秒…",
+    "serverLimitReached": "达到了服务器限制！请等待 {seconds} 秒…",
     "@serverLimitReached": {
         "type": "integer",
         "placeholders": {
@@ -3112,7 +3112,7 @@
             }
         }
     },
-    "oneOfYourDevicesIsNotVerified": "您设备中的一台未验证",
+    "oneOfYourDevicesIsNotVerified": "您的设备中有一台未经验证，请检查",
     "@oneOfYourDevicesIsNotVerified": {},
     "noticeChatBackupDeviceVerification": "注意：当你连接所有设备到聊天备份时，这些设备将被自动验证。",
     "@noticeChatBackupDeviceVerification": {},

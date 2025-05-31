@@ -223,7 +223,7 @@ class HomeserverPickerController extends State<HomeserverPicker> {
       case MoreLoginActions.privacy:
         launchUrlString(AppConfig.privacyUrl);
       case MoreLoginActions.about:
-        PlatformInfos.showDialog(context);
+        PlatformInfos.showAboutAppDialog(context);
     }
   }
 }
