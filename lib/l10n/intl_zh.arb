@@ -2106,7 +2106,7 @@
     "@addAccount": {},
     "editBundlesForAccount": "编辑此账户的集合",
     "@editBundlesForAccount": {},
-    "enableMultiAccounts": "（测试功能）在此设备上添加多个账户",
+    "enableMultiAccounts": "借助此功能，你可以在此设备上添加多个账号。\n不过，当你登录其中一个账号时，其余账号的消息推送可能会延迟哦。",
     "@enableMultiAccounts": {},
     "addToBundle": "添加到集合",
     "@addToBundle": {},
