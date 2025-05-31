@@ -168,6 +168,15 @@ class ClientChooserButton extends StatelessWidget {
               : null, // https://github.com/flutter/flutter/issues/167180
           onSelected: (o) => _clientSelected(o, context),
           itemBuilder: _bundleMenuItems,
+          position: PopupMenuPosition.under,
+          offset: const Offset(0, 8),
+          constraints: const BoxConstraints(
+            minWidth: 200,
+            maxWidth: 230,
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(24),
+          ),
           child: Center(
             child: Avatar(
               mxContent: snapshot.data?.avatarUrl,
