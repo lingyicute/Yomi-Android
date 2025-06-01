@@ -50,17 +50,6 @@ class HomeserverPickerView extends StatelessWidget {
                 ),
               ),
               PopupMenuItem(
-                value: MoreLoginActions.privacy,
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Icon(Icons.privacy_tip_outlined),
-                    const SizedBox(width: 12),
-                    Text(L10n.of(context).privacy),
-                  ],
-                ),
-              ),
-              PopupMenuItem(
                 value: MoreLoginActions.about,
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
