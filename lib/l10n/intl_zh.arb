@@ -924,7 +924,7 @@
         "type": "String",
         "placeholders": {}
     },
-    "inviteContact": "邀请联系人",
+    "inviteContact": "邀请",
     "@inviteContact": {
         "type": "String",
         "placeholders": {}
@@ -2703,7 +2703,7 @@
     "@pleaseChooseAStrongPassword": {},
     "addChatOrSubSpace": "添加聊天或子空间",
     "@addChatOrSubSpace": {},
-    "leaveEmptyToClearStatus": "留空以清除你的状态。",
+    "leaveEmptyToClearStatus": "小提示：留空即可清除原有状态。",
     "@leaveEmptyToClearStatus": {},
     "joinSpace": "加入空间",
     "@joinSpace": {},
@@ -2751,9 +2751,9 @@
     "@sendTypingNotificationsDescription": {},
     "formattedMessagesDescription": "使用 Markdown 显示富文本内容，例如加粗文本。",
     "@formattedMessagesDescription": {},
-    "verifyOtherUserDescription": "如果你验证了其他用户，就可以确保你清楚自己正在与谁进行通信。💪\n\n当你开始验证时，你和其他用户将在应用中看到一个弹出窗口。然后你会看到一系列表情符号或数字，你和其他用户需要比较它们是否一致。\n\n最好的方式是线下会面或开始视频通话。👭",
+    "verifyOtherUserDescription": "通过验证其他用户，你可以确定是谁正在和你聊天。\n\n当你开始验证时，Yomi 将向你和其他用户同时呈现一系列表情符号或数字，你和其他用户需要比较它们是否一致。\n\n对于此流程，最好的方式当然是线下见面喽。👭",
     "@verifyOtherUserDescription": {},
-    "verifyOtherDeviceDescription": "当你验证另一个设备时，这些设备可以交换密钥，从而提高整体安全性。 💪 当你开始验证时，两个设备上的应用都将显示一个弹出窗口。然后你会看到一系列表情符号或数字，你需要比较两个设备上显示的内容。在开始验证之前，最好将两个设备都放在手边。🤳",
+    "verifyOtherDeviceDescription": "当你验证另一个设备时，这些设备可以交换密钥，从而提高整体安全性。🔐\n\n当你开始验证时，两个设备上的 Yomi 将同时弹出提示。你会看到一系列表情符号或数字，你需要比较两个设备上显示的内容。\n\n在开始验证之前，最好把两个设备都放在手边。",
     "@verifyOtherDeviceDescription": {},
     "canceledKeyVerification": "{sender} 取消了密钥验证",
     "@canceledKeyVerification": {

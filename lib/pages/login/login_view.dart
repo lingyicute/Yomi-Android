@@ -39,7 +39,7 @@ class LoginView extends StatelessWidget {
             child: ListView(
               padding: const EdgeInsets.symmetric(horizontal: 8),
               children: <Widget>[
-                const Spacer(flex: 1),
+                const SizedBox(height: 50),
                 Center(
                   child: Hero(
                     tag: 'info-logo',
@@ -121,8 +121,7 @@ class LoginView extends StatelessWidget {
                     ),
                   ),
                 ),
-                const SizedBox(height: 16),
-                const Spacer(flex: 1),
+                const SizedBox(height: 50),
               ],
             ),
           );
