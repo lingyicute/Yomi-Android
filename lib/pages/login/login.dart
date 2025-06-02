@@ -36,7 +36,13 @@ class LoginController extends State<Login> {
     if (usernameController.text.isEmpty) {
       setState(() => usernameError = L10n.of(context).pleaseEnterYourUsername);
     } else {
-      setState(() => usernameError = null);
+      // 验证用户名格式
+      validateUsername(usernameController.text);
+      
+      // 如果有错误，直接返回
+      if (usernameError != null) {
+        return;
+      }
     }
     if (passwordController.text.isEmpty) {
       setState(() => passwordError = L10n.of(context).pleaseEnterYourPassword);
@@ -44,7 +50,7 @@ class LoginController extends State<Login> {
       setState(() => passwordError = null);
     }
 
-    if (usernameController.text.isEmpty || passwordController.text.isEmpty) {
+    if (usernameController.text.isEmpty || passwordController.text.isEmpty || usernameError != null) {
       return;
     }
 
@@ -53,7 +59,13 @@ class LoginController extends State<Login> {
     _coolDown?.cancel();
 
     try {
-      final username = "${usernameController.text}:92li.uk";
+      // 构建正确的用户名格式 @username:92li.uk
+      // 移除可能的前导@符号
+      String cleanUsername = usernameController.text;
+      if (cleanUsername.startsWith('@')) {
+        cleanUsername = cleanUsername.substring(1);
+      }
+      final username = "@${cleanUsername}:92li.uk";
       AuthenticationIdentifier identifier = AuthenticationUserIdentifier(user: username);
       
       await matrix.getLoginClient().login(
@@ -80,9 +92,26 @@ class LoginController extends State<Login> {
 
   void checkWellKnownWithCoolDown(String userId) async {
     _coolDown?.cancel();
+    // 由于使用固定服务器，此方法不再需要执行额外操作
+    // 验证用户名格式
+    validateUsername(userId);
+  }
+
+  void validateUsername(String userId) {
+    // 检查用户名是否包含非法字符
+    final hasInvalidChars = userId.contains(':') || userId.contains('@');
+    
+    setState(() {
+      if (hasInvalidChars) {
+        usernameError = '用户名不应包含 @ 或 : 字符';
+      } else {
+        usernameError = null;
+      }
+    });
   }
 
   void _checkWellKnown(String userId) async {
+    // 同样不再需要检查 well-known
   }
 
   void passwordForgotten() async {

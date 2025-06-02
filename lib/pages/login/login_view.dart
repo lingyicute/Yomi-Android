@@ -107,17 +107,30 @@ class LoginView extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 24.0),
                   child: Center(
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: theme.colorScheme.primary,
-                        foregroundColor: theme.colorScheme.onPrimary,
-                        minimumSize: Size.zero,
-                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                    child: FilledButton(
+                      style: FilledButton.styleFrom(
+                        minimumSize: const Size(200, 48),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
                       ),
                       onPressed: controller.loading ? null : controller.login,
                       child: controller.loading
-                          ? const LinearProgressIndicator()
-                          : Text(L10n.of(context).login),
+                          ? const SizedBox(
+                              width: 24,
+                              height: 24,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2.5,
+                                color: Colors.white,
+                              ),
+                            )
+                          : Text(
+                              L10n.of(context).login,
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
                     ),
                   ),
                 ),
