@@ -74,6 +74,7 @@ class HomeserverPickerView extends StatelessWidget {
                   // display a prominent banner to import session for TOR browser
                   // users. This feature is just some UX sugar as TOR users are
                   // usually forced to logout as TOR browser is non-persistent
+                  const SizedBox(height: 24),
                   AnimatedContainer(
                     height: controller.isTorBrowser ? 64 : 0,
                     duration: LyiThemes.animationDuration,
@@ -95,10 +96,10 @@ class HomeserverPickerView extends StatelessWidget {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 48),
                   Container(
                     alignment: Alignment.center,
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 16.0),
                     child: Hero(
                       tag: 'info-logo',
                       child: Image.asset(
