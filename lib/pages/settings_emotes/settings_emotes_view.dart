@@ -70,32 +70,27 @@ class EmotesSettingsView extends StatelessWidget {
                   vertical: 8.0,
                 ),
                 child: ListTile(
-                  leading: Container(
+                  leading: SizedBox(
                     width: 180.0,
-                    height: 38,
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                    decoration: BoxDecoration(
-                      borderRadius: const BorderRadius.all(Radius.circular(10)),
-                      color: theme.secondaryHeaderColor,
-                    ),
                     child: TextField(
                       controller: controller.newImageCodeController,
                       autocorrect: false,
                       minLines: 1,
                       maxLines: 1,
                       decoration: InputDecoration(
+                        filled: true,
+                        fillColor: Theme.of(context).colorScheme.surfaceVariant,
                         hintText: L10n.of(context).emoteShortcode,
                         prefixText: ': ',
-                        suffixText: ':',
                         prefixStyle: TextStyle(
                           color: theme.colorScheme.secondary,
                           fontWeight: FontWeight.bold,
                         ),
-                        suffixStyle: TextStyle(
-                          color: theme.colorScheme.secondary,
-                          fontWeight: FontWeight.bold,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(16),
+                          borderSide: BorderSide.none,
                         ),
-                        border: InputBorder.none,
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                       ),
                     ),
                   ),
@@ -148,15 +143,8 @@ class EmotesSettingsView extends StatelessWidget {
                       final useShortCuts =
                           (PlatformInfos.isWeb || PlatformInfos.isDesktop);
                       return ListTile(
-                        leading: Container(
+                        leading: SizedBox(
                           width: 180.0,
-                          height: 38,
-                          padding: const EdgeInsets.symmetric(horizontal: 8),
-                          decoration: BoxDecoration(
-                            borderRadius:
-                                const BorderRadius.all(Radius.circular(10)),
-                            color: theme.secondaryHeaderColor,
-                          ),
                           child: Shortcuts(
                             shortcuts: !useShortCuts
                                 ? {}
@@ -187,18 +175,19 @@ class EmotesSettingsView extends StatelessWidget {
                                 minLines: 1,
                                 maxLines: 1,
                                 decoration: InputDecoration(
+                                  filled: true,
+                                  fillColor: theme.colorScheme.surfaceVariant,
                                   hintText: L10n.of(context).emoteShortcode,
                                   prefixText: ': ',
-                                  suffixText: ':',
                                   prefixStyle: TextStyle(
                                     color: theme.colorScheme.secondary,
                                     fontWeight: FontWeight.bold,
                                   ),
-                                  suffixStyle: TextStyle(
-                                    color: theme.colorScheme.secondary,
-                                    fontWeight: FontWeight.bold,
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(16),
+                                    borderSide: BorderSide.none,
                                   ),
-                                  border: InputBorder.none,
+                                  contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                                 ),
                                 onSubmitted: (s) =>
                                     controller.submitImageAction(
