@@ -137,11 +137,23 @@ class ChatDetailsController extends State<ChatDetails> {
             actions: actions,
           );
     if (action == null) return;
+    final oldAvatar = room?.avatar;
+    
     if (action == AvatarAction.remove) {
-      await showFutureLoadingDialog(
+      final success = await showFutureLoadingDialog(
         context: context,
-        future: () => room!.setAvatar(null),
+        future: () async {
+          await room!.setAvatar(null);
+          
+          // 清除旧头像缓存
+          if (oldAvatar != null) {
+            await Matrix.of(context).client.clearAvatarCache(oldAvatar);
+          }
+        },
       );
+      if (success.error == null) {
+        setState(() {}); // 刷新界面
+      }
       return;
     }
     MatrixFile file;
@@ -170,10 +182,27 @@ class ChatDetailsController extends State<ChatDetails> {
         name: pickedFile.name,
       );
     }
-    await showFutureLoadingDialog(
+    
+    final success = await showFutureLoadingDialog(
       context: context,
-      future: () => room!.setAvatar(file),
+      future: () async {
+        await room!.setAvatar(file);
+        
+        // 清除旧头像缓存
+        if (oldAvatar != null) {
+          await Matrix.of(context).client.clearAvatarCache(oldAvatar);
+        }
+        
+        // 获取并刷新新头像
+        if (room.avatar != null) {
+          await Matrix.of(context).client.forceRefreshAvatar(room.avatar);
+        }
+      },
     );
+    
+    if (success.error == null) {
+      setState(() {}); // 刷新界面
+    }
   }
 
   static const fixedWidth = 360.0;

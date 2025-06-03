@@ -11,6 +11,42 @@ import 'package:yomi/utils/client_download_content_extension.dart';
 import 'package:yomi/utils/matrix_sdk_extensions/matrix_file_extension.dart';
 import 'package:yomi/widgets/matrix.dart';
 
+/// 用于管理MXC图像内存缓存的工具类
+class MxcImageCacheManager {
+  static final Map<String, Uint8List> _imageDataCache = {};
+  
+  /// 清除特定缓存键的内存缓存
+  static void clearCache(String? cacheKey) {
+    if (cacheKey != null) {
+      _imageDataCache.remove(cacheKey);
+    }
+  }
+  
+  /// 清除包含特定URI的所有内存缓存
+  static void clearCacheByUri(Uri? uri) {
+    if (uri != null) {
+      final keysToRemove = _imageDataCache.keys
+          .where((key) => key.contains(uri.toString()))
+          .toList();
+      for (final key in keysToRemove) {
+        _imageDataCache.remove(key);
+      }
+    }
+  }
+  
+  /// 获取缓存的图片数据
+  static Uint8List? getData(String? cacheKey) {
+    if (cacheKey == null) return null;
+    return _imageDataCache[cacheKey];
+  }
+  
+  /// 存储图片数据到缓存
+  static void setData(String? cacheKey, Uint8List data) {
+    if (cacheKey == null) return;
+    _imageDataCache[cacheKey] = data;
+  }
+}
+
 class MxcImage extends StatefulWidget {
   final Uri? uri;
   final Event? event;
@@ -50,19 +86,18 @@ class MxcImage extends StatefulWidget {
 }
 
 class _MxcImageState extends State<MxcImage> {
-  static final Map<String, Uint8List> _imageDataCache = {};
   Uint8List? _imageDataNoCache;
 
   Uint8List? get _imageData => widget.cacheKey == null
       ? _imageDataNoCache
-      : _imageDataCache[widget.cacheKey];
+      : MxcImageCacheManager.getData(widget.cacheKey);
 
   set _imageData(Uint8List? data) {
     if (data == null) return;
     final cacheKey = widget.cacheKey;
     cacheKey == null
         ? _imageDataNoCache = data
-        : _imageDataCache[cacheKey] = data;
+        : MxcImageCacheManager.setData(cacheKey, data);
   }
 
   Future<void> _load() async {
@@ -123,6 +158,36 @@ class _MxcImageState extends State<MxcImage> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback(_tryLoad);
+  }
+  
+  @override
+  void didUpdateWidget(MxcImage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    
+    // 当URI变化时，重新加载图片（包括从null到有值，或从有值到null的情况）
+    final oldUri = oldWidget.uri;
+    final newUri = widget.uri;
+    
+    // 检查URI是否发生变化（包括从null到有值或从有值到null）
+    final uriChanged = (oldUri == null && newUri != null) || 
+                       (oldUri != null && newUri == null) ||
+                       (oldUri != null && newUri != null && oldUri != newUri);
+                       
+    if (uriChanged || widget.key != oldWidget.key) {
+      // 清除旧的缓存数据
+      if (oldWidget.cacheKey != null) {
+        MxcImageCacheManager.clearCache(oldWidget.cacheKey);
+      }
+      if (widget.cacheKey != null && widget.cacheKey != oldWidget.cacheKey) {
+        MxcImageCacheManager.clearCache(widget.cacheKey);
+      }
+      
+      // 清除非缓存数据
+      _imageDataNoCache = null;
+      
+      // 重新加载图片
+      WidgetsBinding.instance.addPostFrameCallback(_tryLoad);
+    }
   }
 
   Widget placeholder(BuildContext context) =>

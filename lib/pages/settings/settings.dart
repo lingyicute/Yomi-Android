@@ -27,10 +27,12 @@ class Settings extends StatefulWidget {
 class SettingsController extends State<Settings> {
   Future<Profile>? profileFuture;
   bool profileUpdated = false;
+  int _avatarUpdateTimestamp = DateTime.now().millisecondsSinceEpoch;
 
   void updateProfile() => setState(() {
         profileUpdated = true;
         profileFuture = null;
+        _avatarUpdateTimestamp = DateTime.now().millisecondsSinceEpoch;
       });
 
   void setDisplaynameAction() async {
@@ -109,12 +111,17 @@ class SettingsController extends State<Settings> {
           );
     if (action == null) return;
     final matrix = Matrix.of(context);
+    final oldAvatarUrl = profile?.avatarUrl;
+    
     if (action == AvatarAction.remove) {
       final success = await showFutureLoadingDialog(
         context: context,
         future: () => matrix.client.setAvatar(null),
       );
       if (success.error == null) {
+        if (oldAvatarUrl != null) {
+          await matrix.client.clearAvatarCache(oldAvatarUrl);
+        }
         updateProfile();
       }
       return;
@@ -146,8 +153,26 @@ class SettingsController extends State<Settings> {
     }
     final success = await showFutureLoadingDialog(
       context: context,
-      future: () => matrix.client.setAvatar(file),
+      future: () async {
+        await matrix.client.setAvatar(file);
+        
+        if (oldAvatarUrl != null) {
+          await matrix.client.clearAvatarCache(oldAvatarUrl);
+        }
+        
+        final newProfile = await matrix.client.getProfileFromUserId(
+          matrix.client.userID!,
+          getFromRooms: false,
+        );
+        
+        if (newProfile.avatarUrl != null) {
+          await matrix.client.forceRefreshAvatar(newProfile.avatarUrl);
+        }
+        
+        return;
+      },
     );
+    
     if (success.error == null) {
       updateProfile();
     }
@@ -155,7 +180,10 @@ class SettingsController extends State<Settings> {
 
   @override
   void initState() {
-    WidgetsBinding.instance.addPostFrameCallback((_) => checkBootstrap());
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      checkBootstrap();
+      refreshCurrentAvatar();
+    });
 
     super.initState();
   }
@@ -197,6 +225,25 @@ class SettingsController extends State<Settings> {
       client: Matrix.of(context).client,
     ).show(context);
     checkBootstrap();
+  }
+
+  // 刷新当前头像
+  void refreshCurrentAvatar() async {
+    final matrix = Matrix.of(context);
+    final profile = await matrix.client.getProfileFromUserId(
+      matrix.client.userID!,
+      getFromRooms: false,
+    );
+    
+    if (profile.avatarUrl != null) {
+      // 强制刷新头像缓存
+      await matrix.client.forceRefreshAvatar(profile.avatarUrl);
+      
+      // 更新界面
+      if (mounted) {
+        updateProfile();
+      }
+    }
   }
 
   @override

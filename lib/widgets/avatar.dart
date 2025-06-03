@@ -18,6 +18,7 @@ class Avatar extends StatelessWidget {
   final BorderRadius? borderRadius;
   final IconData? icon;
   final BorderSide? border;
+  final Key? key;
 
   const Avatar({
     this.mxContent,
@@ -30,6 +31,7 @@ class Avatar extends StatelessWidget {
     this.borderRadius,
     this.border,
     this.icon,
+    this.key,
     super.key,
   });
 
@@ -77,7 +79,7 @@ class Avatar extends StatelessWidget {
                   )
                 : MxcImage(
                     client: client,
-                    key: ValueKey(mxContent.toString()),
+                    key: ValueKey('${mxContent}_${key.hashCode}'),
                     cacheKey: '${mxContent}_$size',
                     uri: mxContent,
                     fit: BoxFit.cover,
