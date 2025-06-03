@@ -864,18 +864,24 @@ class ChatController extends State<ChatPageWithRoom>
   }
 
   List<Client?> get currentRoomBundle {
-    final clients = Matrix.of(context).currentBundle!;
-    clients.removeWhere((c) => c!.getRoomById(roomId) == null);
+    final currentBundle = Matrix.of(context).currentBundle;
+    if (currentBundle == null || currentBundle.isEmpty) {
+      return [];
+    }
+    final clients = List<Client?>.from(currentBundle);
+    clients.removeWhere((c) => c == null || c.getRoomById(roomId) == null);
     return clients;
   }
 
   bool get canRedactSelectedEvents {
     if (isArchived) return false;
     final clients = Matrix.of(context).currentBundle;
+    if (clients == null) return false;
+    
     for (final event in selectedEvents) {
       if (!event.status.isSent) return false;
       if (event.canRedact == false &&
-          !(clients!.any((cl) => event.senderId == cl!.userID))) {
+          !(clients.any((cl) => cl != null && event.senderId == cl.userID))) {
         return false;
       }
     }
@@ -898,8 +904,10 @@ class ChatController extends State<ChatPageWithRoom>
         !selectedEvents.first.status.isSent) {
       return false;
     }
-    return currentRoomBundle
-        .any((cl) => selectedEvents.first.senderId == cl!.userID);
+    final bundle = currentRoomBundle;
+    if (bundle.isEmpty) return false;
+    
+    return bundle.any((cl) => cl != null && selectedEvents.first.senderId == cl.userID);
   }
 
   void forwardEventsAction() async {

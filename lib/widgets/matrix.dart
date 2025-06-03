@@ -78,6 +78,9 @@ class MatrixState extends State<Matrix> with WidgetsBindingObserver {
       widget.clients.add(getLoginClient());
     }
     if (_activeClient < 0 || _activeClient >= widget.clients.length) {
+      if (currentBundle == null || currentBundle!.isEmpty || currentBundle!.first == null) {
+        return getLoginClient();
+      }
       return currentBundle!.first!;
     }
     return widget.clients[_activeClient];
