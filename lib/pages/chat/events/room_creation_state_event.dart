@@ -23,31 +23,45 @@ class RoomCreationStateEvent extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 32.0),
       child: Center(
         child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 256),
+          constraints: const BoxConstraints(maxWidth: 400),
           child: Material(
             color: theme.colorScheme.surfaceContainer,
             borderRadius: BorderRadius.circular(AppConfig.borderRadius * 1.5),
             child: Padding(
               padding: const EdgeInsets.all(20.0),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Avatar(
                     mxContent: event.room.avatar,
                     name: roomName,
                     size: Avatar.defaultSize * 2,
                   ),
-                  const SizedBox(height: 12),
-                  Text(
-                    roomName,
-                    style: theme.textTheme.bodyLarge,
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    '${event.originServerTs.localizedTime(context)} | ${l10n.countParticipants((event.room.summary.mJoinedMemberCount ?? 1) + (event.room.summary.mInvitedMemberCount ?? 0))}',
-                    style: theme.textTheme.labelSmall,
-                    textAlign: TextAlign.center,
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          '新房间',
+                          style: theme.textTheme.labelSmall,
+                        ),
+                        Text(
+                          roomName,
+                          style: theme.textTheme.titleMedium,
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          '创建于 ${event.originServerTs.localizedTime(context)}',
+                          style: theme.textTheme.labelSmall,
+                        ),
+                        Text(
+                          l10n.countParticipants((event.room.summary.mJoinedMemberCount ?? 1) + (event.room.summary.mInvitedMemberCount ?? 0)),
+                          style: theme.textTheme.labelSmall,
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
