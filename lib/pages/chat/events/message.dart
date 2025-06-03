@@ -323,17 +323,17 @@ class Message extends StatelessWidget {
                                               : 1,
                                       duration: LyiThemes.animationDuration,
                                       curve: LyiThemes.animationCurve,
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                          color: noBubble
-                                              ? Colors.transparent
-                                              : color,
-                                          borderRadius: borderRadius,
-                                        ),
-                                        clipBehavior: Clip.antiAlias,
-                                        child: Stack(
-                                          children: [
-                                            BubbleBackground(
+                                      child: Stack(
+                                        clipBehavior: Clip.none,
+                                        children: [
+                                          Container(
+                                            decoration: BoxDecoration(
+                                              color: noBubble
+                                                  ? Colors.transparent
+                                                  : color,
+                                              borderRadius: borderRadius,
+                                            ),
+                                            child: BubbleBackground(
                                               colors: colors,
                                               ignore: noBubble || !ownMessage,
                                               scrollController: scrollController,
@@ -470,27 +470,27 @@ class Message extends StatelessWidget {
                                                 ),
                                               ),
                                             ),
-                                            if (ownMessage && event.status.isSent)
-                                              Positioned(
-                                                left: -6,
-                                                bottom: -6,
-                                                child: Builder(
-                                                  builder: (context) {
-                                                    final receipts = event.receipts.where(
-                                                      (receipt) => receipt.user.id != event.senderId && receipt.user.id != event.room.client.userID
-                                                    ).toList();
-                                                    
-                                                    return ReadReceipt(
-                                                      hasReadReceipts: receipts.isNotEmpty,
-                                                      ownMessage: ownMessage,
-                                                      receiptsCount: receipts.length,
-                                                      receipts: receipts,
-                                                    );
-                                                  }
-                                                ),
+                                          ),
+                                          if (ownMessage && event.status.isSent)
+                                            Positioned(
+                                              left: -8, 
+                                              bottom: -8,
+                                              child: Builder(
+                                                builder: (context) {
+                                                  final receipts = event.receipts.where(
+                                                    (receipt) => receipt.user.id != event.senderId && receipt.user.id != event.room.client.userID
+                                                  ).toList();
+                                                  
+                                                  return ReadReceipt(
+                                                    hasReadReceipts: receipts.isNotEmpty,
+                                                    ownMessage: ownMessage,
+                                                    receiptsCount: receipts.length,
+                                                    receipts: receipts,
+                                                  );
+                                                }
                                               ),
-                                          ],
-                                        ),
+                                            ),
+                                        ],
                                       ),
                                     ),
                                   ),

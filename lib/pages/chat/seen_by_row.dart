@@ -92,44 +92,45 @@ class ReadReceipt extends StatelessWidget {
     return Material(
       type: MaterialType.transparency,
       child: InkWell(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(20),
         onTap: () => _showReadReceiptUsers(context),
-        child: Padding(
-          padding: const EdgeInsets.all(4),
-          child: AnimatedContainer(
-            duration: LyiThemes.animationDuration,
-            curve: LyiThemes.animationCurve,
-            width: 16,
-            height: 16,
-            margin: EdgeInsets.zero,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: theme.colorScheme.primary,
-              boxShadow: [
-                BoxShadow(
-                  color: theme.colorScheme.shadow.withOpacity(0.3),
-                  blurRadius: 2,
-                  spreadRadius: 0.5,
-                  offset: const Offset(0, 1),
-                ),
-              ],
+        child: AnimatedContainer(
+          duration: LyiThemes.animationDuration,
+          curve: LyiThemes.animationCurve,
+          width: 18,
+          height: 18,
+          margin: EdgeInsets.zero,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: theme.colorScheme.primary,
+            border: Border.all(
+              color: theme.colorScheme.background,
+              width: 1.5,
             ),
-            child: Center(
-              child: receiptsCount > 1
-                  ? Text(
-                      '+${receiptsCount - 1}',
-                      style: TextStyle(
-                        fontSize: 8,
-                        fontWeight: FontWeight.bold,
-                        color: theme.colorScheme.onPrimary,
-                      ),
-                    )
-                  : Icon(
-                      Icons.check,
-                      size: 12,
+            boxShadow: [
+              BoxShadow(
+                color: theme.colorScheme.shadow.withOpacity(0.3),
+                blurRadius: 2,
+                spreadRadius: 0.5,
+                offset: const Offset(0, 1),
+              ),
+            ],
+          ),
+          child: Center(
+            child: receiptsCount > 1
+                ? Text(
+                    '+${receiptsCount - 1}',
+                    style: TextStyle(
+                      fontSize: 8,
+                      fontWeight: FontWeight.bold,
                       color: theme.colorScheme.onPrimary,
                     ),
-            ),
+                  )
+                : Icon(
+                    Icons.check,
+                    size: 12,
+                    color: theme.colorScheme.onPrimary,
+                  ),
           ),
         ),
       ),
