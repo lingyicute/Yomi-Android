@@ -50,7 +50,7 @@ class LoginView extends StatelessWidget {
                     ),
                   ),
                 ),
-                const SizedBox(height: 30),
+                const SizedBox(height: 35),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 24.0),
                   child: TextField(
@@ -103,7 +103,7 @@ class LoginView extends StatelessWidget {
                     ),
                   ),
                 ),
-                const SizedBox(height: 30),
+                const SizedBox(height: 35),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 24.0),
                   child: Center(
