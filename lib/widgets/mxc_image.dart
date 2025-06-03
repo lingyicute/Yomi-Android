@@ -207,7 +207,7 @@ class _MxcImageState extends State<MxcImage> {
     return AnimatedCrossFade(
       crossFadeState:
           hasData ? CrossFadeState.showSecond : CrossFadeState.showFirst,
-      duration: const Duration(milliseconds: 128),
+      duration: const Duration(milliseconds: 100),
       firstChild: placeholder(context),
       secondChild: hasData
           ? Image.memory(

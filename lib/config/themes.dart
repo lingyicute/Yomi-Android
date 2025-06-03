@@ -33,7 +33,7 @@ abstract class LyiThemes {
     );
   }
 
-  static const Duration animationDuration = Duration(milliseconds: 250);
+  static const Duration animationDuration = Duration(milliseconds: 150);
   static const Curve animationCurve = Curves.easeInOut;
 
   static ThemeData buildTheme(
