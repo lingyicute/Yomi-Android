@@ -101,11 +101,7 @@ class ReadReceipt extends StatelessWidget {
             curve: LyiThemes.animationCurve,
             width: 16,
             height: 16,
-            margin: EdgeInsets.only(
-              left: ownMessage ? -8 : 0,
-              right: ownMessage ? 0 : -8,
-              bottom: -4,
-            ),
+            margin: EdgeInsets.zero,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               color: theme.colorScheme.primary,

@@ -472,8 +472,8 @@ class Message extends StatelessWidget {
                                             ),
                                             if (ownMessage && event.status.isSent)
                                               Positioned(
-                                                right: -2,
-                                                bottom: -2,
+                                                left: -6,
+                                                bottom: -6,
                                                 child: Builder(
                                                   builder: (context) {
                                                     final receipts = event.receipts.where(
