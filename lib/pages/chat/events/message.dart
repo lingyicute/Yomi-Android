@@ -470,6 +470,25 @@ class Message extends StatelessWidget {
                                                 ),
                                               ),
                                             ),
+                                            if (ownMessage && event.status.isSent)
+                                              Positioned(
+                                                right: -2,
+                                                bottom: -2,
+                                                child: Builder(
+                                                  builder: (context) {
+                                                    final receipts = event.receipts.where(
+                                                      (receipt) => receipt.user.id != event.senderId && receipt.user.id != event.room.client.userID
+                                                    ).toList();
+                                                    
+                                                    return ReadReceipt(
+                                                      hasReadReceipts: receipts.isNotEmpty,
+                                                      ownMessage: ownMessage,
+                                                      receiptsCount: receipts.length,
+                                                      receipts: receipts,
+                                                    );
+                                                  }
+                                                ),
+                                              ),
                                           ],
                                         ),
                                       ),

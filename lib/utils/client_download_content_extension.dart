@@ -5,6 +5,45 @@ import 'package:matrix/matrix.dart';
 
 import 'package:yomi/widgets/mxc_image.dart';
 
+// 全局缓存清理函数，避免扩展方法问题
+Future<void> clearAvatarCache(Client client, Uri? mxc) async {
+  if (mxc == null) return;
+  
+  try {
+    // 清除数据库缓存
+    try {
+      await client.database?.deleteFile(mxc);
+    } catch (e) {
+      // 忽略错误，数据库API可能有变化
+    }
+    
+    // 清除内存缓存
+    MxcImageCacheManager.clearCacheByUri(mxc);
+  } catch (e) {
+    // 忽略错误，不影响流程
+  }
+}
+
+// 强制刷新头像的全局函数
+Future<Uint8List?> forceRefreshAvatar(Client client, Uri? mxc, {double size = 110}) async {
+  if (mxc == null) return null;
+  
+  try {
+    // 清除缓存
+    await clearAvatarCache(client, mxc);
+    
+    // 重新下载头像
+    return await client.downloadMxcCached(
+      mxc,
+      width: size,
+      height: size,
+      isThumbnail: true,
+    );
+  } catch (e) {
+    return null;
+  }
+}
+
 extension ClientDownloadContentExtension on Client {
   Future<Uint8List> downloadMxcCached(
     Uri mxc, {
@@ -60,44 +99,5 @@ extension ClientDownloadContentExtension on Client {
     await database?.storeFile(cacheKey, imageData, 0);
 
     return imageData;
-  }
-
-  /// 清除与给定mxc URI相关的缓存
-  /// 在头像更新后调用此方法可以确保头像更新后立即显示
-  Future<void> clearAvatarCache(Uri? mxc) async {
-    if (mxc == null) return;
-    
-    try {
-      // 清除原始文件缓存
-      // 注意：Matrix SDK没有removeFile方法，使用deleteFile代替
-      if (database?.supportFileStoring == true) {
-        await database?.deleteFile(mxc.toString());
-      }
-      
-      // 清除内存缓存
-      MxcImageCacheManager.clearCacheByUri(mxc);
-    } catch (e) {
-      // 忽略错误，不影响流程
-    }
-  }
-
-  /// 重新下载头像以确保它已刷新
-  Future<Uint8List?> forceRefreshAvatar(Uri? mxc, {double size = 110}) async {
-    if (mxc == null) return null;
-    
-    try {
-      // 清除缓存
-      await clearAvatarCache(mxc);
-      
-      // 只重新下载一次，不需要多个尺寸
-      return await downloadMxcCached(
-        mxc,
-        width: size,
-        height: size,
-        isThumbnail: true,
-      );
-    } catch (e) {
-      return null;
-    }
   }
 }

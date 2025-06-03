@@ -8,6 +8,7 @@ import 'package:matrix/matrix.dart';
 import 'package:yomi/l10n/l10n.dart';
 import 'package:yomi/pages/chat_details/chat_details_view.dart';
 import 'package:yomi/pages/settings/settings.dart';
+import 'package:yomi/utils/client_download_content_extension.dart' as cache_utils;
 import 'package:yomi/utils/file_selector.dart';
 import 'package:yomi/utils/matrix_sdk_extensions/matrix_locals.dart';
 import 'package:yomi/utils/platform_infos.dart';
@@ -147,7 +148,7 @@ class ChatDetailsController extends State<ChatDetails> {
           
           // 清除旧头像缓存
           if (oldAvatar != null) {
-            await Matrix.of(context).client.clearAvatarCache(oldAvatar);
+            await cache_utils.clearAvatarCache(Matrix.of(context).client, oldAvatar);
           }
         },
       );
@@ -190,7 +191,7 @@ class ChatDetailsController extends State<ChatDetails> {
         
         // 清除旧头像缓存
         if (oldAvatar != null) {
-          await Matrix.of(context).client.clearAvatarCache(oldAvatar);
+          await cache_utils.clearAvatarCache(Matrix.of(context).client, oldAvatar);
         }
       },
     );
