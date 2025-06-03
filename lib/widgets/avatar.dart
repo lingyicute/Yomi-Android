@@ -77,7 +77,7 @@ class Avatar extends StatelessWidget {
                   )
                 : MxcImage(
                     client: client,
-                    key: ValueKey('${mxContent}_${key.hashCode}'),
+                    key: ValueKey('${mxContent}_${key?.hashCode ?? DateTime.now().millisecondsSinceEpoch}'),
                     cacheKey: '${mxContent}_$size',
                     uri: mxContent,
                     fit: BoxFit.cover,

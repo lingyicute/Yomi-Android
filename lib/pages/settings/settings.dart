@@ -123,10 +123,14 @@ class SettingsController extends State<Settings> {
         future: () async {
           await matrix.client.setAvatar(null);
           
-          // 清除旧头像缓存
           if (oldAvatarUrl != null) {
-            await cache_utils.clearAvatarCache(matrix.client, oldAvatarUrl);
+            await matrix.client.clearAvatarCache(oldAvatarUrl);
           }
+          
+          // 等待一小段时间以确保服务器端处理完成
+          await Future.delayed(Duration(milliseconds: 300));
+          
+          return;
         },
       );
       if (success.error == null) {
@@ -163,18 +167,29 @@ class SettingsController extends State<Settings> {
     final success = await showFutureLoadingDialog(
       context: context,
       future: () async {
-        // 设置新头像
         await matrix.client.setAvatar(file);
         
-        // 清除旧头像缓存
         if (oldAvatarUrl != null) {
-          await cache_utils.clearAvatarCache(matrix.client, oldAvatarUrl);
+          await matrix.client.clearAvatarCache(oldAvatarUrl);
         }
+        
+        // 等待一小段时间以确保服务器端处理完成
+        await Future.delayed(Duration(milliseconds: 300));
+        
+        final newProfile = await matrix.client.getProfileFromUserId(
+          matrix.client.userID!,
+          getFromRooms: false,
+        );
+        
+        if (newProfile.avatarUrl != null) {
+          await matrix.client.forceRefreshAvatar(newProfile.avatarUrl);
+        }
+        
+        return;
       },
     );
     
     if (success.error == null) {
-      // 刷新个人资料以获取最新数据
       updateProfile();
     }
   }
