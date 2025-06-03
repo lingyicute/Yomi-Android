@@ -214,8 +214,8 @@ class ChatListViewBody extends StatelessWidget {
                                 ],
                               ),
                               Icon(
-                                  Icons.chat_outlined,
-                                  size: 80,
+                                  CupertinoIcons.bubble_left_bubble_right,
+                                  size: 77,
                                   color: theme.colorScheme.primary,
                               ),
                             ],
