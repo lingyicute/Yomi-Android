@@ -68,36 +68,25 @@ class EmotesSettingsController extends State<EmotesSettings> {
     if (readonly) {
       return;
     }
-    try {
-      final client = Matrix.of(context).client;
-      if (room != null) {
-        await showFutureLoadingDialog(
-          context: context,
-          future: () => client.setRoomStateWithKey(
-            room!.id,
-            'im.ponies.room_emotes',
-            stateKey ?? '',
-            pack!.toJson(),
-          ),
-        );
-      } else {
-        await showFutureLoadingDialog(
-          context: context,
-          future: () => client.setAccountData(
-            client.userID!,
-            'im.ponies.user_emotes',
-            pack!.toJson(),
-          ),
-        );
-      }
-    } catch (e, s) {
-      Logs().e('保存表情包失败', e, s);
-      await showOkAlertDialog(
-        useRootNavigator: false,
+    final client = Matrix.of(context).client;
+    if (room != null) {
+      await showFutureLoadingDialog(
         context: context,
-        title: '保存失败',
-        message: '无法保存表情包，请稍后再试',
-        okLabel: L10n.of(context).ok,
+        future: () => client.setRoomStateWithKey(
+          room!.id,
+          'im.ponies.room_emotes',
+          stateKey ?? '',
+          pack!.toJson(),
+        ),
+      );
+    } else {
+      await showFutureLoadingDialog(
+        context: context,
+        future: () => client.setAccountData(
+          client.userID!,
+          'im.ponies.user_emotes',
+          pack!.toJson(),
+        ),
       );
     }
   }
@@ -106,44 +95,32 @@ class EmotesSettingsController extends State<EmotesSettings> {
     if (room == null) {
       return;
     }
-
-    try {
-      final client = Matrix.of(context).client;
-      final content = client.accountData['im.ponies.emote_rooms']?.content ??
-          <String, dynamic>{};
-      if (active) {
-        if (content['rooms'] is! Map) {
-          content['rooms'] = <String, dynamic>{};
-        }
-        if (content['rooms'][room!.id] is! Map) {
-          content['rooms'][room!.id] = <String, dynamic>{};
-        }
-        if (content['rooms'][room!.id][stateKey ?? ''] is! Map) {
-          content['rooms'][room!.id][stateKey ?? ''] = <String, dynamic>{};
-        }
-      } else if (content['rooms'] is Map && content['rooms'][room!.id] is Map) {
-        content['rooms'][room!.id].remove(stateKey ?? '');
+    final client = Matrix.of(context).client;
+    final content = client.accountData['im.ponies.emote_rooms']?.content ??
+        <String, dynamic>{};
+    if (active) {
+      if (content['rooms'] is! Map) {
+        content['rooms'] = <String, dynamic>{};
       }
-      // and save
-      await showFutureLoadingDialog(
-        context: context,
-        future: () => client.setAccountData(
-          client.userID!,
-          'im.ponies.emote_rooms',
-          content,
-        ),
-      );
-      setState(() {});
-    } catch (e, s) {
-      Logs().e('设置表情包全局可用性失败', e, s);
-      await showOkAlertDialog(
-        useRootNavigator: false,
-        context: context,
-        title: '设置失败',
-        message: '无法更新表情包设置，请稍后再试',
-        okLabel: L10n.of(context).ok,
-      );
+      if (content['rooms'][room!.id] is! Map) {
+        content['rooms'][room!.id] = <String, dynamic>{};
+      }
+      if (content['rooms'][room!.id][stateKey ?? ''] is! Map) {
+        content['rooms'][room!.id][stateKey ?? ''] = <String, dynamic>{};
+      }
+    } else if (content['rooms'] is Map && content['rooms'][room!.id] is Map) {
+      content['rooms'][room!.id].remove(stateKey ?? '');
     }
+    // and save
+    await showFutureLoadingDialog(
+      context: context,
+      future: () => client.setAccountData(
+        client.userID!,
+        'im.ponies.emote_rooms',
+        content,
+      ),
+    );
+    setState(() {});
   }
 
   void removeImageAction(String oldImageCode) => setState(() {
@@ -244,55 +221,32 @@ class EmotesSettingsController extends State<EmotesSettings> {
   void imagePickerAction(
     ValueNotifier<ImagePackImageContent?> controller,
   ) async {
+    final result = await selectFiles(
+      context,
+      type: FileSelectorType.images,
+    );
+    final pickedFile = result.firstOrNull;
+    if (pickedFile == null) return;
+    var file = MatrixImageFile(
+      bytes: await pickedFile.readAsBytes(),
+      name: pickedFile.name,
+    );
     try {
-      final result = await selectFiles(
-        context,
-        type: FileSelectorType.images,
-      );
-      final pickedFile = result.firstOrNull;
-      if (pickedFile == null) return;
-      
-      var file = MatrixImageFile(
-        bytes: await pickedFile.readAsBytes(),
-        name: pickedFile.name,
-      );
-      try {
-        file = (await file.generateThumbnail(
-          nativeImplementations: ClientManager.nativeImplementations,
-        ))!;
-      } catch (e, s) {
-        Logs().w('无法创建缩略图', e, s);
-        // 显示警告但继续执行
-        await showOkAlertDialog(
-          useRootNavigator: false,
-          context: context,
-          title: '警告',
-          message: '无法生成缩略图，将使用原始图片',
-          okLabel: L10n.of(context).ok,
-        );
-      }
-      
-      final uploadResp = await showFutureLoadingDialog(
-        context: context,
-        future: () => Matrix.of(context).client.uploadContent(
-              file.bytes,
-              filename: file.name,
-              contentType: file.mimeType,
-            ),
-      );
-      
-      if (uploadResp.error != null) {
-        Logs().e('上传表情图片失败', uploadResp.error);
-        await showOkAlertDialog(
-          useRootNavigator: false,
-          context: context,
-          title: '上传失败',
-          message: '无法上传表情图片，请检查网络连接后重试',
-          okLabel: L10n.of(context).ok,
-        );
-        return;
-      }
-      
+      file = (await file.generateThumbnail(
+        nativeImplementations: ClientManager.nativeImplementations,
+      ))!;
+    } catch (e, s) {
+      Logs().w('Unable to create thumbnail', e, s);
+    }
+    final uploadResp = await showFutureLoadingDialog(
+      context: context,
+      future: () => Matrix.of(context).client.uploadContent(
+            file.bytes,
+            filename: file.name,
+            contentType: file.mimeType,
+          ),
+    );
+    if (uploadResp.error == null) {
       setState(() {
         final info = <String, dynamic>{
           ...file.info,
@@ -313,15 +267,6 @@ class EmotesSettingsController extends State<EmotesSettings> {
           'info': info,
         });
       });
-    } catch (e, s) {
-      Logs().e('选择或处理表情图片失败', e, s);
-      await showOkAlertDialog(
-        useRootNavigator: false,
-        context: context,
-        title: '操作失败',
-        message: '选择或处理图片时发生错误，请重试',
-        okLabel: L10n.of(context).ok,
-      );
     }
   }
 
@@ -331,119 +276,75 @@ class EmotesSettingsController extends State<EmotesSettings> {
   }
 
   Future<void> importEmojiZip() async {
-    try {
-      final result = await showFutureLoadingDialog<Archive?>(
-        context: context,
-        future: () async {
-          final result = await selectFiles(
-            context,
-            type: FileSelectorType.zip,
-          );
-
-          if (result.isEmpty) return null;
-
-          final buffer = InputStream(await result.first.readAsBytes());
-
-          final archive = ZipDecoder().decodeBuffer(buffer);
-
-          return archive;
-        },
-      );
-
-      if (result.error != null) {
-        Logs().e('导入表情包ZIP文件失败', result.error);
-        await showOkAlertDialog(
-          useRootNavigator: false,
-          context: context,
-          title: '导入失败',
-          message: '无法读取或处理ZIP文件，请确认文件格式正确',
-          okLabel: L10n.of(context).ok,
+    final result = await showFutureLoadingDialog<Archive?>(
+      context: context,
+      future: () async {
+        final result = await selectFiles(
+          context,
+          type: FileSelectorType.zip,
         );
-        return;
-      }
 
-      final archive = result.result;
-      if (archive == null) return;
+        if (result.isEmpty) return null;
 
-      await showDialog(
-        context: context,
-        // breaks [Matrix.of] calls otherwise
-        useRootNavigator: false,
-        builder: (context) => ImportEmoteArchiveDialog(
-          controller: this,
-          archive: archive,
-        ),
-      );
-      setState(() {});
-    } catch (e, s) {
-      Logs().e('导入表情包过程中发生错误', e, s);
-      await showOkAlertDialog(
-        useRootNavigator: false,
-        context: context,
-        title: '导入错误',
-        message: '导入表情包时发生错误，请重试',
-        okLabel: L10n.of(context).ok,
-      );
-    }
+        final buffer = InputStream(await result.first.readAsBytes());
+
+        final archive = ZipDecoder().decodeBuffer(buffer);
+
+        return archive;
+      },
+    );
+
+    final archive = result.result;
+    if (archive == null) return;
+
+    await showDialog(
+      context: context,
+      // breaks [Matrix.of] calls otherwise
+      useRootNavigator: false,
+      builder: (context) => ImportEmoteArchiveDialog(
+        controller: this,
+        archive: archive,
+      ),
+    );
+    setState(() {});
   }
 
   Future<void> exportAsZip() async {
-    try {
-      final client = Matrix.of(context).client;
+    final client = Matrix.of(context).client;
 
-      await showFutureLoadingDialog(
-        context: context,
-        future: () async {
-          final pack = _getPack();
-          final archive = Archive();
-          
-          for (final entry in pack.images.entries) {
-            try {
-              final emote = entry.value;
-              final name = entry.key;
-              final url = await emote.url.getDownloadUri(client);
-              final response = await get(
-                url,
-                headers: {'authorization': 'Bearer ${client.accessToken}'},
-              );
+    await showFutureLoadingDialog(
+      context: context,
+      future: () async {
+        final pack = _getPack();
+        final archive = Archive();
+        for (final entry in pack.images.entries) {
+          final emote = entry.value;
+          final name = entry.key;
+          final url = await emote.url.getDownloadUri(client);
+          final response = await get(
+            url,
+            headers: {'authorization': 'Bearer ${client.accessToken}'},
+          );
 
-              archive.addFile(
-                ArchiveFile(
-                  name,
-                  response.bodyBytes.length,
-                  response.bodyBytes,
-                ),
-              );
-            } catch (e, s) {
-              Logs().w('导出表情 "${entry.key}" 失败，跳过', e, s);
-              // 继续处理其他表情
-              continue;
-            }
-          }
-          
-          final fileName =
-              '${pack.pack.displayName ?? client.userID?.localpart ?? 'emotes'}.zip';
-          final output = ZipEncoder().encode(archive);
+          archive.addFile(
+            ArchiveFile(
+              name,
+              response.bodyBytes.length,
+              response.bodyBytes,
+            ),
+          );
+        }
+        final fileName =
+            '${pack.pack.displayName ?? client.userID?.localpart ?? 'emotes'}.zip';
+        final output = ZipEncoder().encode(archive);
 
-          if (output == null) {
-            throw Exception('无法创建ZIP文件');
-          }
+        if (output == null) return;
 
-          MatrixFile(
-            name: fileName,
-            bytes: Uint8List.fromList(output),
-          ).save(context);
-        },
-      );
-    } catch (e, s) {
-      Logs().e('导出表情包失败', e, s);
-      await showOkAlertDialog(
-        useRootNavigator: false,
-        context: context,
-        title: '导出失败',
-        message: '无法导出表情包，请稍后重试',
-        okLabel: L10n.of(context).ok,
-      );
-    }
+        MatrixFile(
+          name: fileName,
+          bytes: Uint8List.fromList(output),
+        ).save(context);
+      },
+    );
   }
 }
