@@ -7,6 +7,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:matrix/matrix.dart';
 
 import 'package:yomi/l10n/l10n.dart';
+import 'package:yomi/utils/client_download_content_extension.dart' as cache_utils;
 import 'package:yomi/utils/file_selector.dart';
 import 'package:yomi/utils/platform_infos.dart';
 import 'package:yomi/widgets/adaptive_dialogs/show_modal_action_popup.dart';
@@ -124,7 +125,7 @@ class SettingsController extends State<Settings> {
           
           // 清除旧头像缓存
           if (oldAvatarUrl != null) {
-            await matrix.client.clearAvatarCache(oldAvatarUrl);
+            await cache_utils.clearAvatarCache(matrix.client, oldAvatarUrl);
           }
         },
       );
@@ -167,7 +168,7 @@ class SettingsController extends State<Settings> {
         
         // 清除旧头像缓存
         if (oldAvatarUrl != null) {
-          await matrix.client.clearAvatarCache(oldAvatarUrl);
+          await cache_utils.clearAvatarCache(matrix.client, oldAvatarUrl);
         }
       },
     );
@@ -230,13 +231,7 @@ class SettingsController extends State<Settings> {
   // 刷新当前头像
   void refreshCurrentAvatar() async {
     try {
-      final matrix = Matrix.of(context);
-      final profile = await matrix.client.getProfileFromUserId(
-        matrix.client.userID!,
-        getFromRooms: false,
-      );
-      
-      // 刷新界面即可，不需要额外的缓存操作
+      // 只通过更新profile来刷新界面，不做缓存操作
       if (mounted) {
         updateProfile();
       }
