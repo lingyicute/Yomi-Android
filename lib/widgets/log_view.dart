@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:go_router/go_router.dart';
 import 'package:matrix/matrix.dart';
+import 'package:yomi/widgets/safe_popup_menu.dart';
 
 class LogViewer extends StatefulWidget {
   const LogViewer({super.key});
@@ -35,8 +36,7 @@ class LogViewerState extends State<LogViewer> {
             icon: const Icon(Icons.zoom_out_outlined),
             onPressed: () => setState(() => fontSize--),
           ),
-          PopupMenuButton<Level>(
-            useRootNavigator: true,
+          SafePopupMenu<Level>(
             itemBuilder: (context) => Level.values
                 .map(
                   (level) => PopupMenuItem(

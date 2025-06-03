@@ -9,6 +9,7 @@ import 'package:yomi/utils/other_party_can_receive.dart';
 import 'package:yomi/utils/platform_infos.dart';
 import 'package:yomi/widgets/avatar.dart';
 import 'package:yomi/widgets/matrix.dart';
+import 'package:yomi/widgets/safe_popup_menu.dart';
 import '../../config/themes.dart';
 import 'chat.dart';
 import 'input_bar.dart';
@@ -117,8 +118,7 @@ class ChatInputRow extends StatelessWidget {
                 alignment: Alignment.center,
                 decoration: const BoxDecoration(),
                 clipBehavior: Clip.hardEdge,
-                child: PopupMenuButton<String>(
-                  useRootNavigator: true,
+                child: SafePopupMenu<String>(
                   icon: const Icon(Icons.add_circle_outline),
                   iconColor: theme.colorScheme.onPrimaryContainer,
                   onSelected: controller.onAddPopupMenuButtonSelected,
@@ -198,8 +198,7 @@ class ChatInputRow extends StatelessWidget {
                   alignment: Alignment.center,
                   decoration: const BoxDecoration(),
                   clipBehavior: Clip.hardEdge,
-                  child: PopupMenuButton(
-                    useRootNavigator: true,
+                  child: SafePopupMenu(
                     icon: const Icon(Icons.camera_alt_outlined),
                     onSelected: controller.onAddPopupMenuButtonSelected,
                     iconColor: theme.colorScheme.onPrimaryContainer,
@@ -366,8 +365,7 @@ class _ChatAccountPicker extends StatelessWidget {
       padding: const EdgeInsets.all(8.0),
       child: FutureBuilder<Profile>(
         future: controller.sendingClient.fetchOwnProfile(),
-        builder: (context, snapshot) => PopupMenuButton<String>(
-          useRootNavigator: true,
+        builder: (context, snapshot) => SafePopupMenu<String>(
           onSelected: (mxid) => _popupMenuButtonSelected(mxid, context),
           itemBuilder: (BuildContext context) => clients
               .map(

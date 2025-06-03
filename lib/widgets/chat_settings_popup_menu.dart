@@ -8,6 +8,7 @@ import 'package:matrix/matrix.dart';
 import 'package:yomi/l10n/l10n.dart';
 import 'package:yomi/widgets/adaptive_dialogs/show_ok_cancel_alert_dialog.dart';
 import 'package:yomi/widgets/future_loading_dialog.dart';
+import 'package:yomi/widgets/safe_popup_menu.dart';
 import 'matrix.dart';
 
 enum ChatPopupMenuActions { details, mute, unmute, leave, search }
@@ -51,8 +52,7 @@ class ChatSettingsPopupMenuState extends State<ChatSettingsPopupMenu> {
       alignment: Alignment.center,
       children: [
         const SizedBox.shrink(),
-        PopupMenuButton<ChatPopupMenuActions>(
-          useRootNavigator: true,
+        SafePopupMenu<ChatPopupMenuActions>(
           onSelected: (choice) async {
             switch (choice) {
               case ChatPopupMenuActions.leave:
