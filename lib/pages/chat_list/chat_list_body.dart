@@ -248,7 +248,7 @@ class ChatListViewBody extends StatelessWidget {
                     childCount: dummyChatCount,
                   ),
                 ),
-              if (client.prevBatch != null)
+              if (client.prevBatch != null && (controller.waitForFirstSync || (rooms.isNotEmpty && !rooms.first.partial)))
                 SliverList.builder(
                   itemCount: rooms.length,
                   itemBuilder: (BuildContext context, int i) {
