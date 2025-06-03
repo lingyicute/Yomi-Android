@@ -81,7 +81,7 @@ class SettingsView extends StatelessWidget {
                                   mxContent: avatar,
                                   name: displayname,
                                   size: Avatar.defaultSize * 2.5,
-                                  key: ValueKey('avatar_${controller.avatarUpdateTimestamp}'),
+                                  key: ValueKey('avatar_${controller._avatarUpdateTimestamp}'),
                                   onTap: avatar != null
                                       ? () => showDialog(
                                             context: context,

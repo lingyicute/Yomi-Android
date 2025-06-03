@@ -148,8 +148,11 @@ class ChatDetailsController extends State<ChatDetails> {
           
           // 清除旧头像缓存
           if (oldAvatar != null) {
-            await cache_utils.clearAvatarCache(Matrix.of(context).client, oldAvatar);
+            await Matrix.of(context).client.clearAvatarCache(oldAvatar);
           }
+          
+          // 等待一小段时间以确保服务器端处理完成
+          await Future.delayed(Duration(milliseconds: 300));
         },
       );
       if (success.error == null) {
@@ -191,7 +194,16 @@ class ChatDetailsController extends State<ChatDetails> {
         
         // 清除旧头像缓存
         if (oldAvatar != null) {
-          await cache_utils.clearAvatarCache(Matrix.of(context).client, oldAvatar);
+          await Matrix.of(context).client.clearAvatarCache(oldAvatar);
+        }
+        
+        // 等待一小段时间以确保服务器端处理完成
+        await Future.delayed(Duration(milliseconds: 300));
+        
+        // 获取并刷新新头像
+        final updatedRoom = Matrix.of(context).client.getRoomById(room.id);
+        if (updatedRoom?.avatar != null) {
+          await Matrix.of(context).client.forceRefreshAvatar(updatedRoom.avatar);
         }
       },
     );
