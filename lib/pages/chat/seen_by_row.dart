@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:matrix/matrix.dart';
 
 import 'package:yomi/config/themes.dart';
 import 'package:yomi/pages/chat/chat.dart';
@@ -64,6 +65,113 @@ class SeenByRow extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+class ReadReceipt extends StatelessWidget {
+  final bool hasReadReceipts;
+  final bool ownMessage;
+  final int receiptsCount;
+  final List<Receipt> receipts;
+  
+  const ReadReceipt({
+    super.key,
+    required this.hasReadReceipts,
+    required this.ownMessage,
+    required this.receiptsCount,
+    required this.receipts,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    if (!hasReadReceipts) return const SizedBox.shrink();
+    
+    final theme = Theme.of(context);
+    
+    return Material(
+      type: MaterialType.transparency,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16),
+        onTap: () => _showReadReceiptUsers(context),
+        child: Padding(
+          padding: const EdgeInsets.all(4),
+          child: AnimatedContainer(
+            duration: LyiThemes.animationDuration,
+            curve: LyiThemes.animationCurve,
+            width: 16,
+            height: 16,
+            margin: EdgeInsets.only(
+              left: ownMessage ? -8 : 0,
+              right: ownMessage ? 0 : -8,
+              bottom: -4,
+            ),
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: theme.colorScheme.primary,
+              boxShadow: [
+                BoxShadow(
+                  color: theme.colorScheme.shadow.withOpacity(0.3),
+                  blurRadius: 2,
+                  spreadRadius: 0.5,
+                  offset: const Offset(0, 1),
+                ),
+              ],
+            ),
+            child: Center(
+              child: receiptsCount > 1
+                  ? Text(
+                      '+${receiptsCount - 1}',
+                      style: TextStyle(
+                        fontSize: 8,
+                        fontWeight: FontWeight.bold,
+                        color: theme.colorScheme.onPrimary,
+                      ),
+                    )
+                  : Icon(
+                      Icons.check,
+                      size: 12,
+                      color: theme.colorScheme.onPrimary,
+                    ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+  
+  void _showReadReceiptUsers(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('已读用户'),
+          content: SizedBox(
+            width: double.maxFinite,
+            child: ListView.builder(
+              shrinkWrap: true,
+              itemCount: receipts.length,
+              itemBuilder: (context, index) {
+                final receipt = receipts[index];
+                return ListTile(
+                  leading: Avatar(
+                    mxContent: receipt.user.avatarUrl,
+                    name: receipt.user.calcDisplayname(),
+                    size: 32,
+                  ),
+                  title: Text(receipt.user.calcDisplayname()),
+                );
+              },
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text('关闭'),
+            ),
+          ],
+        );
+      },
     );
   }
 }

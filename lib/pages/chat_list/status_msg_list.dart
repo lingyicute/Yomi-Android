@@ -34,6 +34,10 @@ class StatusMessageList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final client = Matrix.of(context).client;
+    if (client.userID == null) {
+      return const SizedBox.shrink();
+    }
+    
     final interestingPresences = client.interestingPresences;
 
     return StreamBuilder(
@@ -42,22 +46,28 @@ class StatusMessageList extends StatelessWidget {
         return AnimatedSize(
           duration: LyiThemes.animationDuration,
           curve: Curves.easeInOut,
-          child: FutureBuilder(
-            initialData: interestingPresences
-                // ignore: deprecated_member_use
-                .map((userId) => client.presences[userId])
-                .whereType<CachedPresence>(),
-            future: Future.wait(
-              client.interestingPresences.map(
-                (userId) => client.fetchCurrentPresence(
-                  userId,
-                  fetchOnlyFromCached: true,
-                ),
-              ),
-            ),
+          child: FutureBuilder<List<CachedPresence>>(
+            initialData: client.userID != null 
+                ? interestingPresences
+                    // ignore: deprecated_member_use
+                    .map((userId) => client.presences[userId])
+                    .whereType<CachedPresence>()
+                    .toList()
+                : <CachedPresence>[],
+            future: client.userID != null 
+                ? Future.wait(
+                    interestingPresences.map(
+                      (userId) => client.fetchCurrentPresence(
+                        userId,
+                        fetchOnlyFromCached: true,
+                      ),
+                    ),
+                  ) 
+                : Future.value(<CachedPresence>[]),
             builder: (context, snapshot) {
-              final presences =
-                  snapshot.data?.where(isInterestingPresence).toList();
+              final presences = snapshot.data
+                  ?.where(isInterestingPresence)
+                  .toList();
 
               // If no other presences than the own entry is interesting, we
               // hide the presence header.
@@ -68,6 +78,9 @@ class StatusMessageList extends StatelessWidget {
               // Make sure own entry is at the first position. Sort by last
               // active instead.
               presences.sort((a, b) {
+                if (client.userID == null) {
+                  return b.sortOrderDateTime.compareTo(a.sortOrderDateTime);
+                }
                 if (a.userid == client.userID) return -1;
                 if (b.userid == client.userID) return 1;
                 return b.sortOrderDateTime.compareTo(a.sortOrderDateTime);
@@ -273,7 +286,9 @@ extension on Client {
       <String>{},
       (previousValue, element) => previousValue..addAll(element ?? {}),
     );
-    allHeroes.add(userID!);
+    if (userID != null) {
+      allHeroes.add(userID!);
+    }
     return allHeroes;
   }
 }
