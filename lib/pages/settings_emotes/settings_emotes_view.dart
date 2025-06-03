@@ -7,7 +7,6 @@ import 'package:yomi/l10n/l10n.dart';
 import 'package:yomi/utils/platform_infos.dart';
 import 'package:yomi/widgets/layouts/max_width_body.dart';
 import 'package:yomi/widgets/mxc_image.dart';
-import 'package:yomi/widgets/safe_popup_menu.dart';
 import '../../widgets/matrix.dart';
 import 'settings_emotes.dart';
 
@@ -29,7 +28,8 @@ class EmotesSettingsView extends StatelessWidget {
         leading: const Center(child: BackButton()),
         title: Text(L10n.of(context).customEmojisAndStickers),
         actions: [
-          SafePopupMenu<PopupMenuEmojiActions>(
+          PopupMenuButton<PopupMenuEmojiActions>(
+            useRootNavigator: true,
             onSelected: (value) {
               switch (value) {
                 case PopupMenuEmojiActions.export:
