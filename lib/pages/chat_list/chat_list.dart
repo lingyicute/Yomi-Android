@@ -112,6 +112,30 @@ class ChatListController extends State<ChatList>
         _activeSpaceId = null;
       });
 
+  // 添加强制刷新方法
+  void forceRefresh() {
+    if (!mounted) return;
+    
+    // 检查客户端状态
+    final client = Matrix.of(context).client;
+    if (client.prevBatch != null) {
+      // 只有当同步已完成时才设置waitForFirstSync为true
+      setState(() {
+        waitForFirstSync = true;
+      });
+      
+      // 增加一个更可靠的延迟setState，确保UI完全更新
+      Future.delayed(const Duration(milliseconds: 300), () {
+        if (mounted) {
+          setState(() {});
+        }
+      });
+    } else {
+      // 如果同步尚未完成，尝试启动同步
+      _waitForFirstSync();
+    }
+  }
+
   void onChatTap(Room room) async {
     if (room.membership == Membership.invite) {
       final theme = Theme.of(context);
@@ -479,14 +503,22 @@ class ChatListController extends State<ChatList>
     _initReceiveSharingIntent();
 
     scrollController.addListener(_onScroll);
+    waitForFirstSync = false;
     _waitForFirstSync();
     _hackyWebRTCFixForWeb();
+    
+    // 确保在组件挂载后尝试刷新
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (mounted) {
         searchServer =
             Matrix.of(context).store.getString(_serverStoreNamespace);
         Matrix.of(context).backgroundPush?.setupPush();
         UpdateNotifier.showUpdateSnackBar(context);
+        
+        // 组件挂载后延迟500ms尝试刷新，确保即使_waitForFirstSync出问题也能显示列表
+        Future.delayed(const Duration(milliseconds: 500), () {
+          if (mounted) forceRefresh();
+        });
       }
 
       // Workaround for system UI overlay style not applied on app start
@@ -501,7 +533,36 @@ class ChatListController extends State<ChatList>
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // 使用更安全的方式注册路由监听
+    final route = ModalRoute.of(context);
+    if (route != null) {
+      route.addScopedWillPopCallback(() async {
+        if (mounted) forceRefresh();
+        return true;
+      });
+    }
+    
+    final router = GoRouter.of(context);
+    router.routeInformationProvider.addListener(_onRouteChange);
+  }
+
+  void _onRouteChange() {
+    // 当路由变化到当前页面时，尝试刷新
+    if (mounted) {
+      final route = ModalRoute.of(context);
+      if (route?.isCurrent == true) {
+        // 延迟刷新以确保页面已完全加载
+        Future.delayed(const Duration(milliseconds: 100), forceRefresh);
+      }
+    }
+  }
+
+  @override
   void dispose() {
+    final router = GoRouter.of(context);
+    router.routeInformationProvider.removeListener(_onRouteChange);
     _intentDataStreamSubscription?.cancel();
     _intentFileStreamSubscription?.cancel();
     _intentUriStreamSubscription?.cancel();
@@ -793,26 +854,59 @@ class ChatListController extends State<ChatList>
   Future<void> _waitForFirstSync() async {
     final router = GoRouter.of(context);
     final client = Matrix.of(context).client;
-    await client.roomsLoading;
-    await client.accountDataLoading;
-    await client.userDeviceKeysLoading;
-    if (client.prevBatch == null) {
-      await client.onSync.stream.first;
+    
+    // 退出登录后重新登录需要重置状态
+    if (mounted) {
+      setState(() {
+        waitForFirstSync = false;
+      });
+    }
+    
+    try {
+      await client.roomsLoading;
+      await client.accountDataLoading;
+      await client.userDeviceKeysLoading;
+      
+      if (client.prevBatch == null) {
+        await client.onSync.stream.first;
 
-      // Display first login bootstrap if enabled
-      if (client.encryption?.keyManager.enabled == true) {
-        if (await client.encryption?.keyManager.isCached() == false ||
-            await client.encryption?.crossSigning.isCached() == false ||
-            client.isUnknownSession && !mounted) {
-          await BootstrapDialog(client: client).show(context);
+        // Display first login bootstrap if enabled
+        if (client.encryption?.keyManager.enabled == true) {
+          if (await client.encryption?.keyManager.isCached() == false ||
+              await client.encryption?.crossSigning.isCached() == false ||
+              client.isUnknownSession && !mounted) {
+            await BootstrapDialog(client: client).show(context);
+          }
         }
       }
-    }
-    if (!mounted) return;
-    setState(() {
-      waitForFirstSync = true;
-    });
+      
+      if (!mounted) return;
+      
+      // 使用更安全的方式更新状态
+      setState(() {
+        waitForFirstSync = true;
+      });
 
+      // 添加更可靠的强制刷新机制
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          setState(() {});  // 额外的setState触发UI刷新
+        }
+      });
+    } catch (e, s) {
+      // 处理同步过程中的错误
+      Logs().e('Error during initial sync', e, s);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('同步出错: ${e.toString()}')),
+        );
+        // 尝试再次刷新
+        Future.delayed(const Duration(seconds: 2), forceRefresh);
+      }
+    }
+
+    if (!mounted) return;
+    
     if (client.userDeviceKeys[client.userID!]?.deviceKeys.values
             .any((device) => !device.verified && !device.blocked) ??
         false) {
