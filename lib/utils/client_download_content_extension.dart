@@ -38,7 +38,7 @@ Future<void> clearAvatarCache(Client client, Uri? mxc) async {
           height: size[1],
           method: ThumbnailMethod.scale,
         );
-        await client.database?.removeFile(thumbnailKey);
+        await client.database?.deleteFile(thumbnailKey);
         
         // 同时清除对应的内存缓存
         final cacheKeyFormat = '${mxc}_${size[0]}x${size[1]}';
@@ -55,15 +55,14 @@ Future<void> clearAvatarCache(Client client, Uri? mxc) async {
   }
 }
 
-// 强制刷新头像
-/// 用于确保新头像能立即显示出来
-Future<Uint8List?> forceRefreshAvatar(Uri? mxc, {
+// 强制刷新头像的全局函数
+Future<Uint8List?> forceRefreshAvatar(Client client, Uri? mxc, {
   double size = 110,
 }) async {
   if (mxc == null) return null;
   
   // 清除缓存
-  await clearAvatarCache(mxc);
+  await clearAvatarCache(client, mxc);
   
   // 重新下载头像
   try {
@@ -74,7 +73,7 @@ Future<Uint8List?> forceRefreshAvatar(Uri? mxc, {
     for (final s in sizes) {
       try {
         // 强制从服务器获取，不使用缓存
-        final data = await downloadAndDecryptAttachment(
+        final data = await client.downloadAndDecryptAttachment(
           mxc,
           getThumbnail: true,
           width: s.toInt(),
@@ -91,7 +90,7 @@ Future<Uint8List?> forceRefreshAvatar(Uri? mxc, {
         }
       } catch (e) {
         // 尝试使用downloadMxcCached作为备份方法
-        final data = await downloadMxcCached(
+        final data = await client.downloadMxcCached(
           mxc,
           width: s,
           height: s,
@@ -111,6 +110,16 @@ Future<Uint8List?> forceRefreshAvatar(Uri? mxc, {
 }
 
 extension ClientDownloadContentExtension on Client {
+  // 为Client类添加clearAvatarCache扩展方法
+  Future<void> clearAvatarCache(Uri? mxc) async {
+    await ::clearAvatarCache(this, mxc);
+  }
+  
+  // 为Client类添加forceRefreshAvatar扩展方法
+  Future<Uint8List?> forceRefreshAvatar(Uri? mxc, {double size = 110}) async {
+    return await ::forceRefreshAvatar(this, mxc, size: size);
+  }
+
   Future<Uint8List> downloadMxcCached(
     Uri mxc, {
     num? width,

@@ -18,6 +18,7 @@ class SafePopupMenu<T> extends StatelessWidget {
   final BoxConstraints? constraints;
   final ShapeBorder? shape;
   final AnimationStyle? popUpAnimationStyle;
+  final bool? enabled;
 
   const SafePopupMenu({
     super.key,
@@ -34,6 +35,7 @@ class SafePopupMenu<T> extends StatelessWidget {
     this.constraints,
     this.shape,
     this.popUpAnimationStyle,
+    this.enabled,
   });
 
   @override
@@ -47,13 +49,14 @@ class SafePopupMenu<T> extends StatelessWidget {
           tooltip: tooltip,
           icon: icon,
           iconColor: iconColor,
-          padding: padding,
-          offset: offset != null ? Offset(0, offset!) : null,
+          padding: padding ?? EdgeInsets.zero,
+          offset: offset != null ? Offset(0, offset!) : const Offset(0, 0),
           position: position,
           useRootNavigator: useRootNavigator,
           constraints: constraints,
           shape: shape,
           popUpAnimationStyle: popUpAnimationStyle,
+          enabled: enabled ?? true,
           child: child,
         );
       },

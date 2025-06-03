@@ -202,7 +202,7 @@ class ChatDetailsController extends State<ChatDetails> {
         
         // 获取并刷新新头像
         final updatedRoom = Matrix.of(context).client.getRoomById(room.id);
-        if (updatedRoom?.avatar != null) {
+        if (updatedRoom != null && updatedRoom.avatar != null) {
           await Matrix.of(context).client.forceRefreshAvatar(updatedRoom.avatar);
         }
       },
