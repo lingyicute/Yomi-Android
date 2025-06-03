@@ -196,6 +196,7 @@ class ChatListViewBody extends StatelessWidget {
                       Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
+                          SizedBox(height: 50),
                           Stack(
                             alignment: Alignment.center,
                             children: [
