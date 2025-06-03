@@ -958,11 +958,13 @@ class ChatListController extends State<ChatList>
     setState(() {
       _activeSpaceId = null;
       Matrix.of(context).activeBundle = bundle;
-      if (!Matrix.of(context)
-          .currentBundle!
-          .any((client) => client == Matrix.of(context).client)) {
-        Matrix.of(context)
-            .setActiveClient(Matrix.of(context).currentBundle!.first);
+      // 添加安全检查，确保currentBundle不为null且不为空
+      final currentBundle = Matrix.of(context).currentBundle;
+      if (currentBundle != null && currentBundle.isNotEmpty && 
+          !currentBundle.any((client) => client == Matrix.of(context).client)) {
+        if (currentBundle.first != null) {
+          Matrix.of(context).setActiveClient(currentBundle.first);
+        }
       }
     });
   }

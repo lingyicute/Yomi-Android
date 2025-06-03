@@ -265,6 +265,7 @@ class ChatInputRow extends StatelessWidget {
               ),
               if (Matrix.of(context).isMultiAccount &&
                   Matrix.of(context).hasComplexBundles &&
+                  Matrix.of(context).currentBundle != null &&
                   Matrix.of(context).currentBundle!.length > 1)
                 Container(
                   width: height,
@@ -348,9 +349,11 @@ class _ChatAccountPicker extends StatelessWidget {
   const _ChatAccountPicker(this.controller);
 
   void _popupMenuButtonSelected(String mxid, BuildContext context) {
-    final client = Matrix.of(context)
-        .currentBundle!
-        .firstWhere((cl) => cl!.userID == mxid, orElse: () => null);
+    final currentBundle = Matrix.of(context).currentBundle;
+    if (currentBundle == null) return;
+    
+    final client = currentBundle
+        .firstWhere((cl) => cl != null && cl.userID == mxid, orElse: () => null);
     if (client == null) {
       Logs().w('Attempted to switch to a non-existing client $mxid');
       return;
