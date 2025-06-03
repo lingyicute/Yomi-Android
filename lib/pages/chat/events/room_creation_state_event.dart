@@ -26,9 +26,9 @@ class RoomCreationStateEvent extends StatelessWidget {
           constraints: const BoxConstraints(maxWidth: 256),
           child: Material(
             color: theme.colorScheme.surfaceContainer,
-            borderRadius: BorderRadius.circular(AppConfig.borderRadius),
+            borderRadius: BorderRadius.circular(AppConfig.borderRadius * 1.5),
             child: Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.all(20.0),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -37,6 +37,7 @@ class RoomCreationStateEvent extends StatelessWidget {
                     name: roomName,
                     size: Avatar.defaultSize * 2,
                   ),
+                  const SizedBox(height: 12),
                   Text(
                     roomName,
                     style: theme.textTheme.bodyLarge,
