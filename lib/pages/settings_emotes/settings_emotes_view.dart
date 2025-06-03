@@ -23,7 +23,16 @@ class EmotesSettingsView extends StatelessWidget {
     final theme = Theme.of(context);
 
     final client = Matrix.of(context).client;
-    final imageKeys = controller.pack!.images.keys.toList();
+    
+    // 捕获获取表情包可能的错误
+    List<String> imageKeys = [];
+    try {
+      imageKeys = controller.pack!.images.keys.toList();
+    } catch (e, s) {
+      Logs().e('获取表情包数据失败', e, s);
+      // 稍后在UI中处理这个错误
+    }
+    
     return Scaffold(
       appBar: AppBar(
         leading: const Center(child: BackButton()),
@@ -31,13 +40,20 @@ class EmotesSettingsView extends StatelessWidget {
         actions: [
           SafePopupMenu<PopupMenuEmojiActions>(
             onSelected: (value) {
-              switch (value) {
-                case PopupMenuEmojiActions.export:
-                  controller.exportAsZip();
-                  break;
-                case PopupMenuEmojiActions.import:
-                  controller.importEmojiZip();
-                  break;
+              try {
+                switch (value) {
+                  case PopupMenuEmojiActions.export:
+                    controller.exportAsZip();
+                    break;
+                  case PopupMenuEmojiActions.import:
+                    controller.importEmojiZip();
+                    break;
+                }
+              } catch (e, s) {
+                Logs().e('执行表情包操作失败', e, s);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('操作失败，请稍后重试')),
+                );
               }
             },
             enabled: !controller.readonly,
@@ -56,166 +72,268 @@ class EmotesSettingsView extends StatelessWidget {
       ),
       floatingActionButton: controller.showSave
           ? FloatingActionButton(
-              onPressed: controller.saveAction,
+              onPressed: () {
+                try {
+                  controller.saveAction();
+                } catch (e, s) {
+                  Logs().e('保存表情包失败', e, s);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('保存失败，请稍后重试')),
+                  );
+                }
+              },
               child: const Icon(Icons.save_outlined, color: Colors.white),
             )
           : null,
       body: MaxWidthBody(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            if (!controller.readonly)
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  vertical: 8.0,
+        child: Builder(
+          builder: (context) {
+            // 处理表情包加载错误
+            if (imageKeys.isEmpty && controller.pack == null) {
+              return Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.error_outline,
+                        size: 48,
+                        color: theme.colorScheme.error,
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        '无法加载表情包数据',
+                        style: TextStyle(fontSize: 20),
+                      ),
+                      const SizedBox(height: 8),
+                      ElevatedButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: Text('返回'),
+                      ),
+                    ],
+                  ),
                 ),
-                child: ListTile(
-                  leading: SizedBox(
-                    width: 180.0,
-                    child: TextField(
-                      controller: controller.newImageCodeController,
-                      autocorrect: false,
-                      minLines: 1,
-                      maxLines: 1,
-                      decoration: InputDecoration(
-                        filled: true,
-                        fillColor: Theme.of(context).colorScheme.surfaceVariant,
-                        hintText: L10n.of(context).emoteShortcode,
-                        prefixText: ': ',
-                        prefixStyle: TextStyle(
-                          color: theme.colorScheme.secondary,
-                          fontWeight: FontWeight.bold,
+              );
+            }
+            
+            return Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                if (!controller.readonly)
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 8.0,
+                    ),
+                    child: ListTile(
+                      leading: SizedBox(
+                        width: 180.0,
+                        child: TextField(
+                          controller: controller.newImageCodeController,
+                          autocorrect: false,
+                          minLines: 1,
+                          maxLines: 1,
+                          decoration: InputDecoration(
+                            filled: true,
+                            fillColor: Theme.of(context).colorScheme.surfaceVariant,
+                            hintText: L10n.of(context).emoteShortcode,
+                            prefixText: ': ',
+                            prefixStyle: TextStyle(
+                              color: theme.colorScheme.secondary,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(16),
+                              borderSide: BorderSide.none,
+                            ),
+                            contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                          ),
                         ),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(16),
-                          borderSide: BorderSide.none,
+                      ),
+                      title: _ImagePicker(
+                        controller: controller.newImageController,
+                        onPressed: controller.imagePickerAction,
+                      ),
+                      trailing: InkWell(
+                        onTap: () {
+                          try {
+                            controller.addImageAction();
+                          } catch (e, s) {
+                            Logs().e('添加表情失败', e, s);
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('添加表情失败，请重试')),
+                            );
+                          }
+                        },
+                        child: const Icon(
+                          Icons.add_outlined,
+                          color: Colors.green,
+                          size: 32.0,
                         ),
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                       ),
                     ),
                   ),
-                  title: _ImagePicker(
-                    controller: controller.newImageController,
-                    onPressed: controller.imagePickerAction,
-                  ),
-                  trailing: InkWell(
-                    onTap: controller.addImageAction,
-                    child: const Icon(
-                      Icons.add_outlined,
-                      color: Colors.green,
-                      size: 32.0,
-                    ),
-                  ),
-                ),
-              ),
-            if (controller.room != null)
-              SwitchListTile.adaptive(
-                title: Text(L10n.of(context).enableEmotesGlobally),
-                value: controller.isGloballyActive(client),
-                onChanged: controller.setIsGloballyActive,
-              ),
-            if (!controller.readonly || controller.room != null)
-              const Divider(),
-            imageKeys.isEmpty
-                ? Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Text(
-                        L10n.of(context).noEmotesFound,
-                        style: const TextStyle(fontSize: 20),
-                      ),
-                    ),
-                  )
-                : ListView.separated(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    separatorBuilder: (BuildContext context, int i) =>
-                        const SizedBox.shrink(),
-                    itemCount: imageKeys.length + 1,
-                    itemBuilder: (BuildContext context, int i) {
-                      if (i >= imageKeys.length) {
-                        return Container(height: 70);
+                if (controller.room != null)
+                  SwitchListTile.adaptive(
+                    title: Text(L10n.of(context).enableEmotesGlobally),
+                    value: controller.isGloballyActive(client),
+                    onChanged: (value) {
+                      try {
+                        controller.setIsGloballyActive(value);
+                      } catch (e, s) {
+                        Logs().e('设置全局可用性失败', e, s);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('设置失败，请重试')),
+                        );
                       }
-                      final imageCode = imageKeys[i];
-                      final image = controller.pack!.images[imageCode]!;
-                      final textEditingController = TextEditingController();
-                      textEditingController.text = imageCode;
-                      final useShortCuts =
-                          (PlatformInfos.isWeb || PlatformInfos.isDesktop);
-                      return ListTile(
-                        leading: SizedBox(
-                          width: 180.0,
-                          child: Shortcuts(
-                            shortcuts: !useShortCuts
-                                ? {}
-                                : {
-                                    LogicalKeySet(LogicalKeyboardKey.enter):
-                                        SubmitLineIntent(),
-                                  },
-                            child: Actions(
-                              actions: !useShortCuts
-                                  ? {}
-                                  : {
-                                      SubmitLineIntent: CallbackAction(
-                                        onInvoke: (i) {
-                                          controller.submitImageAction(
-                                            imageCode,
-                                            textEditingController.text,
-                                            image,
-                                            textEditingController,
-                                          );
-                                          return null;
+                    },
+                  ),
+                if (!controller.readonly || controller.room != null)
+                  const Divider(),
+                imageKeys.isEmpty
+                    ? Center(
+                        child: Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Text(
+                            L10n.of(context).noEmotesFound,
+                            style: const TextStyle(fontSize: 20),
+                          ),
+                        ),
+                      )
+                    : ListView.separated(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        separatorBuilder: (BuildContext context, int i) =>
+                            const SizedBox.shrink(),
+                        itemCount: imageKeys.length + 1,
+                        itemBuilder: (BuildContext context, int i) {
+                          if (i >= imageKeys.length) {
+                            return Container(height: 70);
+                          }
+                          
+                          final imageCode = imageKeys[i];
+                          ImagePackImageContent? image;
+                          
+                          try {
+                            image = controller.pack!.images[imageCode];
+                            if (image == null) {
+                              throw Exception('表情内容为空');
+                            }
+                          } catch (e, s) {
+                            Logs().e('获取表情数据失败: $imageCode', e, s);
+                            // 返回占位错误显示
+                            return ListTile(
+                              title: Text('表情加载错误: $imageCode',
+                                style: TextStyle(color: theme.colorScheme.error),
+                              ),
+                            );
+                          }
+                          
+                          final textEditingController = TextEditingController();
+                          textEditingController.text = imageCode;
+                          final useShortCuts =
+                              (PlatformInfos.isWeb || PlatformInfos.isDesktop);
+                          return ListTile(
+                            leading: SizedBox(
+                              width: 180.0,
+                              child: Shortcuts(
+                                shortcuts: !useShortCuts
+                                    ? {}
+                                    : {
+                                        LogicalKeySet(LogicalKeyboardKey.enter):
+                                            SubmitLineIntent(),
+                                      },
+                                child: Actions(
+                                  actions: !useShortCuts
+                                      ? {}
+                                      : {
+                                          SubmitLineIntent: CallbackAction(
+                                            onInvoke: (i) {
+                                              try {
+                                                controller.submitImageAction(
+                                                  imageCode,
+                                                  textEditingController.text,
+                                                  image!,
+                                                  textEditingController,
+                                                );
+                                              } catch (e, s) {
+                                                Logs().e('提交表情修改失败', e, s);
+                                                ScaffoldMessenger.of(context).showSnackBar(
+                                                  SnackBar(content: Text('修改失败，请重试')),
+                                                );
+                                              }
+                                              return null;
+                                            },
+                                          ),
                                         },
+                                  child: TextField(
+                                    readOnly: controller.readonly,
+                                    controller: textEditingController,
+                                    autocorrect: false,
+                                    minLines: 1,
+                                    maxLines: 1,
+                                    decoration: InputDecoration(
+                                      filled: true,
+                                      fillColor: theme.colorScheme.surfaceVariant,
+                                      hintText: L10n.of(context).emoteShortcode,
+                                      prefixText: ': ',
+                                      prefixStyle: TextStyle(
+                                        color: theme.colorScheme.secondary,
+                                        fontWeight: FontWeight.bold,
                                       ),
+                                      border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(16),
+                                        borderSide: BorderSide.none,
+                                      ),
+                                      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                                    ),
+                                    onSubmitted: (s) {
+                                      try {
+                                        controller.submitImageAction(
+                                          imageCode,
+                                          s,
+                                          image!,
+                                          textEditingController,
+                                        );
+                                      } catch (e, s) {
+                                        Logs().e('提交表情修改失败', e, s);
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          SnackBar(content: Text('修改失败，请重试')),
+                                        );
+                                      }
                                     },
-                              child: TextField(
-                                readOnly: controller.readonly,
-                                controller: textEditingController,
-                                autocorrect: false,
-                                minLines: 1,
-                                maxLines: 1,
-                                decoration: InputDecoration(
-                                  filled: true,
-                                  fillColor: theme.colorScheme.surfaceVariant,
-                                  hintText: L10n.of(context).emoteShortcode,
-                                  prefixText: ': ',
-                                  prefixStyle: TextStyle(
-                                    color: theme.colorScheme.secondary,
-                                    fontWeight: FontWeight.bold,
                                   ),
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(16),
-                                    borderSide: BorderSide.none,
-                                  ),
-                                  contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                                ),
-                                onSubmitted: (s) =>
-                                    controller.submitImageAction(
-                                  imageCode,
-                                  s,
-                                  image,
-                                  textEditingController,
                                 ),
                               ),
                             ),
-                          ),
-                        ),
-                        title: _EmoteImage(image.url),
-                        trailing: controller.readonly
-                            ? null
-                            : InkWell(
-                                onTap: () =>
-                                    controller.removeImageAction(imageCode),
-                                child: const Icon(
-                                  Icons.delete_outlined,
-                                  color: Colors.red,
-                                  size: 32.0,
-                                ),
-                              ),
-                      );
-                    },
-                  ),
-          ],
+                            title: _EmoteImage(image!.url),
+                            trailing: controller.readonly
+                                ? null
+                                : InkWell(
+                                    onTap: () {
+                                      try {
+                                        controller.removeImageAction(imageCode);
+                                      } catch (e, s) {
+                                        Logs().e('删除表情失败', e, s);
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          SnackBar(content: Text('删除失败，请重试')),
+                                        );
+                                      }
+                                    },
+                                    child: const Icon(
+                                      Icons.delete_outlined,
+                                      color: Colors.red,
+                                      size: 32.0,
+                                    ),
+                                  ),
+                          );
+                        },
+                      ),
+              ],
+            );
+          }
         ),
       ),
     );
