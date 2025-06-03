@@ -304,7 +304,7 @@
             }
         }
     },
-    "changedTheRoomAliases": "{username} 更改了聊天室别名",
+    "changedTheRoomAliases": "{username} 更改了房间别名",
     "@changedTheRoomAliases": {
         "type": "String",
         "placeholders": {
@@ -389,7 +389,7 @@
         "type": "String",
         "placeholders": {}
     },
-    "commandHint_ban": "在此聊天室封禁指定用户",
+    "commandHint_ban": "在此房间封禁指定用户",
     "@commandHint_ban": {
         "type": "String",
         "description": "Usage hint for the command /ban"
@@ -399,22 +399,22 @@
         "type": "String",
         "description": "Usage hint for the command /html"
     },
-    "commandHint_invite": "邀请指定用户加入此聊天室",
+    "commandHint_invite": "邀请指定用户加入此房间",
     "@commandHint_invite": {
         "type": "String",
         "description": "Usage hint for the command /invite"
     },
-    "commandHint_join": "加入指定聊天室",
+    "commandHint_join": "加入指定房间",
     "@commandHint_join": {
         "type": "String",
         "description": "Usage hint for the command /join"
     },
-    "commandHint_kick": "在此聊天室移除指定用户",
+    "commandHint_kick": "在此房间移除指定用户",
     "@commandHint_kick": {
         "type": "String",
         "description": "Usage hint for the command /kick"
     },
-    "commandHint_leave": "退出此聊天室",
+    "commandHint_leave": "退出此房间",
     "@commandHint_leave": {
         "type": "String",
         "description": "Usage hint for the command /leave"
@@ -424,12 +424,12 @@
         "type": "String",
         "description": "Usage hint for the command /me"
     },
-    "commandHint_myroomavatar": "设置你在此聊天室的头像（通过 mxc-uri）",
+    "commandHint_myroomavatar": "设置你在此房间的头像（通过 mxc-uri）",
     "@commandHint_myroomavatar": {
         "type": "String",
         "description": "Usage hint for the command /myroomavatar"
     },
-    "commandHint_myroomnick": "设置你在此聊天室的昵称",
+    "commandHint_myroomnick": "设置你在此房间的昵称",
     "@commandHint_myroomnick": {
         "type": "String",
         "description": "Usage hint for the command /myroomnick"
@@ -454,7 +454,7 @@
         "type": "String",
         "description": "Usage hint for the command /send"
     },
-    "commandHint_unban": "在此聊天室解封指定用户",
+    "commandHint_unban": "在此房间解封指定用户",
     "@commandHint_unban": {
         "type": "String",
         "description": "Usage hint for the command /unban"
@@ -533,7 +533,7 @@
         "type": "String",
         "placeholders": {}
     },
-    "couldNotDecryptMessage": "消息解密失败: {error}",
+    "couldNotDecryptMessage": "消息解密失败：{error}",
     "@couldNotDecryptMessage": {
         "type": "String",
         "placeholders": {
@@ -684,12 +684,12 @@
         "type": "String",
         "placeholders": {}
     },
-    "editRoomAliases": "编辑聊天室别名",
+    "editRoomAliases": "编辑房间别名",
     "@editRoomAliases": {
         "type": "String",
         "placeholders": {}
     },
-    "editRoomAvatar": "编辑聊天室头像",
+    "editRoomAvatar": "编辑房间头像",
     "@editRoomAvatar": {
         "type": "String",
         "placeholders": {}
@@ -704,7 +704,7 @@
         "type": "String",
         "placeholders": {}
     },
-    "emotePacks": "聊天室的表情包",
+    "emotePacks": "房间的表情包",
     "@emotePacks": {
         "type": "String",
         "placeholders": {}
@@ -818,7 +818,7 @@
         "type": "String",
         "placeholders": {}
     },
-    "goToTheNewRoom": "前往新的聊天室",
+    "goToTheNewRoom": "前往新的房间",
     "@goToTheNewRoom": {
         "type": "String",
         "placeholders": {}
@@ -991,7 +991,7 @@
             }
         }
     },
-    "joinRoom": "加入聊天室",
+    "joinRoom": "加入房间",
     "@joinRoom": {
         "type": "String",
         "placeholders": {}
@@ -1020,7 +1020,7 @@
             }
         }
     },
-    "kickFromChat": "从聊天室踢出",
+    "kickFromChat": "从房间踢出",
     "@kickFromChat": {
         "type": "String",
         "placeholders": {}
@@ -1157,7 +1157,7 @@
         "type": "String",
         "placeholders": {}
     },
-    "noEncryptionForPublicRooms": "你只能在聊天室不可被公众访问时才能启用加密。",
+    "noEncryptionForPublicRooms": "你只能在房间不可被公众访问时才能启用加密。",
     "@noEncryptionForPublicRooms": {
         "type": "String",
         "placeholders": {}
@@ -1182,7 +1182,7 @@
         "type": "String",
         "placeholders": {}
     },
-    "noRoomsFound": "未找到聊天室…",
+    "noRoomsFound": "未找到房间…",
     "@noRoomsFound": {
         "type": "String",
         "placeholders": {}
@@ -1355,7 +1355,7 @@
         "type": "String",
         "placeholders": {}
     },
-    "publicRooms": "公开聊天室",
+    "publicRooms": "公开房间",
     "@publicRooms": {
         "type": "String",
         "placeholders": {}
@@ -1447,7 +1447,7 @@
         "type": "String",
         "placeholders": {}
     },
-    "replaceRoomWithNewerVersion": "更新聊天室至新版本",
+    "replaceRoomWithNewerVersion": "更新房间至新版本",
     "@replaceRoomWithNewerVersion": {
         "type": "String",
         "placeholders": {}
@@ -1467,12 +1467,12 @@
         "type": "String",
         "placeholders": {}
     },
-    "roomHasBeenUpgraded": "聊天室已升级",
+    "roomHasBeenUpgraded": "房间已升级",
     "@roomHasBeenUpgraded": {
         "type": "String",
         "placeholders": {}
     },
-    "roomVersion": "聊天室版本",
+    "roomVersion": "房间版本",
     "@roomVersion": {
         "type": "String",
         "placeholders": {}
@@ -2190,7 +2190,7 @@
     },
     "confirmEventUnpin": "你确定要永久性取消置顶此事件吗？",
     "@confirmEventUnpin": {},
-    "pinMessage": "置顶到聊天室",
+    "pinMessage": "置顶到房间",
     "@pinMessage": {},
     "emojis": "表情符号",
     "@emojis": {},
@@ -2371,11 +2371,11 @@
     },
     "commandHint_markasgroup": "标记为群组",
     "@commandHint_markasgroup": {},
-    "commandHint_markasdm": "将给定的 Matrix ID 标为私信聊天室",
+    "commandHint_markasdm": "将给定的 Matrix ID 标为私信房间",
     "@commandHint_markasdm": {},
     "whyIsThisMessageEncrypted": "为什么此消息不可读？",
     "@whyIsThisMessageEncrypted": {},
-    "noKeyForThisMessage": "如果这条消息是在你登录此设备之前产生的，就可能发生这种情况。\n\n不过，也有可能是网络连接出了点儿问题。\n\n你能在另一个会话中读取消息吗？如果是的话，你可以从它那里获得密钥。请点击设置 > 设备，并确保你的设备已经相互验证。当你下次打开聊天，且两个会话都在前台，密钥就会被自动传输。\n\n小提示：如果不想在注销或切换设备的时候丢失密钥，请确保在设置中启用了聊天备份。",
+    "noKeyForThisMessage": "在此设备上，Yomi 找不到用于解密此消息的密钥。\n\n如果这条消息是在你登录此设备之前产生的，就可能发生这种情况。\n\n你能在另一个会话中读取消息吗？如果可以的话，你可以从它那里获得密钥。请点击设置 > 设备，并确保你的设备已经相互验证。当你下次打开聊天，且两个会话都在前台，密钥就会被自动传输。\n\n小提示：如果不想在注销或切换设备的时候丢失密钥，请确保在设置中启用了聊天备份。",
     "@noKeyForThisMessage": {},
     "newGroup": "新群组",
     "@newGroup": {},
@@ -2383,7 +2383,7 @@
     "@newSpace": {},
     "enterSpace": "进入空间",
     "@enterSpace": {},
-    "enterRoom": "进入聊天室",
+    "enterRoom": "进入房间",
     "@enterRoom": {},
     "allSpaces": "所有空间",
     "@allSpaces": {},
@@ -2509,9 +2509,9 @@
             }
         }
     },
-    "reportErrorDescription": "😭 哦不！出了点儿差错。如果你愿意，请报告此错误。",
+    "reportErrorDescription": "啊！Yomi 遇到了一些小问题。如果愿意的话，请把下面的错误报告发给梨。",
     "@reportErrorDescription": {},
-    "noBackupWarning": "警告！如果不启用聊天备份，你将无法访问加密消息。强烈建议在注销前先启用聊天备份。",
+    "noBackupWarning": "警告：如果不启用聊天备份，你将无法再访问这些加密的聊天记录。强烈建议在注销前先启用聊天备份。",
     "@noBackupWarning": {},
     "signInWithPassword": "使用密码登录",
     "@signInWithPassword": {},
@@ -2612,7 +2612,7 @@
             }
         }
     },
-    "hasKnocked": "{user} 请求了加入聊天室的邀请",
+    "hasKnocked": "{user} 请求了加入房间的邀请",
     "@hasKnocked": {
         "placeholders": {
             "user": {
@@ -2622,7 +2622,7 @@
     },
     "pleaseEnterANumber": "请输入大于 0 的数",
     "@pleaseEnterANumber": {},
-    "banUserDescription": "该用户将被禁止进入聊天室，在解除封禁之前将不能再进入聊天室。",
+    "banUserDescription": "该用户将被禁止进入房间，且在解封之前不能再进入房间。",
     "@banUserDescription": {},
     "removeDevicesDescription": "你将从此设备登出，无法再接收消息。",
     "@removeDevicesDescription": {},
@@ -2636,11 +2636,11 @@
     "@archiveRoomDescription": {},
     "learnMore": "了解更多",
     "@learnMore": {},
-    "roomUpgradeDescription": "将使用新版聊天室来重新创建当前聊天室。所有参与者都会收到通知以切换到新的聊天室。有关聊天室版本的更多信息，请访问 https://spec.matrix.org/latest/rooms/",
+    "roomUpgradeDescription": "将使用新版房间来重新创建当前房间。所有参与者都会收到通知以切换到新的房间。有关房间版本的更多信息，请访问 https://spec.matrix.org/latest/rooms/",
     "@roomUpgradeDescription": {},
-    "kickUserDescription": "该用户会被踢出聊天但没被封禁。在公开聊天中，该用户可以随时重新加入。",
+    "kickUserDescription": "该用户会被踢出聊天但不会被封禁。如果这是公共房间，该用户将可以随时重新加入。",
     "@kickUserDescription": {},
-    "blockListDescription": "你可以屏蔽打扰你的用户。你将不会收到来自屏蔽列表中用户的任何消息或聊天室邀请。",
+    "blockListDescription": "你可以屏蔽打扰你的用户。你将不会收到来自屏蔽列表中用户的任何消息或房间邀请。",
     "@blockListDescription": {},
     "createGroupAndInviteUsers": "创建群组并邀请用户",
     "@createGroupAndInviteUsers": {},
@@ -2751,7 +2751,7 @@
     "@sendTypingNotificationsDescription": {},
     "formattedMessagesDescription": "使用 Markdown 显示富文本内容，例如加粗文本。",
     "@formattedMessagesDescription": {},
-    "verifyOtherUserDescription": "通过验证其他用户，你可以确定是谁正在和你聊天。\n\n当你开始验证时，Yomi 将向你和其他用户同时呈现一系列表情符号或数字，你和其他用户需要比较它们是否一致。\n\n对于此流程，最好的方式当然是线下见面喽。👭",
+    "verifyOtherUserDescription": "通过验证其他用户，你可以确定是谁正在和你聊天。\n\n当你开始验证时，Yomi 将向你和其他用户同时呈现一系列表情符号或数字，你和其他用户需要比较它们是否一致。\n\n对于此流程，最好的方式当然是线下见面喽。🥰",
     "@verifyOtherUserDescription": {},
     "verifyOtherDeviceDescription": "当你验证另一个设备时，这些设备可以交换密钥，从而提高整体安全性。🔐\n\n当你开始验证时，两个设备上的 Yomi 将同时弹出提示。你会看到一系列表情符号或数字，你需要比较两个设备上显示的内容。\n\n在开始验证之前，最好把两个设备都放在手边。",
     "@verifyOtherDeviceDescription": {},
@@ -2884,7 +2884,7 @@
     "@calls": {},
     "customEmojisAndStickers": "自定义表情符号和贴纸",
     "@customEmojisAndStickers": {},
-    "hideRedactedMessages": "隐藏被涂黑的消息",
+    "hideRedactedMessages": "隐藏消息删除提示",
     "@hideRedactedMessages": {},
     "overview": "概览",
     "@overview": {},
@@ -2914,13 +2914,13 @@
         "type": "String",
         "count": {}
     },
-    "hideRedactedMessagesBody": "如果某人涂黑了一条消息，那么在聊天中再也看不到这条消息。",
+    "hideRedactedMessagesBody": "不再显示“已删除”灰色气泡。",
     "@hideRedactedMessagesBody": {},
     "hideInvalidOrUnknownMessageFormats": "隐藏无效或未知的消息格式",
     "@hideInvalidOrUnknownMessageFormats": {},
-    "hideMemberChangesInPublicChats": "在公开聊天中隐藏成员变化",
+    "hideMemberChangesInPublicChats": "在公共房间中隐藏成员变动",
     "@hideMemberChangesInPublicChats": {},
-    "hideMemberChangesInPublicChatsBody": "不在聊天时间线中显示某人是否加入或离开了公开聊天来改进可读性。",
+    "hideMemberChangesInPublicChatsBody": "在公共房间中，隐藏成员变动提示以改进可读性。",
     "@hideMemberChangesInPublicChatsBody": {},
     "userWouldLikeToChangeTheChat": "{user} 想加入聊天。",
     "@userWouldLikeToChangeTheChat": {
@@ -3040,7 +3040,7 @@
     "@changeTheVisibilityOfChatHistory": {},
     "changeTheCanonicalRoomAlias": "更改主公共聊天地址",
     "@changeTheCanonicalRoomAlias": {},
-    "sendRoomNotifications": "发送通知聊天室所有人的通知",
+    "sendRoomNotifications": "发送通知房间所有人的通知",
     "@sendRoomNotifications": {},
     "changeTheDescriptionOfTheGroup": "更改聊天描述",
     "@changeTheDescriptionOfTheGroup": {},
@@ -3220,7 +3220,7 @@
     "@notificationRuleSuppressNotices": {},
     "notificationRuleInviteForMe": "给我的邀请",
     "@notificationRuleInviteForMe": {},
-    "notificationRuleInviteForMeDescription": "当用户被邀请加入聊天室时提醒用户。",
+    "notificationRuleInviteForMeDescription": "当用户被邀请加入房间时提醒用户。",
     "@notificationRuleInviteForMeDescription": {},
     "notificationRuleMemberEvent": "成员事件",
     "@notificationRuleMemberEvent": {},
@@ -3232,25 +3232,25 @@
     "@notificationRuleIsUserMentionDescription": {},
     "notificationRuleContainsDisplayName": "包含展示名称",
     "@notificationRuleContainsDisplayName": {},
-    "notificationRuleIsRoomMention": "聊天室提及",
+    "notificationRuleIsRoomMention": "房间提及",
     "@notificationRuleIsRoomMention": {},
     "notificationRuleRoomnotifDescription": "消息包含 「@room」 时提醒用户。",
     "@notificationRuleRoomnotifDescription": {},
     "notificationRuleTombstone": "墓碑",
     "@notificationRuleTombstone": {},
-    "notificationRuleRoomServerAcl": "聊天室服务器 ACL",
+    "notificationRuleRoomServerAcl": "房间服务器 ACL",
     "@notificationRuleRoomServerAcl": {},
     "notificationRuleSuppressEdits": "隐藏编辑",
     "@notificationRuleSuppressEdits": {},
     "notificationRuleCall": "通话",
     "@notificationRuleCall": {},
-    "notificationRuleRoomOneToOne": "一对一聊天室",
+    "notificationRuleRoomOneToOne": "一对一房间",
     "@notificationRuleRoomOneToOne": {},
-    "notificationRuleRoomOneToOneDescription": "在一对一聊天室中提醒用户消息。",
+    "notificationRuleRoomOneToOneDescription": "在一对一房间中提醒用户消息。",
     "@notificationRuleRoomOneToOneDescription": {},
     "notificationRuleEncrypted": "已加密",
     "@notificationRuleEncrypted": {},
-    "notificationRuleEncryptedDescription": "在已加密聊天室中提醒用户消息。",
+    "notificationRuleEncryptedDescription": "在已加密房间中提醒用户消息。",
     "@notificationRuleEncryptedDescription": {},
     "notificationRuleJitsi": "Jitsi",
     "@notificationRuleJitsi": {},
@@ -3274,7 +3274,7 @@
     "@otherNotificationSettings": {},
     "notificationRuleContainsUserNameDescription": "当消息包含用户名时通知使用该用户名的用户。",
     "@notificationRuleContainsUserNameDescription": {},
-    "notificationRuleIsRoomMentionDescription": "有聊天室提及时通知用户。",
+    "notificationRuleIsRoomMentionDescription": "有房间提及时通知用户。",
     "@notificationRuleIsRoomMentionDescription": {},
     "contentNotificationSettings": "内容通知设置",
     "@contentNotificationSettings": {},
@@ -3282,15 +3282,15 @@
     "@notificationRuleMasterDescription": {},
     "notificationRuleSuppressNoticesDescription": "隐藏来自 bot 等自动客户端的通知。",
     "@notificationRuleSuppressNoticesDescription": {},
-    "roomNotificationSettings": "聊天室通知设置",
+    "roomNotificationSettings": "房间通知设置",
     "@roomNotificationSettings": {},
-    "notificationRuleRoomServerAclDescription": "隐藏聊天室服务器访问控制列表（ACL）通知。",
+    "notificationRuleRoomServerAclDescription": "隐藏房间服务器访问控制列表（ACL）通知。",
     "@notificationRuleRoomServerAclDescription": {},
     "notificationRuleContainsDisplayNameDescription": "当消息包含用户的展示名时提醒使用该展示名的用户。",
     "@notificationRuleContainsDisplayNameDescription": {},
-    "notificationRuleRoomnotif": "聊天室通知",
+    "notificationRuleRoomnotif": "房间通知",
     "@notificationRuleRoomnotif": {},
-    "notificationRuleTombstoneDescription": "提醒用户聊天室解散的消息。",
+    "notificationRuleTombstoneDescription": "提醒用户房间解散的消息。",
     "@notificationRuleTombstoneDescription": {},
     "notificationRuleReaction": "回应",
     "@notificationRuleReaction": {},
@@ -3298,9 +3298,9 @@
     "@notificationRuleSuppressEditsDescription": {},
     "notificationRuleCallDescription": "提醒用户通话的消息。",
     "@notificationRuleCallDescription": {},
-    "notificationRuleEncryptedRoomOneToOne": "已加密一对一聊天室",
+    "notificationRuleEncryptedRoomOneToOne": "已加密一对一房间",
     "@notificationRuleEncryptedRoomOneToOne": {},
-    "notificationRuleEncryptedRoomOneToOneDescription": "在已加密一对一聊天室中提醒用户消息。",
+    "notificationRuleEncryptedRoomOneToOneDescription": "在已加密一对一房间中提醒用户消息。",
     "@notificationRuleEncryptedRoomOneToOneDescription": {},
     "notificationRuleMessage": "消息",
     "@notificationRuleMessage": {},
@@ -3335,7 +3335,7 @@
     "@notSupportedOnThisDevice": {},
     "enterNewChat": "进入新聊天",
     "@enterNewChat": {},
-    "commandHint_roomupgrade": "将此聊天室升级到给定的聊天室版本",
+    "commandHint_roomupgrade": "将此房间升级到给定的房间版本",
     "@commandHint_roomupgrade": {},
     "setCustomPermissionLevel": "设置自定义权限等级",
     "@setCustomPermissionLevel": {},
@@ -3349,7 +3349,7 @@
     "@approve": {},
     "youHaveKnocked": "你已请求加入",
     "@youHaveKnocked": {},
-    "pleaseWaitUntilInvited": "在来自该聊天室的某人邀请你之前请等待。",
+    "pleaseWaitUntilInvited": "在来自该房间的某人邀请你之前请等待。",
     "@pleaseWaitUntilInvited": {},
     "countInvited": "邀请了 {count}",
     "@countInvited": {
