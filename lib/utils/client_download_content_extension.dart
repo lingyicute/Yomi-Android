@@ -73,12 +73,12 @@ Future<Uint8List?> _forceRefreshAvatarImpl(Client client, Uri? mxc, {
     for (final s in sizes) {
       try {
         // 强制从服务器获取，不使用缓存
-        final data = await client.downloadAndDecryptAttachment(
+        final data = await client.downloadMxcCached(
           mxc,
-          getThumbnail: true,
           width: s.toInt(),
           height: s.toInt(),
-          method: ThumbnailMethod.scale,
+          isThumbnail: true,
+          thumbnailMethod: ThumbnailMethod.scale,
         );
         
         // 将结果缓存到内存中
@@ -128,6 +128,24 @@ extension ClientDownloadContentExtension on Client {
   // 为Client类添加forceRefreshAvatar扩展方法
   Future<Uint8List?> forceRefreshAvatar(Uri? mxc, {double size = 110}) async {
     return await _forceRefreshAvatarImpl(this, mxc, size: size);
+  }
+  
+  // 为Client类添加downloadAndDecryptAttachment扩展方法，以保持API兼容
+  Future<Uint8List> downloadAndDecryptAttachment(
+    Uri mxc, {
+    bool getThumbnail = false,
+    int? width,
+    int? height,
+    ThumbnailMethod method = ThumbnailMethod.scale,
+  }) async {
+    // 使用downloadMxcCached方法实现相同的功能
+    return downloadMxcCached(
+      mxc,
+      width: width,
+      height: height,
+      isThumbnail: getThumbnail,
+      thumbnailMethod: method,
+    );
   }
 
   Future<Uint8List> downloadMxcCached(
