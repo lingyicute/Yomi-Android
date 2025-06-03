@@ -3069,7 +3069,7 @@
     },
     "sendCanceled": "发送被取消",
     "@sendCanceled": {},
-    "noChatsFoundHere": "聊天列表空空的。试试使用下方按钮 ⤵️ 开始一个新聊天吧！",
+    "noChatsFoundHere": "还没有对话哦。点击下方按钮 ⤵ 开始吧！",
     "@noChatsFoundHere": {},
     "loginWithMatrixId": "使用 Matrix-ID 登录",
     "@loginWithMatrixId": {},
