@@ -20,6 +20,7 @@ import 'message_content.dart';
 import 'message_reactions.dart';
 import 'reply_content.dart';
 import 'state_message.dart';
+import 'package:yomi/pages/chat/seen_by_row.dart';
 
 class Message extends StatelessWidget {
   final Event event;
@@ -247,225 +248,236 @@ class Message extends StatelessWidget {
                             },
                           ),
                         Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              if (!nextEventSameSender)
-                                Padding(
-                                  padding: const EdgeInsets.only(
-                                    left: 8.0,
-                                    bottom: 4,
-                                  ),
-                                  child: ownMessage || event.room.isDirectChat
-                                      ? const SizedBox(height: 12)
-                                      : FutureBuilder<User?>(
-                                          future: event.fetchSenderUser(),
-                                          builder: (context, snapshot) {
-                                            final displayname = snapshot.data
-                                                    ?.calcDisplayname() ??
-                                                event.senderFromMemoryOrFallback
-                                                    .calcDisplayname();
-                                            return Text(
-                                              displayname,
-                                              style: TextStyle(
-                                                fontSize: 11,
-                                                fontWeight: FontWeight.bold,
-                                                color: (theme.brightness ==
-                                                        Brightness.light
-                                                    ? displayname.color
-                                                    : displayname
-                                                        .lightColorText),
-                                                shadows: !wallpaperMode
-                                                    ? null
-                                                    : [
-                                                        const Shadow(
-                                                          offset: Offset(
-                                                            0.0,
-                                                            0.0,
-                                                          ),
-                                                          blurRadius: 3,
-                                                          color: Colors.black,
-                                                        ),
-                                                      ],
-                                              ),
-                                              maxLines: 1,
-                                              overflow: TextOverflow.ellipsis,
-                                            );
-                                          },
-                                        ),
-                                ),
-                              Container(
-                                alignment: alignment,
-                                padding: const EdgeInsets.only(left: 8),
-                                child: GestureDetector(
-                                  onLongPress: longPressSelect
-                                      ? null
-                                      : () {
-                                          HapticFeedback.heavyImpact();
-                                          onSelect(event);
-                                        },
-                                  child: AnimatedOpacity(
-                                    opacity: animateIn
-                                        ? 0
-                                        : event.messageType ==
-                                                    MessageTypes.BadEncrypted ||
-                                                event.status.isSending
-                                            ? 0.5
-                                            : 1,
-                                    duration: LyiThemes.animationDuration,
-                                    curve: LyiThemes.animationCurve,
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        color: noBubble
-                                            ? Colors.transparent
-                                            : color,
-                                        borderRadius: borderRadius,
-                                      ),
-                                      clipBehavior: Clip.antiAlias,
-                                      child: BubbleBackground(
-                                        colors: colors,
-                                        ignore: noBubble || !ownMessage,
-                                        scrollController: scrollController,
-                                        child: Container(
-                                          decoration: BoxDecoration(
-                                            borderRadius: BorderRadius.circular(
-                                              AppConfig.borderRadius,
-                                            ),
-                                          ),
-                                          constraints: const BoxConstraints(
-                                            maxWidth:
-                                                LyiThemes.columnWidth * 1.5,
-                                          ),
-                                          child: Column(
-                                            mainAxisSize: MainAxisSize.min,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: <Widget>[
-                                              if ({
-                                                RelationshipTypes.reply,
-                                                RelationshipTypes.thread,
-                                              }.contains(
-                                                event.relationshipType,
-                                              ))
-                                                FutureBuilder<Event?>(
-                                                  future: event
-                                                      .getReplyEvent(timeline),
-                                                  builder: (
-                                                    BuildContext context,
-                                                    snapshot,
-                                                  ) {
-                                                    final replyEvent = snapshot
-                                                            .hasData
-                                                        ? snapshot.data!
-                                                        : Event(
-                                                            eventId: event
-                                                                .relationshipEventId!,
-                                                            content: {
-                                                              'msgtype':
-                                                                  'm.text',
-                                                              'body': '...',
-                                                            },
-                                                            senderId:
-                                                                event.senderId,
-                                                            type:
-                                                                'm.room.message',
-                                                            room: event.room,
-                                                            status: EventStatus
-                                                                .sent,
-                                                            originServerTs:
-                                                                DateTime.now(),
-                                                          );
-                                                    return Padding(
-                                                      padding:
-                                                          const EdgeInsets.only(
-                                                        left: 16,
-                                                        right: 16,
-                                                        top: 8,
-                                                      ),
-                                                      child: Material(
-                                                        color:
-                                                            Colors.transparent,
-                                                        borderRadius:
-                                                            ReplyContent
-                                                                .borderRadius,
-                                                        child: InkWell(
-                                                          borderRadius:
-                                                              ReplyContent
-                                                                  .borderRadius,
-                                                          onTap: () =>
-                                                              scrollToEventId(
-                                                            replyEvent.eventId,
-                                                          ),
-                                                          child: AbsorbPointer(
-                                                            child: ReplyContent(
-                                                              replyEvent,
-                                                              ownMessage:
-                                                                  ownMessage,
-                                                              timeline:
-                                                                  timeline,
+                          child: Padding(
+                            padding: EdgeInsets.only(
+                              right: ownMessage ? 0 : 8,
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                if (!nextEventSameSender)
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                      left: 8.0,
+                                      bottom: 4,
+                                    ),
+                                    child: ownMessage || event.room.isDirectChat
+                                        ? const SizedBox(height: 12)
+                                        : FutureBuilder<User?>(
+                                            future: event.fetchSenderUser(),
+                                            builder: (context, snapshot) {
+                                              final displayname = snapshot.data
+                                                      ?.calcDisplayname() ??
+                                                  event.senderFromMemoryOrFallback
+                                                      .calcDisplayname();
+                                              return Text(
+                                                displayname,
+                                                style: TextStyle(
+                                                  fontSize: 11,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: (theme.brightness ==
+                                                          Brightness.light
+                                                      ? displayname.color
+                                                      : displayname
+                                                          .lightColorText),
+                                                  shadows: !wallpaperMode
+                                                      ? null
+                                                      : [
+                                                          const Shadow(
+                                                            offset: Offset(
+                                                              0.0,
+                                                              0.0,
                                                             ),
+                                                            blurRadius: 3,
+                                                            color: Colors.black,
                                                           ),
-                                                        ),
-                                                      ),
-                                                    );
-                                                  },
+                                                        ],
                                                 ),
-                                              MessageContent(
-                                                displayEvent,
-                                                textColor: textColor,
-                                                linkColor: linkColor,
-                                                onInfoTab: onInfoTab,
-                                                borderRadius: borderRadius,
-                                                timeline: timeline,
-                                                selected: selected,
-                                              ),
-                                              if (event.hasAggregatedEvents(
-                                                timeline,
-                                                RelationshipTypes.edit,
-                                              ))
-                                                Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                    bottom: 8.0,
-                                                    left: 16.0,
-                                                    right: 16.0,
-                                                  ),
-                                                  child: Row(
-                                                    mainAxisSize:
-                                                        MainAxisSize.min,
-                                                    spacing: 4.0,
-                                                    children: [
-                                                      Icon(
-                                                        Icons.edit_outlined,
-                                                        color: textColor
-                                                            .withAlpha(164),
-                                                        size: 14,
-                                                      ),
-                                                      Text(
-                                                        displayEvent
-                                                            .originServerTs
-                                                            .localizedTimeShort(
-                                                          context,
-                                                        ),
-                                                        style: TextStyle(
-                                                          color: textColor
-                                                              .withAlpha(164),
-                                                          fontSize: 11,
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
-                                            ],
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
+                                              );
+                                            },
                                           ),
+                                  ),
+                                Container(
+                                  alignment: alignment,
+                                  padding: EdgeInsets.only(
+                                    left: 8, 
+                                    right: ownMessage ? 0 : 12,
+                                  ),
+                                  child: GestureDetector(
+                                    onLongPress: longPressSelect
+                                        ? null
+                                        : () {
+                                            HapticFeedback.heavyImpact();
+                                            onSelect(event);
+                                          },
+                                    child: AnimatedOpacity(
+                                      opacity: animateIn
+                                          ? 0
+                                          : event.messageType ==
+                                                      MessageTypes.BadEncrypted ||
+                                                  event.status.isSending
+                                              ? 0.5
+                                              : 1,
+                                      duration: LyiThemes.animationDuration,
+                                      curve: LyiThemes.animationCurve,
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          color: noBubble
+                                              ? Colors.transparent
+                                              : color,
+                                          borderRadius: borderRadius,
+                                        ),
+                                        clipBehavior: Clip.antiAlias,
+                                        child: Stack(
+                                          children: [
+                                            BubbleBackground(
+                                              colors: colors,
+                                              ignore: noBubble || !ownMessage,
+                                              scrollController: scrollController,
+                                              child: Container(
+                                                decoration: BoxDecoration(
+                                                  borderRadius: BorderRadius.circular(
+                                                    AppConfig.borderRadius,
+                                                  ),
+                                                ),
+                                                constraints: BoxConstraints(
+                                                  maxWidth: LyiThemes.columnWidth * (ownMessage ? 1.5 : 1.7),
+                                                ),
+                                                child: Column(
+                                                  mainAxisSize: MainAxisSize.min,
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: <Widget>[
+                                                    if ({
+                                                      RelationshipTypes.reply,
+                                                      RelationshipTypes.thread,
+                                                    }.contains(
+                                                      event.relationshipType,
+                                                    ))
+                                                      FutureBuilder<Event?>(
+                                                        future: event
+                                                            .getReplyEvent(timeline),
+                                                        builder: (
+                                                          BuildContext context,
+                                                          snapshot,
+                                                        ) {
+                                                          final replyEvent = snapshot
+                                                                  .hasData
+                                                              ? snapshot.data!
+                                                              : Event(
+                                                                  eventId: event
+                                                                      .relationshipEventId!,
+                                                                  content: {
+                                                                    'msgtype':
+                                                                        'm.text',
+                                                                    'body': '...',
+                                                                  },
+                                                                  senderId:
+                                                                      event.senderId,
+                                                                  type:
+                                                                      'm.room.message',
+                                                                  room: event.room,
+                                                                  status: EventStatus
+                                                                      .sent,
+                                                                  originServerTs:
+                                                                      DateTime.now(),
+                                                                );
+                                                          return Padding(
+                                                            padding:
+                                                                const EdgeInsets.only(
+                                                              left: 16,
+                                                              right: 16,
+                                                              top: 8,
+                                                            ),
+                                                            child: Material(
+                                                              color:
+                                                                  Colors.transparent,
+                                                              borderRadius:
+                                                                  ReplyContent
+                                                                      .borderRadius,
+                                                              child: InkWell(
+                                                                borderRadius:
+                                                                    ReplyContent
+                                                                        .borderRadius,
+                                                                onTap: () =>
+                                                                    scrollToEventId(
+                                                                  replyEvent.eventId,
+                                                                ),
+                                                                child: AbsorbPointer(
+                                                                  child: ReplyContent(
+                                                                    replyEvent,
+                                                                    ownMessage:
+                                                                        ownMessage,
+                                                                    timeline:
+                                                                        timeline,
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          );
+                                                        },
+                                                      ),
+                                                    MessageContent(
+                                                      displayEvent,
+                                                      textColor: textColor,
+                                                      linkColor: linkColor,
+                                                      onInfoTab: onInfoTab,
+                                                      borderRadius: borderRadius,
+                                                      timeline: timeline,
+                                                      selected: selected,
+                                                    ),
+                                                    if (event.hasAggregatedEvents(
+                                                      timeline,
+                                                      RelationshipTypes.edit,
+                                                    ))
+                                                      Padding(
+                                                        padding:
+                                                            const EdgeInsets.only(
+                                                          bottom: 8.0,
+                                                          left: 16.0,
+                                                          right: 16.0,
+                                                        ),
+                                                        child: Row(
+                                                          mainAxisSize:
+                                                              MainAxisSize.min,
+                                                          spacing: 4.0,
+                                                          children: [
+                                                            Icon(
+                                                              Icons.edit_outlined,
+                                                              color: textColor
+                                                                  .withAlpha(164),
+                                                              size: 14,
+                                                            ),
+                                                            Text(
+                                                              displayEvent
+                                                                  .originServerTs
+                                                                  .localizedTimeShort(
+                                                                context,
+                                                              ),
+                                                              style: TextStyle(
+                                                                color: textColor
+                                                                    .withAlpha(164),
+                                                                fontSize: 11,
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                          ],
                                         ),
                                       ),
                                     ),
                                   ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ),
                       ],

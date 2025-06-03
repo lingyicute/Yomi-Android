@@ -165,23 +165,6 @@ void showMemberActionsPopupMenu({
             ],
           ),
         ),
-      if (!isMe)
-        PopupMenuItem(
-          value: _MemberActions.report,
-          child: Row(
-            children: [
-              Icon(
-                Icons.gavel_outlined,
-                color: theme.colorScheme.onErrorContainer,
-              ),
-              const SizedBox(width: 18),
-              Text(
-                L10n.of(context).reportUser,
-                style: TextStyle(color: theme.colorScheme.onErrorContainer),
-              ),
-            ],
-          ),
-        ),
     ],
   );
   if (action == null) return;
