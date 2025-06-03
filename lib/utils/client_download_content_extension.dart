@@ -6,7 +6,7 @@ import 'package:matrix/matrix.dart';
 import 'package:yomi/widgets/mxc_image.dart';
 
 // 全局缓存清理函数，避免扩展方法问题
-Future<void> clearAvatarCache(Client client, Uri? mxc) async {
+Future<void> _clearAvatarCacheImpl(Client client, Uri? mxc) async {
   if (mxc == null) return;
   
   try {
@@ -56,13 +56,13 @@ Future<void> clearAvatarCache(Client client, Uri? mxc) async {
 }
 
 // 强制刷新头像的全局函数
-Future<Uint8List?> forceRefreshAvatar(Client client, Uri? mxc, {
+Future<Uint8List?> _forceRefreshAvatarImpl(Client client, Uri? mxc, {
   double size = 110,
 }) async {
   if (mxc == null) return null;
   
   // 清除缓存
-  await clearAvatarCache(client, mxc);
+  await _clearAvatarCacheImpl(client, mxc);
   
   // 重新下载头像
   try {
@@ -109,15 +109,25 @@ Future<Uint8List?> forceRefreshAvatar(Client client, Uri? mxc, {
   }
 }
 
+// 为了向后兼容，保留原始的全局函数
+Future<void> clearAvatarCache(Client client, Uri? mxc) async {
+  await _clearAvatarCacheImpl(client, mxc);
+}
+
+// 为了向后兼容，保留原始的全局函数
+Future<Uint8List?> forceRefreshAvatar(Client client, Uri? mxc, {double size = 110}) async {
+  return await _forceRefreshAvatarImpl(client, mxc, size: size);
+}
+
 extension ClientDownloadContentExtension on Client {
   // 为Client类添加clearAvatarCache扩展方法
   Future<void> clearAvatarCache(Uri? mxc) async {
-    await ::clearAvatarCache(this, mxc);
+    await _clearAvatarCacheImpl(this, mxc);
   }
   
   // 为Client类添加forceRefreshAvatar扩展方法
   Future<Uint8List?> forceRefreshAvatar(Uri? mxc, {double size = 110}) async {
-    return await ::forceRefreshAvatar(this, mxc, size: size);
+    return await _forceRefreshAvatarImpl(this, mxc, size: size);
   }
 
   Future<Uint8List> downloadMxcCached(
