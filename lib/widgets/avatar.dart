@@ -18,7 +18,6 @@ class Avatar extends StatelessWidget {
   final BorderRadius? borderRadius;
   final IconData? icon;
   final BorderSide? border;
-  final Key? key;
 
   const Avatar({
     this.mxContent,
@@ -31,7 +30,6 @@ class Avatar extends StatelessWidget {
     this.borderRadius,
     this.border,
     this.icon,
-    this.key,
     super.key,
   });
 

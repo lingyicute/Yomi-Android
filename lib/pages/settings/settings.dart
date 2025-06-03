@@ -28,6 +28,9 @@ class SettingsController extends State<Settings> {
   Future<Profile>? profileFuture;
   bool profileUpdated = false;
   int _avatarUpdateTimestamp = DateTime.now().millisecondsSinceEpoch;
+  
+  // 公共访问器
+  int get avatarUpdateTimestamp => _avatarUpdateTimestamp;
 
   void updateProfile() => setState(() {
         profileUpdated = true;
@@ -116,12 +119,16 @@ class SettingsController extends State<Settings> {
     if (action == AvatarAction.remove) {
       final success = await showFutureLoadingDialog(
         context: context,
-        future: () => matrix.client.setAvatar(null),
+        future: () async {
+          await matrix.client.setAvatar(null);
+          
+          // 清除旧头像缓存
+          if (oldAvatarUrl != null) {
+            await matrix.client.clearAvatarCache(oldAvatarUrl);
+          }
+        },
       );
       if (success.error == null) {
-        if (oldAvatarUrl != null) {
-          await matrix.client.clearAvatarCache(oldAvatarUrl);
-        }
         updateProfile();
       }
       return;
@@ -151,29 +158,22 @@ class SettingsController extends State<Settings> {
         name: pickedFile.name,
       );
     }
+    
     final success = await showFutureLoadingDialog(
       context: context,
       future: () async {
+        // 设置新头像
         await matrix.client.setAvatar(file);
         
+        // 清除旧头像缓存
         if (oldAvatarUrl != null) {
           await matrix.client.clearAvatarCache(oldAvatarUrl);
         }
-        
-        final newProfile = await matrix.client.getProfileFromUserId(
-          matrix.client.userID!,
-          getFromRooms: false,
-        );
-        
-        if (newProfile.avatarUrl != null) {
-          await matrix.client.forceRefreshAvatar(newProfile.avatarUrl);
-        }
-        
-        return;
       },
     );
     
     if (success.error == null) {
+      // 刷新个人资料以获取最新数据
       updateProfile();
     }
   }
@@ -229,20 +229,19 @@ class SettingsController extends State<Settings> {
 
   // 刷新当前头像
   void refreshCurrentAvatar() async {
-    final matrix = Matrix.of(context);
-    final profile = await matrix.client.getProfileFromUserId(
-      matrix.client.userID!,
-      getFromRooms: false,
-    );
-    
-    if (profile.avatarUrl != null) {
-      // 强制刷新头像缓存
-      await matrix.client.forceRefreshAvatar(profile.avatarUrl);
+    try {
+      final matrix = Matrix.of(context);
+      final profile = await matrix.client.getProfileFromUserId(
+        matrix.client.userID!,
+        getFromRooms: false,
+      );
       
-      // 更新界面
+      // 刷新界面即可，不需要额外的缓存操作
       if (mounted) {
         updateProfile();
       }
+    } catch (e) {
+      // 忽略异常
     }
   }
 

@@ -164,24 +164,11 @@ class _MxcImageState extends State<MxcImage> {
   void didUpdateWidget(MxcImage oldWidget) {
     super.didUpdateWidget(oldWidget);
     
-    // 当URI变化时，重新加载图片（包括从null到有值，或从有值到null的情况）
-    final oldUri = oldWidget.uri;
-    final newUri = widget.uri;
+    // 当URI变化或key变化时，重新加载图片
+    final uriChanged = oldWidget.uri?.toString() != widget.uri?.toString();
+    final keyChanged = oldWidget.key != widget.key;
     
-    // 检查URI是否发生变化（包括从null到有值或从有值到null）
-    final uriChanged = (oldUri == null && newUri != null) || 
-                       (oldUri != null && newUri == null) ||
-                       (oldUri != null && newUri != null && oldUri != newUri);
-                       
-    if (uriChanged || widget.key != oldWidget.key) {
-      // 清除旧的缓存数据
-      if (oldWidget.cacheKey != null) {
-        MxcImageCacheManager.clearCache(oldWidget.cacheKey);
-      }
-      if (widget.cacheKey != null && widget.cacheKey != oldWidget.cacheKey) {
-        MxcImageCacheManager.clearCache(widget.cacheKey);
-      }
-      
+    if (uriChanged || keyChanged) {
       // 清除非缓存数据
       _imageDataNoCache = null;
       
