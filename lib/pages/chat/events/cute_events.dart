@@ -122,7 +122,7 @@ class _CuteEventOverlayState extends State<CuteEventOverlay>
   @override
   void initState() {
     controller = AnimationController(
-      duration: const Duration(milliseconds: 2500),
+      duration: const Duration(milliseconds: 1700),
       vsync: this,
     );
     controller?.forward();

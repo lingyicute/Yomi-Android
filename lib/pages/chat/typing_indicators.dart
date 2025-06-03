@@ -111,7 +111,7 @@ class __TypingDotsState extends State<_TypingDots> {
 
   late final Timer _timer;
 
-  static const Duration animationDuration = Duration(milliseconds: 300);
+  static const Duration animationDuration = Duration(milliseconds: 180);
 
   @override
   void initState() {
@@ -145,7 +145,7 @@ class __TypingDotsState extends State<_TypingDots> {
       children: [
         for (var i = 1; i <= 3; i++)
           AnimatedContainer(
-            duration: animationDuration * 1.5,
+            duration: animationDuration * 1.2,
             curve: LyiThemes.animationCurve,
             width: size,
             height: _tick == i ? size * 2 : size,
