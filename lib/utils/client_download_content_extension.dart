@@ -67,65 +67,35 @@ extension ClientDownloadContentExtension on Client {
   Future<void> clearAvatarCache(Uri? mxc) async {
     if (mxc == null) return;
     
-    // 清除原始文件缓存
-    await database?.removeFile(mxc);
-    
-    // 清除内存缓存
-    MxcImageCacheManager.clearCacheByUri(mxc);
-    
-    // 清除各种尺寸的缩略图缓存
-    final thumbnailSizes = [
-      [32, 32], // 小尺寸头像
-      [44, 44], // 默认头像尺寸
-      [56, 56], // 稍大尺寸
-      [80, 80], // 设置页面头像尺寸
-      [110, 110], // 大头像尺寸
-    ];
-    
-    for (final size in thumbnailSizes) {
-      final thumbnailKey = mxc.getThumbnail(
-        this,
-        width: size[0],
-        height: size[1],
-        method: ThumbnailMethod.scale,
-      );
-      await database?.removeFile(thumbnailKey);
+    try {
+      // 清除原始文件缓存
+      // 注意：Matrix SDK没有removeFile方法，使用deleteFile代替
+      if (database?.supportFileStoring == true) {
+        await database?.deleteFile(mxc.toString());
+      }
       
-      // 同时清除对应的内存缓存
-      final cacheKeyFormat = '${mxc}_${size[0]}x${size[1]}';
-      MxcImageCacheManager.clearCache(cacheKeyFormat);
+      // 清除内存缓存
+      MxcImageCacheManager.clearCacheByUri(mxc);
+    } catch (e) {
+      // 忽略错误，不影响流程
     }
   }
 
-  /// 强制刷新头像
-  /// 用于确保新头像能立即显示出来
-  Future<Uint8List?> forceRefreshAvatar(Uri? mxc, {
-    double size = 110,
-  }) async {
+  /// 重新下载头像以确保它已刷新
+  Future<Uint8List?> forceRefreshAvatar(Uri? mxc, {double size = 110}) async {
     if (mxc == null) return null;
     
-    // 清除缓存
-    await clearAvatarCache(mxc);
-    
-    // 重新下载头像
     try {
-      // 预先获取不同尺寸的缩略图，确保在不同场景下都能正确显示
-      final sizes = [size, 44.0, 32.0]; // 常用尺寸
+      // 清除缓存
+      await clearAvatarCache(mxc);
       
-      Uint8List? result;
-      for (final s in sizes) {
-        final data = await downloadMxcCached(
-          mxc,
-          width: s,
-          height: s,
-          isThumbnail: true,
-        );
-        if (result == null) {
-          result = data;
-        }
-      }
-      
-      return result;
+      // 只重新下载一次，不需要多个尺寸
+      return await downloadMxcCached(
+        mxc,
+        width: size,
+        height: size,
+        isThumbnail: true,
+      );
     } catch (e) {
       return null;
     }

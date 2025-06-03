@@ -192,11 +192,6 @@ class ChatDetailsController extends State<ChatDetails> {
         if (oldAvatar != null) {
           await Matrix.of(context).client.clearAvatarCache(oldAvatar);
         }
-        
-        // 获取并刷新新头像
-        if (room.avatar != null) {
-          await Matrix.of(context).client.forceRefreshAvatar(room.avatar);
-        }
       },
     );
     
