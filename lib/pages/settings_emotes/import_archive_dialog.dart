@@ -105,107 +105,158 @@ class _ImportEmoteArchiveDialogState extends State<ImportEmoteArchiveDialog> {
       _loading = true;
       _progress = 0;
     });
-    final imports = _importMap;
-    final successfulUploads = <String>{};
+    
+    try {
+      final imports = _importMap;
+      final successfulUploads = <String>{};
+      final failedUploads = <String, String>{};
 
-    // check for duplicates first
+      // check for duplicates first
+      final skipKeys = [];
 
-    final skipKeys = [];
+      for (final entry in imports.entries) {
+        final imageCode = entry.value;
 
-    for (final entry in imports.entries) {
-      final imageCode = entry.value;
-
-      if (widget.controller.pack!.images.containsKey(imageCode)) {
-        final completer = Completer<OkCancelResult>();
-        WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
-          final result = await showOkCancelAlertDialog(
-            useRootNavigator: false,
-            context: context,
-            title: L10n.of(context).emoteExists,
-            message: imageCode,
-            cancelLabel: L10n.of(context).replace,
-            okLabel: L10n.of(context).skip,
-          );
-          completer.complete(result);
-        });
-
-        final result = await completer.future;
-        if (result == OkCancelResult.ok) {
-          skipKeys.add(entry.key);
-        }
-      }
-    }
-
-    for (final key in skipKeys) {
-      imports.remove(key);
-    }
-
-    for (final entry in imports.entries) {
-      setState(() {
-        _progress += 1 / imports.length;
-      });
-      final file = entry.key;
-      final imageCode = entry.value;
-
-      try {
-        var mxcFile = MatrixImageFile(
-          bytes: file.content,
-          name: file.name,
-        );
-
-        final thumbnail = (await mxcFile.generateThumbnail(
-          nativeImplementations: ClientManager.nativeImplementations,
-        ));
-        if (thumbnail == null) {
-          Logs().w('Unable to create thumbnail');
-        } else {
-          mxcFile = thumbnail;
-        }
-        final uri = await Matrix.of(context).client.uploadContent(
-              mxcFile.bytes,
-              filename: mxcFile.name,
-              contentType: mxcFile.mimeType,
+        if (widget.controller.pack!.images.containsKey(imageCode)) {
+          final completer = Completer<OkCancelResult>();
+          WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+            final result = await showOkCancelAlertDialog(
+              useRootNavigator: false,
+              context: context,
+              title: L10n.of(context).emoteExists,
+              message: imageCode,
+              cancelLabel: L10n.of(context).replace,
+              okLabel: L10n.of(context).skip,
             );
+            completer.complete(result);
+          });
 
-        final info = <String, dynamic>{
-          ...mxcFile.info,
-        };
-
-        // normalize width / height to 256, required for stickers
-        if (info['w'] is int && info['h'] is int) {
-          final ratio = info['w'] / info['h'];
-          if (info['w'] > info['h']) {
-            info['w'] = 256;
-            info['h'] = (256.0 / ratio).round();
-          } else {
-            info['h'] = 256;
-            info['w'] = (ratio * 256.0).round();
+          final result = await completer.future;
+          if (result == OkCancelResult.ok) {
+            skipKeys.add(entry.key);
           }
         }
-        widget.controller.pack!.images[imageCode] =
-            ImagePackImageContent.fromJson(<String, dynamic>{
-          'url': uri.toString(),
-          'info': info,
-        });
-        successfulUploads.add(file.name);
-      } catch (e) {
-        Logs().d('Could not upload emote $imageCode');
       }
-    }
 
-    await widget.controller.save(context);
-    _importMap.removeWhere(
-      (key, value) => successfulUploads.contains(key.name),
-    );
+      for (final key in skipKeys) {
+        imports.remove(key);
+      }
 
-    _loading = false;
-    _progress = 0;
+      for (final entry in imports.entries) {
+        setState(() {
+          _progress += 1 / imports.length;
+        });
+        final file = entry.key;
+        final imageCode = entry.value;
 
-    // in case we have unhandled / duplicated emotes left, don't pop
-    if (mounted) setState(() {});
-    if (_importMap.isEmpty) {
-      WidgetsBinding.instance
-          .addPostFrameCallback((_) => Navigator.of(context).pop());
+        try {
+          var mxcFile = MatrixImageFile(
+            bytes: file.content,
+            name: file.name,
+          );
+
+          final thumbnail = (await mxcFile.generateThumbnail(
+            nativeImplementations: ClientManager.nativeImplementations,
+          ));
+          if (thumbnail == null) {
+            Logs().w('无法为表情 $imageCode 创建缩略图，使用原始图片');
+          } else {
+            mxcFile = thumbnail;
+          }
+          final uri = await Matrix.of(context).client.uploadContent(
+                mxcFile.bytes,
+                filename: mxcFile.name,
+                contentType: mxcFile.mimeType,
+              );
+
+          final info = <String, dynamic>{
+            ...mxcFile.info,
+          };
+
+          // normalize width / height to 256, required for stickers
+          if (info['w'] is int && info['h'] is int) {
+            final ratio = info['w'] / info['h'];
+            if (info['w'] > info['h']) {
+              info['w'] = 256;
+              info['h'] = (256.0 / ratio).round();
+            } else {
+              info['h'] = 256;
+              info['w'] = (ratio * 256.0).round();
+            }
+          }
+          widget.controller.pack!.images[imageCode] =
+              ImagePackImageContent.fromJson(<String, dynamic>{
+            'url': uri.toString(),
+            'info': info,
+          });
+          successfulUploads.add(file.name);
+        } catch (e, s) {
+          Logs().e('无法上传表情 $imageCode', e, s);
+          failedUploads[file.name] = imageCode;
+        }
+      }
+
+      // 如果有失败的表情上传，显示提示
+      if (failedUploads.isNotEmpty) {
+        final failedCount = failedUploads.length;
+        final totalCount = imports.length;
+        
+        WidgetsBinding.instance.addPostFrameCallback((_) async {
+          await showOkAlertDialog(
+            useRootNavigator: false,
+            context: context,
+            title: '部分表情上传失败',
+            message: '共有 $failedCount/$totalCount 个表情上传失败，\n'
+                '已上传成功的表情将被保存',
+            okLabel: L10n.of(context).ok,
+          );
+        });
+      }
+
+      // 只有存在成功上传的表情才保存
+      if (successfulUploads.isNotEmpty) {
+        try {
+          await widget.controller.save(context);
+        } catch (e, s) {
+          Logs().e('保存表情包失败', e, s);
+          WidgetsBinding.instance.addPostFrameCallback((_) async {
+            await showOkAlertDialog(
+              useRootNavigator: false,
+              context: context,
+              title: '保存失败',
+              message: '无法保存表情包，请稍后重试',
+              okLabel: L10n.of(context).ok,
+            );
+          });
+        }
+      }
+
+      _importMap.removeWhere(
+        (key, value) => successfulUploads.contains(key.name),
+      );
+
+    } catch (e, s) {
+      Logs().e('导入表情包过程中发生错误', e, s);
+      
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
+        await showOkAlertDialog(
+          useRootNavigator: false,
+          context: context,
+          title: '导入错误',
+          message: '导入表情包时发生错误，请重试',
+          okLabel: L10n.of(context).ok,
+        );
+      });
+    } finally {
+      _loading = false;
+      _progress = 0;
+
+      // in case we have unhandled / duplicated emotes left, don't pop
+      if (mounted) setState(() {});
+      if (_importMap.isEmpty) {
+        WidgetsBinding.instance
+            .addPostFrameCallback((_) => Navigator.of(context).pop());
+      }
     }
   }
 }
