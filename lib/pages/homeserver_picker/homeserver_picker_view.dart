@@ -9,7 +9,6 @@ import 'package:yomi/l10n/l10n.dart';
 import 'package:yomi/widgets/adaptive_dialogs/adaptive_dialog_action.dart';
 import 'package:yomi/widgets/layouts/login_scaffold.dart';
 import 'package:yomi/widgets/matrix.dart';
-import 'package:yomi/widgets/safe_popup_menu.dart';
 import '../../config/themes.dart';
 import 'homeserver_picker.dart';
 
@@ -35,7 +34,8 @@ class HomeserverPickerView extends StatelessWidget {
               : L10n.of(context).login,
         ),
         actions: [
-          SafePopupMenu<MoreLoginActions>(
+          PopupMenuButton<MoreLoginActions>(
+            useRootNavigator: true,
             onSelected: controller.onMoreAction,
             itemBuilder: (_) => [
               PopupMenuItem(

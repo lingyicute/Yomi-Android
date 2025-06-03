@@ -8,7 +8,6 @@ import 'package:yomi/l10n/l10n.dart';
 import 'package:yomi/widgets/adaptive_dialogs/show_ok_cancel_alert_dialog.dart';
 import 'package:yomi/widgets/avatar.dart';
 import 'package:yomi/widgets/matrix.dart';
-import 'package:yomi/widgets/safe_popup_menu.dart';
 import '../../utils/lyi_share.dart';
 import 'chat_list.dart';
 
@@ -162,14 +161,15 @@ class ClientChooserButton extends StatelessWidget {
         clipBehavior: Clip.hardEdge,
         borderRadius: BorderRadius.circular(99),
         color: Colors.transparent,
-        child: SafePopupMenu<Object>(
+        child: PopupMenuButton<Object>(
+          useRootNavigator: true,
           popUpAnimationStyle: LyiThemes.isColumnMode(context)
               ? AnimationStyle.noAnimation
               : null, // https://github.com/flutter/flutter/issues/167180
           onSelected: (o) => _clientSelected(o, context),
           itemBuilder: _bundleMenuItems,
           position: PopupMenuPosition.under,
-          offset: 8,
+          offset: const Offset(0, 8),
           constraints: const BoxConstraints(
             minWidth: 200,
             maxWidth: 230,

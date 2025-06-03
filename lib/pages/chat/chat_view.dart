@@ -23,7 +23,6 @@ import 'package:yomi/widgets/chat_settings_popup_menu.dart';
 import 'package:yomi/widgets/future_loading_dialog.dart';
 import 'package:yomi/widgets/matrix.dart';
 import 'package:yomi/widgets/mxc_image.dart';
-import 'package:yomi/widgets/safe_popup_menu.dart';
 import 'package:yomi/widgets/unread_rooms_badge.dart';
 import '../../utils/stream_extension.dart';
 import 'chat_emoji_picker.dart';
@@ -72,7 +71,8 @@ class ChatView extends StatelessWidget {
             onPressed: controller.redactEventsAction,
           ),
         if (controller.selectedEvents.length == 1)
-          SafePopupMenu<_EventContextAction>(
+          PopupMenuButton<_EventContextAction>(
+            useRootNavigator: true,
             onSelected: (action) {
               switch (action) {
                 case _EventContextAction.info:

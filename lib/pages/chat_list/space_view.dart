@@ -19,7 +19,6 @@ import 'package:yomi/widgets/adaptive_dialogs/show_text_input_dialog.dart';
 import 'package:yomi/widgets/avatar.dart';
 import 'package:yomi/widgets/future_loading_dialog.dart';
 import 'package:yomi/widgets/matrix.dart';
-import 'package:yomi/widgets/safe_popup_menu.dart';
 
 enum AddRoomType { chat, subspace }
 
@@ -265,7 +264,8 @@ class _SpaceViewState extends State<SpaceView> {
                 ),
         ),
         actions: [
-          SafePopupMenu<SpaceActions>(
+          PopupMenuButton<SpaceActions>(
+            useRootNavigator: true,
             onSelected: _onSpaceAction,
             itemBuilder: (context) => [
               PopupMenuItem(
