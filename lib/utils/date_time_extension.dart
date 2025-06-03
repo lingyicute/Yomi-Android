@@ -28,10 +28,46 @@ extension DateTimeExtension on DateTime {
       difference(prevTime) < const Duration(hours: 1);
 
   /// Returns a simple time String.
-  String localizedTimeOfDay(BuildContext context) =>
-      L10n.of(context).alwaysUse24HourFormat == 'true'
-          ? DateFormat('HH:mm', L10n.of(context).localeName).format(this)
-          : DateFormat('h:mm a', L10n.of(context).localeName).format(this);
+  String localizedTimeOfDay(BuildContext context) {
+    final locale = Localizations.localeOf(context);
+    final is24HourFormat = L10n.of(context).alwaysUse24HourFormat == 'true';
+    
+    if (is24HourFormat) {
+      return DateFormat('HH:mm', locale.languageCode).format(this);
+    } else {
+      // 检查是否是中文环境
+      if (locale.languageCode == 'zh') {
+        final hour = this.hour;
+        final minute = this.minute.toString().padLeft(2, '0');
+        String period;
+        
+        // 根据小时确定时间段
+        if (hour >= 0 && hour < 6) {
+          period = '凌晨';
+        } else if (hour >= 6 && hour < 9) {
+          period = '早上';
+        } else if (hour >= 9 && hour < 12) {
+          period = '上午';
+        } else if (hour == 12) {
+          period = '中午';
+        } else if (hour > 12 && hour < 18) {
+          period = '下午';
+        } else if (hour >= 18 && hour < 20) {
+          period = '傍晚';
+        } else {
+          period = '晚上';
+        }
+        
+        // 转换为12小时制
+        final hour12 = hour % 12 == 0 ? 12 : hour % 12;
+        
+        return '$period $hour12:$minute';
+      } else {
+        // 其他语言使用标准格式
+        return DateFormat('h:mm a', locale.languageCode).format(this);
+      }
+    }
+  }
 
   /// Returns [localizedTimeOfDay()] if the ChatTime is today, the name of the week
   /// day if the ChatTime is this week and a date string else.
