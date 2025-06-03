@@ -333,6 +333,7 @@ class Message extends StatelessWidget {
                                                   : color,
                                               borderRadius: borderRadius,
                                             ),
+                                            clipBehavior: Clip.antiAlias,
                                             child: BubbleBackground(
                                               colors: colors,
                                               ignore: noBubble || !ownMessage,
