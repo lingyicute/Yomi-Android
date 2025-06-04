@@ -180,6 +180,7 @@ class RecordingDialogState extends State<RecordingDialog> {
           );
     if (PlatformInfos.isCupertinoStyle) {
       return CupertinoAlertDialog(
+        title: const Text("请开始说话吧～"),
         content: content,
         actions: [
           CupertinoDialogAction(
@@ -200,6 +201,7 @@ class RecordingDialogState extends State<RecordingDialog> {
       );
     }
     return AlertDialog(
+      title: const Text("请开始说话吧～"),
       content: content,
       actions: [
         TextButton(
