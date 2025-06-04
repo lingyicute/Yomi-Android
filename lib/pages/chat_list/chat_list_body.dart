@@ -200,19 +200,6 @@ class ChatListViewBody extends StatelessWidget {
                           Stack(
                             alignment: Alignment.center,
                             children: [
-                              const Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  DummyChatListItem(
-                                    opacity: 0.5,
-                                    animate: false,
-                                  ),
-                                  DummyChatListItem(
-                                    opacity: 0.3,
-                                    animate: false,
-                                  ),
-                                ],
-                              ),
                               Icon(
                                   CupertinoIcons.bubble_left_bubble_right,
                                   size: 77,
