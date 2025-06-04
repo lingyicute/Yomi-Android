@@ -73,6 +73,8 @@ extension DateTimeExtension on DateTime {
   /// day if the ChatTime is this week and a date string else.
   String localizedTimeShort(BuildContext context) {
     final now = DateTime.now();
+    final locale = Localizations.localeOf(context);
+    final isZhLocale = locale.languageCode == 'zh';
 
     final sameYear = now.year == year;
 
@@ -86,30 +88,50 @@ extension DateTimeExtension on DateTime {
     if (sameDay) {
       return localizedTimeOfDay(context);
     } else if (sameWeek) {
-      return DateFormat.E(Localizations.localeOf(context).languageCode)
-          .format(this);
+      if (isZhLocale) {
+        // 中文环境下使用 "星期x" 格式
+        final weekdays = ['一', '二', '三', '四', '五', '六', '日'];
+        final weekdayIndex = weekday - 1; // DateTime的weekday从1开始，周一是1
+        return '星期${weekdays[weekdayIndex]}';
+      } else {
+        return DateFormat.E(locale.languageCode).format(this);
+      }
     } else if (sameYear) {
-      return DateFormat.MMMd(Localizations.localeOf(context).languageCode)
-          .format(this);
+      if (isZhLocale) {
+        // 中文环境下使用 "M月d日" 格式
+        return '${month}月${day}日';
+      } else {
+        return DateFormat.MMMd(locale.languageCode).format(this);
+      }
     }
-    return DateFormat.yMMMd(Localizations.localeOf(context).languageCode)
-        .format(this);
+    if (isZhLocale) {
+      // 中文环境下使用 "yyyy年M月d日" 格式
+      return '${year}年${month}月${day}日';
+    } else {
+      return DateFormat.yMMMd(locale.languageCode).format(this);
+    }
   }
 
   /// If the DateTime is today, this returns [localizedTimeOfDay()], if not it also
   /// shows the date.
-  /// TODO: Add localization
   String localizedTime(BuildContext context) {
     final now = DateTime.now();
+    final locale = Localizations.localeOf(context);
+    final isZhLocale = locale.languageCode == 'zh';
 
     final sameYear = now.year == year;
-
     final sameDay = sameYear && now.month == month && now.day == day;
 
     if (sameDay) return localizedTimeOfDay(context);
-    return L10n.of(context).dateAndTimeOfDay(
-      localizedTimeShort(context),
-      localizedTimeOfDay(context),
-    );
+    
+    if (isZhLocale) {
+      // 中文环境下日期和时间的组合方式
+      return '${localizedTimeShort(context)} ${localizedTimeOfDay(context)}';
+    } else {
+      return L10n.of(context).dateAndTimeOfDay(
+        localizedTimeShort(context),
+        localizedTimeOfDay(context),
+      );
+    }
   }
 }
