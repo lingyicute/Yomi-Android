@@ -136,48 +136,54 @@ class RecordingDialogState extends State<RecordingDialog> {
     const maxDecibalWidth = 64.0;
     final time =
         '${_duration.inMinutes.toString().padLeft(2, '0')}:${(_duration.inSeconds % 60).toString().padLeft(2, '0')}';
-    final content = error
-        ? Text(L10n.of(context).oopsSomethingWentWrong)
-        : Row(
-            children: [
-              Container(
-                width: 16,
-                height: 16,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(32),
-                  color: Colors.red,
+    final content = SizedBox(
+      height: maxDecibalWidth,
+      child: error
+          ? Center(
+              child: Text(L10n.of(context).oopsSomethingWentWrong),
+            )
+          : Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Container(
+                  width: 16,
+                  height: 16,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(32),
+                    color: Colors.red,
+                  ),
                 ),
-              ),
-              Expanded(
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: amplitudeTimeline.reversed
-                      .take(26)
-                      .toList()
-                      .reversed
-                      .map(
-                        (amplitude) => Container(
-                          margin: const EdgeInsets.only(left: 2),
-                          width: 4,
-                          decoration: BoxDecoration(
-                            color: theme.colorScheme.primary,
-                            borderRadius:
-                                BorderRadius.circular(AppConfig.borderRadius),
+                SizedBox(
+                  width: (4.0 + 2.0) * 26, // 156.0
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: amplitudeTimeline.reversed
+                        .take(26)
+                        .toList()
+                        .reversed
+                        .map(
+                          (amplitude) => Container(
+                            margin: const EdgeInsets.only(left: 2),
+                            width: 4,
+                            decoration: BoxDecoration(
+                              color: theme.colorScheme.primary,
+                              borderRadius:
+                                  BorderRadius.circular(AppConfig.borderRadius),
+                            ),
+                            height: maxDecibalWidth * (amplitude / 100),
                           ),
-                          height: maxDecibalWidth * (amplitude / 100),
-                        ),
-                      )
-                      .toList(),
+                        )
+                        .toList(),
+                  ),
                 ),
-              ),
-              const SizedBox(width: 8),
-              SizedBox(
-                width: 48,
-                child: Text(time),
-              ),
-            ],
-          );
+                const SizedBox(width: 8),
+                SizedBox(
+                  width: 48,
+                  child: Text(time),
+                ),
+              ],
+            ),
+    );
     if (PlatformInfos.isCupertinoStyle) {
       return CupertinoAlertDialog(
         title: const Text("请开始说话吧～"),
