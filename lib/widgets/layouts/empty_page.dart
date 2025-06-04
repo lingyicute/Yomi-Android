@@ -20,7 +20,7 @@ class EmptyPage extends StatelessWidget {
       body: Container(
         alignment: Alignment.center,
         child: Image.asset(
-          'assets/logo.png',
+          'assets/logo2.png',
           color: theme.colorScheme.surfaceContainerHigh,
           width: width,
           height: width,
