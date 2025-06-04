@@ -69,18 +69,6 @@ class MapBubble extends StatelessWidget {
                   ),
                 ],
               ),
-              Container(
-                alignment: Alignment.bottomRight,
-                child: Text(
-                  ' © OpenStreetMap contributors ',
-                  style: TextStyle(
-                    color: theme.brightness == Brightness.dark
-                        ? Colors.white
-                        : Colors.black,
-                    backgroundColor: theme.appBarTheme.backgroundColor,
-                  ),
-                ),
-              ),
             ],
           ),
         ),
