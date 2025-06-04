@@ -565,7 +565,7 @@
             }
         }
     },
-    "currentlyActive": "目前活跃",
+    "currentlyActive": "当前在线",
     "@currentlyActive": {
         "type": "String",
         "placeholders": {}
