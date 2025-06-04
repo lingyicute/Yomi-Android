@@ -119,6 +119,25 @@ class PresenceAvatar extends StatelessWidget {
     super.key,
   });
 
+  // 从状态消息中提取第一个emoji，如果没有则返回默认emoji
+  String? _extractFirstEmoji(String? text) {
+    if (text == null || text.isEmpty) {
+      return null;
+    }
+    
+    // 匹配Unicode emoji的正则表达式
+    final emojiRegex = RegExp(
+      r'(\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])',
+    );
+    
+    final matches = emojiRegex.allMatches(text);
+    if (matches.isNotEmpty) {
+      return matches.first.group(0);
+    }
+    
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
     final avatarSize = height - 16 - 16 - 8;
@@ -133,10 +152,8 @@ class PresenceAvatar extends StatelessWidget {
             presence.userid.localpart ??
             presence.userid;
         final statusMsg = presence.statusMsg;
+        final statusEmoji = _extractFirstEmoji(statusMsg);
 
-        const statusMsgBubbleElevation = 6.0;
-        final statusMsgBubbleShadowColor = theme.colorScheme.surface;
-        final statusMsgBubbleColor = Colors.white.withAlpha(230);
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8.0),
           child: SizedBox(
@@ -192,65 +209,31 @@ class PresenceAvatar extends StatelessWidget {
                                     ),
                                   ),
                                 ),
-                              if (statusMsg != null) ...[
+                              if (statusMsg != null)
                                 Positioned(
-                                  left: 0,
+                                  right: 0,
                                   top: 0,
-                                  right: 8,
-                                  child: Material(
-                                    elevation: statusMsgBubbleElevation,
-                                    shadowColor: statusMsgBubbleShadowColor,
-                                    borderRadius: BorderRadius.circular(
-                                      AppConfig.borderRadius / 2,
+                                  child: Container(
+                                    width: 22,
+                                    height: 22,
+                                    decoration: BoxDecoration(
+                                      color: theme.colorScheme.primary.withOpacity(0.9),
+                                      borderRadius: BorderRadius.circular(11),
+                                      border: Border.all(
+                                        color: theme.colorScheme.background,
+                                        width: 1.5,
+                                      ),
                                     ),
-                                    color: statusMsgBubbleColor,
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(2.0),
+                                    child: Center(
                                       child: Text(
-                                        statusMsg,
-                                        maxLines: 2,
-                                        overflow: TextOverflow.ellipsis,
+                                        statusEmoji ?? '💬',
                                         style: const TextStyle(
-                                          color: Colors.black,
-                                          fontSize: 10.5,
+                                          fontSize: 12,
                                         ),
                                       ),
                                     ),
                                   ),
                                 ),
-                                Positioned(
-                                  left: 8,
-                                  top: 32,
-                                  child: Material(
-                                    color: statusMsgBubbleColor,
-                                    elevation: statusMsgBubbleElevation,
-                                    shadowColor: statusMsgBubbleShadowColor,
-                                    borderRadius: BorderRadius.circular(
-                                      AppConfig.borderRadius / 2,
-                                    ),
-                                    child: const SizedBox(
-                                      width: 8,
-                                      height: 8,
-                                    ),
-                                  ),
-                                ),
-                                Positioned(
-                                  left: 14,
-                                  top: 40,
-                                  child: Material(
-                                    color: statusMsgBubbleColor,
-                                    elevation: statusMsgBubbleElevation,
-                                    shadowColor: statusMsgBubbleShadowColor,
-                                    borderRadius: BorderRadius.circular(
-                                      AppConfig.borderRadius / 2,
-                                    ),
-                                    child: const SizedBox(
-                                      width: 4,
-                                      height: 4,
-                                    ),
-                                  ),
-                                ),
-                              ],
                             ],
                           ),
                         ),
