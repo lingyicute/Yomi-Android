@@ -304,7 +304,7 @@
             }
         }
     },
-    "changedTheRoomAliases": "{username} 更改了房间别名",
+    "changedTheRoomAliases": "{username} 更改了房间名称",
     "@changedTheRoomAliases": {
         "type": "String",
         "placeholders": {
@@ -684,7 +684,7 @@
         "type": "String",
         "placeholders": {}
     },
-    "editRoomAliases": "编辑房间别名",
+    "editRoomAliases": "编辑房间名称",
     "@editRoomAliases": {
         "type": "String",
         "placeholders": {}
@@ -2900,7 +2900,7 @@
     "@noOneCanJoin": {},
     "knocking": "正在请求",
     "@knocking": {},
-    "chatCanBeDiscoveredViaSearchOnServer": "可通过搜索 {server} 发现聊天",
+    "chatCanBeDiscoveredViaSearchOnServer": "可通过搜索 {server} 找到房间",
     "@chatCanBeDiscoveredViaSearchOnServer": {
         "type": "String",
         "placeholders": {
@@ -2976,7 +2976,7 @@
     "@alwaysUse24HourFormat": {
         "description": "Set to true to always display time of day in 24 hour format."
     },
-    "noMoreChatsFound": "找不到更多聊天…",
+    "noMoreChatsFound": "没有更多对话啦",
     "@noMoreChatsFound": {},
     "joinedChats": "已加入的聊天",
     "@joinedChats": {},
@@ -3069,7 +3069,7 @@
     },
     "sendCanceled": "发送被取消",
     "@sendCanceled": {},
-    "noChatsFoundHere": "还没有对话哦。点击下方按钮 ⤵ 开始吧！",
+    "noChatsFoundHere": "还没有对话哦。点击下方按钮开始吧！",
     "@noChatsFoundHere": {},
     "loginWithMatrixId": "使用 Matrix-ID 登录",
     "@loginWithMatrixId": {},
@@ -3165,7 +3165,7 @@
     "@boldText": {},
     "invalidUrl": "无效 url",
     "@invalidUrl": {},
-    "unableToJoinChat": "无法加入聊天。可能其他方面已经关闭了对话。",
+    "unableToJoinChat": "加入房间时遇到问题。或许房间已不存在？",
     "@unableToJoinChat": {},
     "sendImages": "发送 {count} 张图片",
     "@sendImages": {
@@ -3186,7 +3186,7 @@
     "@appWantsToUseForLoginDescription": {},
     "open": "打开",
     "@open": {},
-    "appWantsToUseForLogin": "使用 '{server}'服务器登录",
+    "appWantsToUseForLogin": "使用 '{server}' 登录",
     "@appWantsToUseForLogin": {
         "type": "String",
         "placeholders": {
@@ -3280,7 +3280,7 @@
     "@contentNotificationSettings": {},
     "notificationRuleMasterDescription": "覆盖所有其他规则并禁用所有通知。",
     "@notificationRuleMasterDescription": {},
-    "notificationRuleSuppressNoticesDescription": "隐藏来自 bot 等自动客户端的通知。",
+    "notificationRuleSuppressNoticesDescription": "隐藏来自 bot 的通知。",
     "@notificationRuleSuppressNoticesDescription": {},
     "roomNotificationSettings": "房间通知设置",
     "@roomNotificationSettings": {},
@@ -3288,9 +3288,9 @@
     "@notificationRuleRoomServerAclDescription": {},
     "notificationRuleContainsDisplayNameDescription": "当消息包含用户的展示名时提醒使用该展示名的用户。",
     "@notificationRuleContainsDisplayNameDescription": {},
-    "notificationRuleRoomnotif": "房间通知",
+    "notificationRuleRoomnotif": "@All 通知",
     "@notificationRuleRoomnotif": {},
-    "notificationRuleTombstoneDescription": "提醒用户房间解散的消息。",
+    "notificationRuleTombstoneDescription": "房间已重建的提醒。",
     "@notificationRuleTombstoneDescription": {},
     "notificationRuleReaction": "回应",
     "@notificationRuleReaction": {},

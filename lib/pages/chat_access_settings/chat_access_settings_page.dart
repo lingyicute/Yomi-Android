@@ -165,20 +165,18 @@ class ChatAccessSettingsPageView extends StatelessWidget {
                       );
                     },
                   ),
-                  Divider(color: theme.dividerColor),
-                  FutureBuilder(
+                    Divider(color: theme.dividerColor),
+                    FutureBuilder(
                     future: room.client.getRoomVisibilityOnDirectory(room.id),
                     builder: (context, snapshot) => SwitchListTile.adaptive(
                       value: snapshot.data == Visibility.public,
                       title: Text(
-                        L10n.of(context).chatCanBeDiscoveredViaSearchOnServer(
-                          room.client.userID!.domain!,
-                        ),
+                      '允许通过搜索找到该房间',
                       ),
                       onChanged: controller.setChatVisibilityOnDirectory,
                     ),
-                  ),
-                ],
+                    ),
+                  ],
                 ListTile(
                   title: Text(L10n.of(context).globalChatId),
                   subtitle: SelectableText(room.id),

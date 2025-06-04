@@ -40,13 +40,13 @@ class ArchiveController extends State<Archive> {
     final client = Matrix.of(context).client;
     if (archive.isEmpty) return;
     if (await showOkCancelAlertDialog(
-          useRootNavigator: false,
-          context: context,
-          title: L10n.of(context).areYouSure,
-          okLabel: L10n.of(context).yes,
-          cancelLabel: L10n.of(context).cancel,
-          message: L10n.of(context).clearArchive,
-        ) !=
+        useRootNavigator: false,
+        context: context,
+        title: L10n.of(context).areYouSure,
+        okLabel: L10n.of(context).yes,
+        cancelLabel: L10n.of(context).cancel,
+        message: '即将清空所有存档，此操作不可撤销。',
+      ) !=
         OkCancelResult.ok) {
       return;
     }
