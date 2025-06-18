@@ -136,7 +136,7 @@ void showMemberActionsPopupMenu({
             ],
           ),
         ),
-      if (user.canBan)
+      if (user.canBan && user.membership != Membership.ban)
         PopupMenuItem(
           value: _MemberActions.ban,
           child: Row(
