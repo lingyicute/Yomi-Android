@@ -114,6 +114,9 @@ class ImageBubble extends StatelessWidget {
               tag: event.eventId,
               child: MxcImage(
                 event: event,
+                // 为事件附件启用跨挂载缓存。否则每次滚动出屏再回屏都会重新
+                // 下载 +（对加密房间）重新解密缩略图，滚动卡顿的主要来源。
+                cacheKey: 'event_img_${event.eventId}_thumb_$thumbnailOnly',
                 width: width,
                 height: height,
                 fit: fit,

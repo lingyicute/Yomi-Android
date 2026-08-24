@@ -25,6 +25,19 @@ class BlurHash extends StatefulWidget {
 class _BlurHashState extends State<BlurHash> {
   Uint8List? _data;
 
+  /// Memoized Future so rebuilds don't restart the lookup:
+  Future<Uint8List?>? _future;
+
+  /// Global cache of decoded blurhashes, keyed by "hash@WxH".
+  ///
+  /// Previously every State only memoized its own decode and — worse —
+  /// spawned a new `compute()` isolate on every rebuild until the first one
+  /// completed. Scrolling an image-heavy timeline therefore re-decoded the
+  /// same placeholders over and over again.
+  static final Map<String, Uint8List> _decodedCache = {};
+  static final Map<String, Future<Uint8List>> _inflight = {};
+  static const int _maxCacheEntries = 64;
+
   static Future<Uint8List> getBlurhashData(
     BlurhashData blurhashData,
   ) async {
@@ -44,7 +57,17 @@ class _BlurHashState extends State<BlurHash> {
       width = (height * ratio).round();
     }
 
-    return _data ??= await compute(
+    final cacheKey = '${widget.blurhash}@${width}x$height';
+
+    final cached = _decodedCache.remove(cacheKey);
+    if (cached != null) {
+      // Move to end = most recently used.
+      _decodedCache[cacheKey] = cached;
+      return _data = cached;
+    }
+
+    // De-duplicate concurrent decodes of the same blurhash:
+    final inflight = _inflight[cacheKey] ??= compute(
       getBlurhashData,
       BlurhashData(
         hsh: widget.blurhash,
@@ -52,12 +75,32 @@ class _BlurHashState extends State<BlurHash> {
         h: height,
       ),
     );
+    try {
+      final decoded = await inflight;
+      _decodedCache[cacheKey] = decoded;
+      if (_decodedCache.length > _maxCacheEntries) {
+        _decodedCache.remove(_decodedCache.keys.first);
+      }
+      return _data = decoded;
+    } finally {
+      _inflight.remove(cacheKey);
+    }
+  }
+
+  @override
+  void didUpdateWidget(BlurHash oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.blurhash != widget.blurhash ||
+        oldWidget.width != widget.width ||
+        oldWidget.height != widget.height) {
+      _future = null;
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<Uint8List?>(
-      future: _computeBlurhashData(),
+      future: _future ??= _computeBlurhashData(),
       initialData: _data,
       builder: (context, snapshot) {
         final data = snapshot.data;
@@ -73,6 +116,7 @@ class _BlurHashState extends State<BlurHash> {
           fit: widget.fit,
           width: widget.width,
           height: widget.height,
+          gaplessPlayback: true,
         );
       },
     );

@@ -532,20 +532,31 @@ class ChatListController extends State<ChatList>
     super.initState();
   }
 
+  RouteInformationProvider? _listenedRouteProvider;
+  bool _willPopCallbackRegistered = false;
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    // 使用更安全的方式注册路由监听
-    final route = ModalRoute.of(context);
-    if (route != null) {
-      route.addScopedWillPopCallback(() async {
-        if (mounted) forceRefresh();
-        return true;
-      });
+    // 使用更安全的方式注册路由监听。
+    // 注意：didChangeDependencies 会被多次调用，原实现每次都会重复注册
+    // willPop 回调和路由监听，导致 forceRefresh 越积越多（setState 风暴）。
+    if (!_willPopCallbackRegistered) {
+      final route = ModalRoute.of(context);
+      if (route != null) {
+        _willPopCallbackRegistered = true;
+        route.addScopedWillPopCallback(() async {
+          if (mounted) forceRefresh();
+          return true;
+        });
+      }
     }
-    
-    final router = GoRouter.of(context);
-    router.routeInformationProvider.addListener(_onRouteChange);
+
+    final routeProvider = GoRouter.of(context).routeInformationProvider;
+    if (!identical(routeProvider, _listenedRouteProvider)) {
+      _listenedRouteProvider?.removeListener(_onRouteChange);
+      _listenedRouteProvider = routeProvider..addListener(_onRouteChange);
+    }
   }
 
   void _onRouteChange() {
@@ -561,8 +572,8 @@ class ChatListController extends State<ChatList>
 
   @override
   void dispose() {
-    final router = GoRouter.of(context);
-    router.routeInformationProvider.removeListener(_onRouteChange);
+    _listenedRouteProvider?.removeListener(_onRouteChange);
+    _listenedRouteProvider = null;
     _intentDataStreamSubscription?.cancel();
     _intentFileStreamSubscription?.cancel();
     _intentUriStreamSubscription?.cancel();

@@ -8,6 +8,7 @@ import 'package:mime/mime.dart';
 import 'package:yomi/config/app_config.dart';
 import 'package:yomi/l10n/l10n.dart';
 import 'package:yomi/utils/localized_exception_extension.dart';
+import 'package:yomi/utils/matrix_sdk_extensions/cached_futures.dart';
 import 'package:yomi/utils/matrix_sdk_extensions/matrix_file_extension.dart';
 import 'package:yomi/utils/other_party_can_receive.dart';
 import 'package:yomi/utils/platform_infos.dart';
@@ -229,7 +230,9 @@ class SendFileDialogState extends State<SendFileDialog> {
                                 color: Colors.black,
                                 clipBehavior: Clip.hardEdge,
                                 child: FutureBuilder(
-                                  future: widget.files[i].readAsBytes(),
+                                  // Memoized: previously re-read the whole
+                                  // file from disk on every dialog rebuild.
+                                  future: readAsBytesCached(widget.files[i]),
                                   builder: (context, snapshot) {
                                     final bytes = snapshot.data;
                                     if (bytes == null) {
@@ -261,6 +264,12 @@ class SendFileDialogState extends State<SendFileDialog> {
                                       width: widget.files.length == 1
                                           ? 256 - 36
                                           : null,
+                                      // Decode at display resolution instead
+                                      // of full camera resolution — massively
+                                      // reduces memory and decode time.
+                                      cacheHeight: 512,
+                                      cacheWidth: 512,
+                                      filterQuality: FilterQuality.medium,
                                       fit: BoxFit.contain,
                                       errorBuilder: (context, e, s) {
                                         Logs()

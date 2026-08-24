@@ -75,6 +75,9 @@ class EventVideoPlayer extends StatelessWidget {
                     if (event.hasThumbnail)
                       MxcImage(
                         event: event,
+                        // See image_bubble.dart: persistent thumbnail cache
+                        // across scroll unmount/remount cycles.
+                        cacheKey: 'event_vid_thumb_${event.eventId}',
                         isThumbnail: true,
                         width: width,
                         height: height,

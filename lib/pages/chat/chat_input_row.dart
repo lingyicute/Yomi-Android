@@ -5,6 +5,7 @@ import 'package:matrix/matrix.dart';
 
 import 'package:yomi/config/app_config.dart';
 import 'package:yomi/l10n/l10n.dart';
+import 'package:yomi/utils/matrix_sdk_extensions/cached_futures.dart';
 import 'package:yomi/utils/other_party_can_receive.dart';
 import 'package:yomi/utils/platform_infos.dart';
 import 'package:yomi/widgets/avatar.dart';
@@ -368,7 +369,8 @@ class _ChatAccountPicker extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: FutureBuilder<Profile>(
-        future: controller.sendingClient.fetchOwnProfile(),
+        // Memoized: the raw call fires an HTTP request per rebuild.
+        future: fetchOwnProfileCached(controller.sendingClient),
         builder: (context, snapshot) => PopupMenuButton<String>(
           useRootNavigator: true,
           onSelected: (mxid) => _popupMenuButtonSelected(mxid, context),
@@ -377,7 +379,7 @@ class _ChatAccountPicker extends StatelessWidget {
                 (client) => PopupMenuItem<String>(
                   value: client!.userID,
                   child: FutureBuilder<Profile>(
-                    future: client.fetchOwnProfile(),
+                    future: fetchOwnProfileCached(client),
                     builder: (context, snapshot) => ListTile(
                       leading: Avatar(
                         mxContent: snapshot.data?.avatarUrl,

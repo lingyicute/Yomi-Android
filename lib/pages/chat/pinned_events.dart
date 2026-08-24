@@ -7,6 +7,7 @@ import 'package:matrix/matrix.dart';
 import 'package:yomi/l10n/l10n.dart';
 import 'package:yomi/pages/chat/chat.dart';
 import 'package:yomi/pages/chat/chat_app_bar_list_tile.dart';
+import 'package:yomi/utils/matrix_sdk_extensions/cached_futures.dart';
 import 'package:yomi/utils/matrix_sdk_extensions/matrix_locals.dart';
 import 'package:yomi/widgets/adaptive_dialogs/show_modal_action_popup.dart';
 import 'package:yomi/widgets/future_loading_dialog.dart';
@@ -64,7 +65,9 @@ class PinnedEvents extends StatelessWidget {
     }
 
     return FutureBuilder<Event?>(
-      future: controller.room.getEventById(pinnedEventIds.last),
+      // Memoized: this widget rebuilds whenever the room updates; a fresh
+      // future re-queried the database on every rebuild.
+      future: getEventByIdCached(controller.room, pinnedEventIds.last),
       builder: (context, snapshot) {
         final event = snapshot.data;
         return ChatAppBarListTile(
