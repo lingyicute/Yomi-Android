@@ -36,7 +36,7 @@ abstract class LyiShare {
     await LyiShare.share(
       L10n.of(context).inviteText(
         ownProfile.displayName ?? client.userID!,
-        'https://matrix.to/#/${client.userID}?client=im.yomi',
+        'https://yominvite.92li.uk/#/${client.userID}',
       ),
       context,
     );

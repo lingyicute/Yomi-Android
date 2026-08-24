@@ -141,7 +141,7 @@ msix_config:
   logo_path: assets\logo.png
   capabilities: internetClient, location, microphone, webcam
   protocol_activation: https
-  app_uri_handler_hosts: yomi.im, matrix.to
+  app_uri_handler_hosts: yomi.im, yominvite.92li.uk
   execution_alias: yomi
   sign_msix: false
   install_certificate: false

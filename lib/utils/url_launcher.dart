@@ -121,7 +121,7 @@ class UrlLauncher {
           AppConfig.inviteLinkPrefix,
         );
 
-    // The identifier might be a matrix.to url and needs escaping. Or, it might have multiple
+    // The identifier might be a 92li.uk url and needs escaping. Or, it might have multiple
     // identifiers (room id & event id), or it might also have a query part.
     // All this needs parsing.
     final identityParts = url.parseIdentifierIntoParts() ??

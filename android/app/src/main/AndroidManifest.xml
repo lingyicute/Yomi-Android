@@ -57,14 +57,14 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
 
-            <!-- App can open https://matrix.to urls -->
+            <!-- App can open https://92li.uk urls -->
             <intent-filter>
                <action android:name="android.intent.action.VIEW" />
                <category android:name="android.intent.category.DEFAULT" />
                <category android:name="android.intent.category.BROWSABLE" />
                <data
                    android:scheme="https"
-                   android:host="matrix.to"/>
+                   android:host="yominvite.92li.uk"/>
             </intent-filter>
 
             <!-- App can open matrix: uris -->
