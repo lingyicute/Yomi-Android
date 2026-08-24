@@ -187,7 +187,7 @@ class NewPrivateChatView extends StatelessWidget {
                                 constraints:
                                     const BoxConstraints(maxWidth: 200),
                                 child: PrettyQrView.data(
-                                  data: 'https://matrix.to/#/$userId',
+                                  data: 'https://yominvite.92li.uk/#/$userId',
                                   decoration: PrettyQrDecoration(
                                     shape: PrettyQrSmoothSymbol(
                                       roundFactor: 1,

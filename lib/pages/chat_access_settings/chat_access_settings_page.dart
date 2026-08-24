@@ -233,7 +233,7 @@ class _AliasListTile extends StatelessWidget {
           : const Icon(Icons.link_outlined),
       title: InkWell(
         onTap: () => LyiShare.share(
-          'https://matrix.to/#/$alias',
+          'https://yominvite.92li.uk/#/$alias',
           context,
         ),
         child: SelectableText(

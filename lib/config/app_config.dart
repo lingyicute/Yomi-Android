@@ -63,7 +63,7 @@ abstract class AppConfig {
   static bool experimentalVoip = false;
   static const bool hideTypingUsernames = false;
   static const bool hideAllStateEvents = false;
-  static const String inviteLinkPrefix = 'https://matrix.to/#/';
+  static const String inviteLinkPrefix = 'https://yominvite.92li.uk/#/';
   static const String deepLinkPrefix = 'im.yomi://chat/';
   static const String schemePrefix = 'matrix:';
   static const String pushNotificationsChannelId = 'yomi_push';

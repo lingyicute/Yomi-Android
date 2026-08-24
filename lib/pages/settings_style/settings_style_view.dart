@@ -247,7 +247,7 @@ class SettingsStyleView extends StatelessWidget {
                                         vertical: 8,
                                       ),
                                       child: Text(
-                                        '恭喜新CEO上任！记得给它发小鱼干当工资～需要我帮你起草一份《猫CEO管理章程》吗？📝',
+                                        '恭喜新CEO上任！记得给它发小鱼干当工资 ~ 哎？需要我帮你起草一份《猫CEO管理章程》吗？📝',
                                         style: TextStyle(
                                           color: theme.colorScheme.onSurface,
                                           fontSize: AppConfig.messageFontSize *

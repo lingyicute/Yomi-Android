@@ -2346,7 +2346,7 @@
     "@hydrate": {},
     "dehydrate": "导出会话并擦除设备",
     "@dehydrate": {},
-    "dehydrateWarning": "此操作无法撤消。请确保你安全地存储备份文件。",
+    "dehydrateWarning": "这将导出所有账号数据和聊天记录，并从 App 中安全擦除它们。此操作无法撤消。存储备份文件时请确保安全。",
     "@dehydrateWarning": {},
     "indexedDbErrorTitle": "私有模式问题",
     "@indexedDbErrorTitle": {},
@@ -2462,7 +2462,7 @@
     },
     "startFirstChat": "发起你的第一个聊天",
     "@startFirstChat": {},
-    "newSpaceDescription": "空间让你可以整合聊天并建立私人或公共社区。",
+    "newSpaceDescription": "空间让你可以整合多个聊天会话，建立私人集合或公共社区。",
     "@newSpaceDescription": {},
     "encryptThisChat": "加密此聊天",
     "@encryptThisChat": {},
@@ -2509,13 +2509,13 @@
             }
         }
     },
-    "reportErrorDescription": "啊！Yomi 遇到了一些小问题。如果愿意的话，请把下面的错误报告发给梨。",
+    "reportErrorDescription": "啊！Yomi 遇到了一些小问题。如果方便的话，请把下面的错误报告发给梨。感谢你让 Yomi 变得更好！",
     "@reportErrorDescription": {},
-    "noBackupWarning": "警告：如果不启用聊天备份，你将无法再访问这些加密的聊天记录。强烈建议在注销前先启用聊天备份。",
+    "noBackupWarning": "聊天记录会在 Yomi 服务器上妥善保存，在任何设备上登录都可以查看哦！",
     "@noBackupWarning": {},
     "signInWithPassword": "使用密码登录",
     "@signInWithPassword": {},
-    "pleaseTryAgainLaterOrChooseDifferentServer": "请稍后再试或选择其它服务器。",
+    "pleaseTryAgainLaterOrChooseDifferentServer": "请稍后再试。",
     "@pleaseTryAgainLaterOrChooseDifferentServer": {},
     "reopenChat": "重新打开聊天",
     "@reopenChat": {},
@@ -2632,7 +2632,7 @@
     "@pushNotificationsNotAvailable": {},
     "makeAdminDescription": "一旦你将该用户设为管理员，你可能无法撤销，因为他们将拥有与你相同的权限。",
     "@makeAdminDescription": {},
-    "archiveRoomDescription": "聊天将被移至存档。其他用户将能看到你已离开聊天。",
+    "archiveRoomDescription": "聊天将被移至存档。你仍然可以查看聊天记录，但无法再发言。其他用户将能看到你已离开聊天。",
     "@archiveRoomDescription": {},
     "learnMore": "了解更多",
     "@learnMore": {},
@@ -3054,7 +3054,7 @@
             }
         }
     },
-    "chatPermissionsDescription": "定义此聊天中哪个权限等级对特定操作是必需的。权限等级 0、50 和 100 通常代表用户、主持人和管理员，但你可以自定义任何等级。",
+    "chatPermissionsDescription": "定义聊天中的权限等级对特定操作是必需的。权限等级 0、50 和 100 通常代表用户、主持人和管理者，你也可以自定义任何等级。",
     "@chatPermissionsDescription": {},
     "changelog": "更新记录",
     "@changelog": {},
@@ -3195,7 +3195,7 @@
             }
         }
     },
-    "waitingForServer": "正在等待服务器…",
+    "waitingForServer": "正在拉取数据…",
     "@waitingForServer": {},
     "synchronizingPleaseWaitCounter": " 同步中… ({percentage}%)",
     "@synchronizingPleaseWaitCounter": {
@@ -3206,7 +3206,7 @@
             }
         }
     },
-    "appIntroduction": "嗨，亲爱的朋友！欢迎来到 Yomi。\n安心分享，轻松畅聊，重拾社交最纯粹的美好。",
+    "appIntroduction": "嗨，亲爱的朋友！欢迎来到 Yomi 🤗\n安心分享，轻松畅聊，重拾社交最纯粹的美好。",
     "@appIntroduction": {},
     "newChatRequest": "📩 新的聊天请求",
     "@newChatRequest": {},
@@ -3218,7 +3218,7 @@
     "@notificationRuleMaster": {},
     "notificationRuleSuppressNotices": "隐藏机器人消息",
     "@notificationRuleSuppressNotices": {},
-    "notificationRuleInviteForMe": "给我的邀请",
+    "notificationRuleInviteForMe": "收到邀请",
     "@notificationRuleInviteForMe": {},
     "notificationRuleInviteForMeDescription": "当收到聊天邀请时发送通知。",
     "@notificationRuleInviteForMeDescription": {},
@@ -3294,7 +3294,7 @@
     "@notificationRuleEncryptedRoomOneToOneDescription": {},
     "notificationRuleMessage": "普通消息",
     "@notificationRuleMessage": {},
-    "unknownPushRule": "未知推送规则 '{rule}'",
+    "unknownPushRule": "调试性推送规则 '{rule}'",
     "@unknownPushRule": {
         "type": "String",
         "placeholders": {
@@ -3305,7 +3305,7 @@
     },
     "crossVerifiedDevices": "交叉验证设备",
     "@crossVerifiedDevices": {},
-    "shareKeysWithDescription": "选择应当信任哪些设备允许它们读取你在加密聊天中的消息？",
+    "shareKeysWithDescription": "选择应当信任哪些设备并允许它们读取你在加密聊天中的消息？",
     "@shareKeysWithDescription": {},
     "shareKeysWith": "与哪些设备分享密钥…",
     "@shareKeysWith": {},
