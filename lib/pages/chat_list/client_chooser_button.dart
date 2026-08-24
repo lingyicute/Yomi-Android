@@ -5,6 +5,7 @@ import 'package:matrix/matrix.dart';
 
 import 'package:yomi/config/themes.dart';
 import 'package:yomi/l10n/l10n.dart';
+import 'package:yomi/utils/matrix_sdk_extensions/cached_futures.dart';
 import 'package:yomi/widgets/adaptive_dialogs/show_ok_cancel_alert_dialog.dart';
 import 'package:yomi/widgets/avatar.dart';
 import 'package:yomi/widgets/matrix.dart';
@@ -105,7 +106,7 @@ class ClientChooserButton extends StatelessWidget {
               (client) => PopupMenuItem(
                 value: client,
                 child: FutureBuilder<Profile?>(
-                  future: client.fetchOwnProfile(),
+                  future: fetchOwnProfileCached(client),
                   builder: (context, snapshot) => Row(
                     children: [
                       Avatar(
@@ -156,7 +157,9 @@ class ClientChooserButton extends StatelessWidget {
     var clientCount = 0;
     matrix.accountBundles.forEach((key, value) => clientCount += value.length);
     return FutureBuilder<Profile>(
-      future: matrix.client.isLogged() ? matrix.client.fetchOwnProfile() : null,
+      future: matrix.client.isLogged()
+          ? fetchOwnProfileCached(matrix.client)
+          : null,
       builder: (context, snapshot) => Material(
         clipBehavior: Clip.hardEdge,
         borderRadius: BorderRadius.circular(99),

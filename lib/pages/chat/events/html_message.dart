@@ -40,6 +40,29 @@ class HtmlMessage extends StatelessWidget {
     this.textStyle,
   });
 
+  /// LRU cache for parsed HTML documents.
+  ///
+  /// Parsing HTML is expensive and every text message went through
+  /// [parser.parse] on every single build before — a top scrolling hot spot.
+  /// Parsed documents are treated as read-only here, so they can be shared.
+  static final Map<String, dom.Element> _parsedHtmlCache = {};
+  static const int _parsedHtmlCacheMaxSize = 200;
+
+  static dom.Element _parseCached(String html) {
+    final cached = _parsedHtmlCache.remove(html);
+    if (cached != null) {
+      // Move to the end = most recently used.
+      _parsedHtmlCache[html] = cached;
+      return cached;
+    }
+    final parsed = parser.parse(html).body ?? dom.Element.html('');
+    _parsedHtmlCache[html] = parsed;
+    if (_parsedHtmlCache.length > _parsedHtmlCacheMaxSize) {
+      _parsedHtmlCache.remove(_parsedHtmlCache.keys.first);
+    }
+    return parsed;
+  }
+
   /// Keep in sync with: https://spec.matrix.org/latest/client-server-api/#mroommessage-msgtypes
   static const Set<String> allowedHtmlTags = {
     'font',
@@ -510,7 +533,7 @@ class HtmlMessage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final element = parser.parse(html).body ?? dom.Element.html('');
+    final element = _parseCached(html);
     return Text.rich(
       _renderHtml(element, context),
       style: textStyle ?? TextStyle(

@@ -11,6 +11,7 @@ import 'package:yomi/l10n/l10n.dart';
 import 'package:yomi/pages/chat/events/room_creation_state_event.dart';
 import 'package:yomi/utils/date_time_extension.dart';
 import 'package:yomi/utils/file_description.dart';
+import 'package:yomi/utils/matrix_sdk_extensions/cached_futures.dart';
 import 'package:yomi/utils/string_color.dart';
 import 'package:yomi/widgets/avatar.dart';
 import 'package:yomi/widgets/matrix.dart';
@@ -229,7 +230,7 @@ class Message extends StatelessWidget {
                           )
                         else
                           FutureBuilder<User?>(
-                            future: event.fetchSenderUser(),
+                            future: fetchSenderUserCached(event),
                             builder: (context, snapshot) {
                               final user = snapshot.data ??
                                   event.senderFromMemoryOrFallback;
@@ -265,7 +266,7 @@ class Message extends StatelessWidget {
                                     child: ownMessage || event.room.isDirectChat
                                         ? const SizedBox(height: 12)
                                         : FutureBuilder<User?>(
-                                            future: event.fetchSenderUser(),
+                                            future: fetchSenderUserCached(event),
                                             builder: (context, snapshot) {
                                               final displayname = snapshot.data
                                                       ?.calcDisplayname() ??
@@ -669,14 +670,23 @@ class BubblePainter extends CustomPainter {
   final BuildContext context;
   final List<Color> colors;
   ScrollableState? _scrollable;
+  RenderBox? _scrollableBox;
 
   @override
   void paint(Canvas canvas, Size size) {
-    final scrollable = _scrollable ??= Scrollable.of(context);
-    final scrollableBox = scrollable.context.findRenderObject() as RenderBox;
-    final scrollableRect = Offset.zero & scrollableBox.size;
-    final bubbleBox = context.findRenderObject() as RenderBox;
+    // Maybe-lookups with null guards are much cheaper than throwing lookups:
+    final scrollable = _scrollable ??= Scrollable.maybeOf(context);
+    final scrollableBox =
+        _scrollableBox ??= scrollable?.context.findRenderObject() as RenderBox?;
+    final bubbleBox = context.findRenderObject() as RenderBox?;
+    if (scrollableBox == null ||
+        !scrollableBox.attached ||
+        bubbleBox == null ||
+        !bubbleBox.attached) {
+      return;
+    }
 
+    final scrollableRect = Offset.zero & scrollableBox.size;
     final origin =
         bubbleBox.localToGlobal(Offset.zero, ancestor: scrollableBox);
     final paint = Paint()
@@ -684,7 +694,7 @@ class BubblePainter extends CustomPainter {
         scrollableRect.topCenter,
         scrollableRect.bottomCenter,
         colors,
-        [0.0, 1.0],
+        const [0.0, 1.0],
         TileMode.clamp,
         Matrix4.translationValues(-origin.dx, -origin.dy, 0.0).storage,
       );
@@ -693,9 +703,11 @@ class BubblePainter extends CustomPainter {
 
   @override
   bool shouldRepaint(BubblePainter oldDelegate) {
-    final scrollable = Scrollable.of(context);
-    final oldScrollable = _scrollable;
-    _scrollable = scrollable;
-    return scrollable.position != oldScrollable?.position;
+    // 滚动监听刷新由 `repaint` listenable 驱动，这里只需处理真正影响画面的
+    // 输入变化。旧实现在这里调用 Scrollable.of，既昂贵又会在非 build 阶段
+    // 注册错误的依赖关系。
+    _scrollable = null;
+    _scrollableBox = null;
+    return oldDelegate.colors != colors;
   }
 }

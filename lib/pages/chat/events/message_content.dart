@@ -8,6 +8,7 @@ import 'package:yomi/l10n/l10n.dart';
 import 'package:yomi/pages/chat/events/video_player.dart';
 import 'package:yomi/utils/adaptive_bottom_sheet.dart';
 import 'package:yomi/utils/date_time_extension.dart';
+import 'package:yomi/utils/matrix_sdk_extensions/cached_futures.dart';
 import 'package:yomi/utils/matrix_sdk_extensions/matrix_locals.dart';
 import 'package:yomi/widgets/avatar.dart';
 import 'package:yomi/widgets/matrix.dart';
@@ -233,7 +234,9 @@ class MessageContent extends StatelessWidget {
           default:
             if (event.redacted) {
               return FutureBuilder<User?>(
-                future: event.redactedBecause?.fetchSenderUser(),
+                future: event.redactedBecause == null
+                  ? null
+                  : fetchSenderUserCached(event.redactedBecause!),
                 builder: (context, snapshot) {
                   final reason =
                       event.redactedBecause?.content.tryGet<String>('reason');
@@ -302,7 +305,7 @@ class MessageContent extends StatelessWidget {
         }
       case EventTypes.CallInvite:
         return FutureBuilder<User?>(
-          future: event.fetchSenderUser(),
+          future: fetchSenderUserCached(event),
           builder: (context, snapshot) {
             return _ButtonContent(
               label: L10n.of(context).startedACall(
@@ -318,7 +321,7 @@ class MessageContent extends StatelessWidget {
         );
       default:
         return FutureBuilder<User?>(
-          future: event.fetchSenderUser(),
+          future: fetchSenderUserCached(event),
           builder: (context, snapshot) {
             return _ButtonContent(
               label: L10n.of(context).userSentUnknownEvent(

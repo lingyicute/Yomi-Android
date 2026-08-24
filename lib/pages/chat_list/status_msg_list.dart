@@ -4,6 +4,7 @@ import 'package:matrix/matrix.dart';
 
 import 'package:yomi/config/app_config.dart';
 import 'package:yomi/config/themes.dart';
+import 'package:yomi/utils/matrix_sdk_extensions/cached_futures.dart';
 import 'package:yomi/utils/stream_extension.dart';
 import 'package:yomi/widgets/avatar.dart';
 import 'package:yomi/widgets/hover_builder.dart';
@@ -143,7 +144,9 @@ class PresenceAvatar extends StatelessWidget {
     final avatarSize = height - 16 - 16 - 8;
     final client = Matrix.of(context).client;
     return FutureBuilder<Profile>(
-      future: client.getProfileFromUserId(presence.userid),
+      // Memoized: the raw call is an HTTP request that was re-issued on
+      // every rebuild of the presence row (which refreshes every 3s).
+      future: getProfileCached(client, presence.userid),
       builder: (context, snapshot) {
         final theme = Theme.of(context);
 

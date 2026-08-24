@@ -6,6 +6,7 @@ import 'package:matrix/matrix.dart';
 
 import 'package:yomi/config/app_config.dart';
 import 'package:yomi/l10n/l10n.dart';
+import 'package:yomi/utils/matrix_sdk_extensions/cached_futures.dart';
 
 class CuteContent extends StatefulWidget {
   final Event event;
@@ -30,7 +31,7 @@ class _CuteContentState extends State<CuteContent> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<User?>(
-      future: widget.event.fetchSenderUser(),
+      future: fetchSenderUserCached(widget.event),
       builder: (context, snapshot) {
         final label = generateLabel(snapshot.data);
 

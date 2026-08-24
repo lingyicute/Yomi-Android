@@ -9,6 +9,7 @@ import 'package:matrix/matrix.dart';
 import 'package:yomi/l10n/l10n.dart';
 import 'package:yomi/utils/client_download_content_extension.dart' as cache_utils;
 import 'package:yomi/utils/file_selector.dart';
+import 'package:yomi/utils/matrix_sdk_extensions/cached_futures.dart';
 import 'package:yomi/utils/platform_infos.dart';
 import 'package:yomi/widgets/adaptive_dialogs/show_modal_action_popup.dart';
 import 'package:yomi/widgets/adaptive_dialogs/show_ok_cancel_alert_dialog.dart';
@@ -37,6 +38,12 @@ class SettingsController extends State<Settings> {
         profileUpdated = true;
         profileFuture = null;
         _avatarUpdateTimestamp = DateTime.now().millisecondsSinceEpoch;
+        // 同步失效全局 profile 缓存，让聊天页账号选择器、状态列表等处的
+        // 头像/昵称立即刷新。
+        final client = Matrix.of(context).client;
+        invalidateOwnProfileCache(client);
+        final userId = client.userID;
+        if (userId != null) invalidateProfileCache(client, userId);
       });
 
   void setDisplaynameAction() async {

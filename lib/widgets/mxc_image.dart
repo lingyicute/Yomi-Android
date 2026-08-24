@@ -12,16 +12,31 @@ import 'package:yomi/utils/matrix_sdk_extensions/matrix_file_extension.dart';
 import 'package:yomi/widgets/matrix.dart';
 
 /// 用于管理MXC图像内存缓存的工具类
+///
+/// 使用带容量上限的 LRU 缓存。原实现是无界 Map，会话期间解码后的图片
+/// 字节只进不出，导致内存无限增长、GC 停顿与 OOM。
 class MxcImageCacheManager {
+  /// 缓存总字节数上限（64 MB）。超过后按最近最少使用逐出。
+  static const int maxCacheBytes = 64 * 1024 * 1024;
+
+  /// 缓存条目数上限，防止大量小图撑爆entry数量
+  static const int maxCacheEntries = 400;
+
+  /// LinkedHashMap 按插入/访问顺序迭代，用于实现 LRU。
   static final Map<String, Uint8List> _imageDataCache = {};
-  
+
+  static int _currentBytes = 0;
+
+  static int get cacheBytes => _currentBytes;
+
   /// 清除特定缓存键的内存缓存
   static void clearCache(String? cacheKey) {
     if (cacheKey != null) {
-      _imageDataCache.remove(cacheKey);
+      final removed = _imageDataCache.remove(cacheKey);
+      if (removed != null) _currentBytes -= removed.lengthInBytes;
     }
   }
-  
+
   /// 清除包含特定URI的所有内存缓存
   static void clearCacheByUri(Uri? uri) {
     if (uri != null) {
@@ -29,21 +44,53 @@ class MxcImageCacheManager {
           .where((key) => key.contains(uri.toString()))
           .toList();
       for (final key in keysToRemove) {
-        _imageDataCache.remove(key);
+        clearCache(key);
       }
     }
   }
-  
-  /// 获取缓存的图片数据
+
+  /// 清空全部缓存（例如内存告警时可调用）
+  static void clearAll() {
+    _imageDataCache.clear();
+    _currentBytes = 0;
+  }
+
+  /// 获取缓存的图片数据（命中会将其标记为最近使用）
   static Uint8List? getData(String? cacheKey) {
+    if (cacheKey == null) return null;
+    final data = _imageDataCache.remove(cacheKey);
+    if (data != null) {
+      // 重新插入到末尾 = 最近使用
+      _imageDataCache[cacheKey] = data;
+    }
+    return data;
+  }
+
+  /// 返回缓存数据但不改变 LRU 顺序（用于 build 中的高频读取）
+  static Uint8List? peekData(String? cacheKey) {
     if (cacheKey == null) return null;
     return _imageDataCache[cacheKey];
   }
-  
-  /// 存储图片数据到缓存
+
+  /// 存储图片数据到缓存，并在超出上限时逐出最久未使用的条目
   static void setData(String? cacheKey, Uint8List data) {
     if (cacheKey == null) return;
+    final existing = _imageDataCache.remove(cacheKey);
+    if (existing != null) _currentBytes -= existing.lengthInBytes;
+
+    // 单张图超过上限的一半就不进缓存，避免一张大图清空整个缓存
+    if (data.lengthInBytes > maxCacheBytes ~/ 2) return;
+
     _imageDataCache[cacheKey] = data;
+    _currentBytes += data.lengthInBytes;
+
+    while (_currentBytes > maxCacheBytes ||
+        _imageDataCache.length > maxCacheEntries) {
+      final oldestKey = _imageDataCache.keys.first;
+      final evicted = _imageDataCache.remove(oldestKey);
+      if (evicted == null) break;
+      _currentBytes -= evicted.lengthInBytes;
+    }
   }
 }
 
@@ -141,14 +188,22 @@ class _MxcImageState extends State<MxcImage> {
     }
   }
 
+  /// 加载重试次数上限。原实现无限重试，会堆积大量永久后台任务。
+  static const int _maxRetries = 5;
+
+  int _retryCount = 0;
+
   void _tryLoad(_) async {
     if (_imageData != null) {
       return;
     }
     try {
       await _load();
+      _retryCount = 0;
     } on IOException catch (_) {
       if (!mounted) return;
+      if (_retryCount >= _maxRetries) return;
+      _retryCount++;
       await Future.delayed(widget.retryDuration);
       _tryLoad(_);
     }
@@ -178,17 +233,11 @@ class _MxcImageState extends State<MxcImage> {
     final cacheKeyChanged = widget.cacheKey != oldWidget.cacheKey;
     
     if (uriChanged || keyChanged || cacheKeyChanged) {
-      // 清除旧的缓存数据
-      if (oldWidget.cacheKey != null) {
-        MxcImageCacheManager.clearCache(oldWidget.cacheKey);
-      }
-      if (widget.cacheKey != null && cacheKeyChanged) {
-        MxcImageCacheManager.clearCache(widget.cacheKey);
-      }
-      
-      // 清除非缓存数据
+      // 注意：不再在此处清除缓存。缓存是多个组件共享的（例如同一尺寸的同
+      // 一头像），随意清除会导致其他组件被迫重新下载/解码，反而造成卡顿。
+      // 过期条目交由 LRU 自然逐出即可。
       _imageDataNoCache = null;
-      
+
       // 重新加载图片
       WidgetsBinding.instance.addPostFrameCallback(_tryLoad);
     }
@@ -219,6 +268,8 @@ class _MxcImageState extends State<MxcImage> {
               width: widget.width,
               height: widget.height,
               fit: widget.fit,
+              // 避免重建（例如滚动出屏再回屏）时图片闪烁
+              gaplessPlayback: true,
               filterQuality:
                   widget.isThumbnail ? FilterQuality.low : FilterQuality.medium,
               errorBuilder: (context, e, s) {

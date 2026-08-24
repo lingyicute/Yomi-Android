@@ -5,6 +5,7 @@ import 'package:matrix/matrix.dart';
 import 'package:yomi/l10n/l10n.dart';
 import 'package:yomi/utils/matrix_sdk_extensions/matrix_locals.dart';
 import '../../../config/app_config.dart';
+import 'package:yomi/utils/matrix_sdk_extensions/cached_futures.dart';
 
 class ReplyContent extends StatelessWidget {
   final Event replyEvent;
@@ -59,7 +60,7 @@ class ReplyContent extends StatelessWidget {
               children: <Widget>[
                 FutureBuilder<User?>(
                   initialData: displayEvent.senderFromMemoryOrFallback,
-                  future: displayEvent.fetchSenderUser(),
+                  future: fetchSenderUserCached(displayEvent),
                   builder: (context, snapshot) {
                     return Text(
                       '${snapshot.data?.calcDisplayname() ?? displayEvent.senderFromMemoryOrFallback.calcDisplayname()}:',

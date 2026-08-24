@@ -172,10 +172,17 @@ class ChatView extends StatelessWidget {
                     : LyiThemes.isColumnMode(context)
                         ? null
                         : StreamBuilder<Object>(
-                            stream:
-                                Matrix.of(context).client.onSync.stream.where(
-                                      (syncUpdate) => syncUpdate.hasRoomUpdate,
-                                    ),
+                            // Rate-limited: syncs can fire several times per
+                            // second during catch-up; counting unread rooms on
+                            // every single one just wastes frames.
+                            stream: Matrix.of(context)
+                                .client
+                                .onSync
+                                .stream
+                                .where(
+                                  (syncUpdate) => syncUpdate.hasRoomUpdate,
+                                )
+                                .rateLimit(const Duration(seconds: 1)),
                             builder: (context, _) => UnreadRoomsBadge(
                               filter: (r) => r.id != controller.roomId,
                               badgePosition:
@@ -241,21 +248,25 @@ class ChatView extends StatelessWidget {
                 child: Stack(
                   children: <Widget>[
                     if (accountConfig.wallpaperUrl != null)
-                      Opacity(
-                        opacity: accountConfig.wallpaperOpacity ?? 0.5,
-                        child: ImageFiltered(
-                          imageFilter: ui.ImageFilter.blur(
-                            sigmaX: accountConfig.wallpaperBlur ?? 0.0,
-                            sigmaY: accountConfig.wallpaperBlur ?? 0.0,
-                          ),
-                          child: MxcImage(
-                            cacheKey: accountConfig.wallpaperUrl.toString(),
-                            uri: accountConfig.wallpaperUrl,
-                            fit: BoxFit.cover,
-                            height: MediaQuery.of(context).size.height,
-                            width: MediaQuery.of(context).size.width,
-                            isThumbnail: false,
-                            placeholder: (_) => Container(),
+                      // RepaintBoundary 将模糊滤镜的光栅化与滚动的消息列表
+                      // 隔离开来，避免每次滚动/消息更新都重新光栅化全屏模糊层。
+                      RepaintBoundary(
+                        child: Opacity(
+                          opacity: accountConfig.wallpaperOpacity ?? 0.5,
+                          child: ImageFiltered(
+                            imageFilter: ui.ImageFilter.blur(
+                              sigmaX: accountConfig.wallpaperBlur ?? 0.0,
+                              sigmaY: accountConfig.wallpaperBlur ?? 0.0,
+                            ),
+                            child: MxcImage(
+                              cacheKey: accountConfig.wallpaperUrl.toString(),
+                              uri: accountConfig.wallpaperUrl,
+                              fit: BoxFit.cover,
+                              height: MediaQuery.sizeOf(context).height,
+                              width: MediaQuery.sizeOf(context).width,
+                              isThumbnail: false,
+                              placeholder: (_) => Container(),
+                            ),
                           ),
                         ),
                       ),

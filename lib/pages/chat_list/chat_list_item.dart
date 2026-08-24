@@ -4,6 +4,7 @@ import 'package:matrix/matrix.dart';
 
 import 'package:yomi/config/app_config.dart';
 import 'package:yomi/l10n/l10n.dart';
+import 'package:yomi/utils/matrix_sdk_extensions/cached_futures.dart';
 import 'package:yomi/utils/matrix_sdk_extensions/matrix_locals.dart';
 import 'package:yomi/utils/room_status_extension.dart';
 import 'package:yomi/widgets/adaptive_dialogs/show_ok_cancel_alert_dialog.dart';
@@ -103,7 +104,9 @@ class ChatListItem extends StatelessWidget {
         clipBehavior: Clip.hardEdge,
         color: backgroundColor,
         child: FutureBuilder(
-          future: room.loadHeroUsers(),
+          // Memoized: a fresh future on every rebuild would restart the
+          // lookup (and possibly a network request) at every sync tick.
+          future: loadHeroUsersCached(room),
           builder: (context, snapshot) => HoverBuilder(
             builder: (context, listTileHovered) => ListTile(
               visualDensity: const VisualDensity(vertical: -0.5),

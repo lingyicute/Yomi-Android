@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:matrix/matrix.dart';
 
 import 'package:yomi/l10n/l10n.dart';
+import 'package:yomi/utils/matrix_sdk_extensions/cached_futures.dart';
 import '../../widgets/matrix.dart';
 
 class EncryptionButton extends StatelessWidget {
@@ -19,9 +20,13 @@ class EncryptionButton extends StatelessWidget {
           .stream
           .where((s) => s.deviceLists != null),
       builder: (context, snapshot) {
+        // The device list changed: recompute the health state next time.
+        invalidateEncryptionHealthCache(room);
         return FutureBuilder<EncryptionHealthState>(
+          // Memoized: iterating all members' device keys is expensive and must
+          // not run on every rebuild of the app bar.
           future: room.encrypted
-              ? room.calcEncryptionHealthState()
+              ? calcEncryptionHealthStateCached(room)
               : Future.value(EncryptionHealthState.allVerified),
           builder: (BuildContext context, snapshot) => IconButton(
             tooltip: room.encrypted

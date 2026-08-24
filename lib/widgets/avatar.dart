@@ -77,7 +77,11 @@ class Avatar extends StatelessWidget {
                   )
                 : MxcImage(
                     client: client,
-                    key: ValueKey('${mxContent}_${key?.hashCode ?? DateTime.now().millisecondsSinceEpoch}'),
+                    // The key MUST be stable. Including a timestamp (as was
+                    // done before) destroyed and recreated the image widget —
+                    // and re-triggered the image download/decoding — on every
+                    // single rebuild, which is the top jank source of the app.
+                    key: ValueKey('avatar_${mxContent}_$size'),
                     cacheKey: '${mxContent}_$size',
                     uri: mxContent,
                     fit: BoxFit.cover,
