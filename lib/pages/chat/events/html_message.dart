@@ -14,7 +14,7 @@ import 'package:yomi/widgets/future_loading_dialog.dart';
 import 'package:yomi/widgets/mxc_image.dart';
 import '../../../utils/url_launcher.dart';
 
-class HtmlMessage extends StatelessWidget {
+class HtmlMessage extends StatefulWidget {
   final String html;
   final Room room;
   final Color textColor;
@@ -39,6 +39,58 @@ class HtmlMessage extends StatelessWidget {
     this.limitHeight = true,
     this.textStyle,
   });
+
+  @override
+  State<HtmlMessage> createState() => _HtmlMessageState();
+}
+
+class _HtmlMessageState extends State<HtmlMessage> {
+  /// The rendered [InlineSpan] tree for the current inputs.
+  ///
+  /// Rendering HTML into spans is expensive: it walks the DOM, runs the
+  /// linkify regex over every text node and constructs widgets for pills,
+  /// images, code blocks etc. The *timeline* rebuilds every visible message
+  /// on every event update, so doing this per build made text-heavy chats
+  /// stutter badly (~30 messages x 1-3 ms of span construction per update).
+  ///
+  /// We cache the finished span tree on the State and only re-render when one
+  /// of the inputs that the spans embed actually changes. All context-bound
+  /// callbacks in the tree reference [context] of this State, so the cache is
+  /// automatically discarded (and rebuilt with a fresh context) when the
+  /// message is scrolled out of view and back in.
+  InlineSpan? _cachedSpan;
+  String? _cachedHtml;
+  double? _cachedFontSize;
+  Color? _cachedTextColor;
+  TextStyle? _cachedLinkStyle;
+  String? _cachedCheckboxFingerprint;
+
+  static String _checkboxFingerprint(Set<Event>? events) {
+    if (events == null || events.isEmpty) return '';
+    // The aggregated-events set is mutated in place by the SDK, so we cannot
+    // rely on its identity. The ids change whenever a checkbox reaction is
+    // added or redacted.
+    final ids = events.map((e) => e.eventId).toList()..sort();
+    return ids.join(',');
+  }
+
+  void _updateCache(HtmlMessage w) {
+    if (_cachedSpan != null &&
+        w.html == _cachedHtml &&
+        w.fontSize == _cachedFontSize &&
+        w.textColor == _cachedTextColor &&
+        w.linkStyle == _cachedLinkStyle &&
+        _checkboxFingerprint(w.checkboxCheckedEvents) ==
+            _cachedCheckboxFingerprint) {
+      return;
+    }
+    _cachedSpan = _renderHtml(_parseCached(w.html), context);
+    _cachedHtml = w.html;
+    _cachedFontSize = w.fontSize;
+    _cachedTextColor = w.textColor;
+    _cachedLinkStyle = w.linkStyle;
+    _cachedCheckboxFingerprint = _checkboxFingerprint(w.checkboxCheckedEvents);
+  }
 
   /// LRU cache for parsed HTML documents.
   ///
@@ -179,8 +231,8 @@ class HtmlMessage extends StatelessWidget {
       return LinkifySpan(
         text: text,
         options: const LinkifyOptions(humanize: false),
-        linkStyle: linkStyle,
-        onOpen: onOpen,
+        linkStyle: widget.linkStyle,
+        onOpen: widget.onOpen,
       );
     }
 
@@ -198,7 +250,7 @@ class HtmlMessage extends StatelessWidget {
             ?.primaryIdentifier;
         if (matrixId != null) {
           if (matrixId.sigil == '@') {
-            final user = room.unsafeGetUserFromMemoryOrFallback(matrixId);
+            final user = widget.room.unsafeGetUserFromMemoryOrFallback(matrixId);
             return WidgetSpan(
               child: MatrixPill(
                 key: Key('user_pill_$matrixId'),
@@ -206,23 +258,23 @@ class HtmlMessage extends StatelessWidget {
                 avatar: user.avatarUrl,
                 uri: href,
                 outerContext: context,
-                fontSize: fontSize,
-                color: linkStyle.color,
+                fontSize: widget.fontSize,
+                color: widget.linkStyle.color,
               ),
             );
           }
           if (matrixId.sigil == '#' || matrixId.sigil == '!') {
             final room = matrixId.sigil == '!'
-                ? this.room.client.getRoomById(matrixId)
-                : this.room.client.getRoomByAlias(matrixId);
+                ? widget.room.client.getRoomById(matrixId)
+                : widget.room.client.getRoomByAlias(matrixId);
             return WidgetSpan(
               child: MatrixPill(
                 name: room?.getLocalizedDisplayname() ?? matrixId,
                 avatar: room?.avatar,
                 uri: href,
                 outerContext: context,
-                fontSize: fontSize,
-                color: linkStyle.color,
+                fontSize: widget.fontSize,
+                color: widget.linkStyle.color,
               ),
             );
           }
@@ -240,7 +292,7 @@ class HtmlMessage extends StatelessWidget {
                     context,
                     depth: depth,
                   ),
-                  style: linkStyle,
+                  style: widget.linkStyle,
                 ),
                 style: const TextStyle(height: 1.25),
               ),
@@ -251,7 +303,7 @@ class HtmlMessage extends StatelessWidget {
         if (!{'ol', 'ul'}.contains(node.parent?.localName)) {
           continue block;
         }
-        final eventId = this.eventId;
+        final eventId = widget.eventId;
 
         final isCheckbox = node.className == 'task-list-item';
         final checkboxIndex = isCheckbox
@@ -262,7 +314,7 @@ class HtmlMessage extends StatelessWidget {
             : null;
         final checkedByReaction = !isCheckbox
             ? null
-            : checkboxCheckedEvents?.firstWhereOrNull(
+            : widget.checkboxCheckedEvents?.firstWhereOrNull(
                 (event) => event.checkedCheckboxId == checkboxIndex,
               );
         final staticallyChecked = !isCheckbox
@@ -271,7 +323,7 @@ class HtmlMessage extends StatelessWidget {
 
         return WidgetSpan(
           child: Padding(
-            padding: EdgeInsets.only(left: fontSize),
+            padding: EdgeInsets.only(left: widget.fontSize),
             child: Text.rich(
               TextSpan(
                 children: [
@@ -287,29 +339,29 @@ class HtmlMessage extends StatelessWidget {
                       child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 8.0),
                         child: SizedBox.square(
-                          dimension: fontSize,
+                          dimension: widget.fontSize,
                           child: Checkbox.adaptive(
-                            checkColor: textColor,
-                            side: BorderSide(color: textColor),
-                            activeColor: textColor.withAlpha(64),
+                            checkColor: widget.textColor,
+                            side: BorderSide(color: widget.textColor),
+                            activeColor: widget.textColor.withAlpha(64),
                             visualDensity: VisualDensity.compact,
                             value:
                                 staticallyChecked || checkedByReaction != null,
                             onChanged: eventId == null ||
                                     checkboxIndex == null ||
                                     staticallyChecked ||
-                                    !room.canSendDefaultMessages ||
+                                    !widget.room.canSendDefaultMessages ||
                                     (checkedByReaction != null &&
                                         checkedByReaction.senderId !=
-                                            room.client.userID)
+                                            widget.room.client.userID)
                                 ? null
                                 : (_) => showFutureLoadingDialog(
                                       context: context,
                                       future: () => checkedByReaction != null
-                                          ? room.redactEvent(
+                                          ? widget.room.redactEvent(
                                               checkedByReaction.eventId,
                                             )
-                                          : room.checkCheckbox(
+                                          : widget.room.checkCheckbox(
                                               eventId,
                                               checkboxIndex,
                                             ),
@@ -324,7 +376,7 @@ class HtmlMessage extends StatelessWidget {
                     depth: depth,
                   ),
                 ],
-                style: TextStyle(fontSize: fontSize, color: textColor),
+                style: TextStyle(fontSize: widget.fontSize, color: widget.textColor),
               ),
             ),
           ),
@@ -336,7 +388,7 @@ class HtmlMessage extends StatelessWidget {
             decoration: BoxDecoration(
               border: Border(
                 left: BorderSide(
-                  color: textColor,
+                  color: widget.textColor,
                   width: 5,
                 ),
               ),
@@ -351,8 +403,8 @@ class HtmlMessage extends StatelessWidget {
               ),
               style: TextStyle(
                 fontStyle: FontStyle.italic,
-                fontSize: fontSize,
-                color: textColor,
+                fontSize: widget.fontSize,
+                color: widget.textColor,
               ),
             ),
           ),
@@ -381,7 +433,7 @@ class HtmlMessage extends StatelessWidget {
                   vertical: isInline ? 0 : 8,
                 ),
                 textStyle: TextStyle(
-                  fontSize: fontSize,
+                  fontSize: widget.fontSize,
                   fontFamily: 'RobotoMono',
                 ),
               ),
@@ -429,8 +481,8 @@ class HtmlMessage extends StatelessWidget {
                     WidgetSpan(
                       child: Icon(
                         obscure ? Icons.arrow_right : Icons.arrow_drop_down,
-                        size: fontSize * 1.2,
-                        color: textColor,
+                        size: widget.fontSize * 1.2,
+                        color: widget.textColor,
                       ),
                     ),
                     if (obscure)
@@ -452,8 +504,8 @@ class HtmlMessage extends StatelessWidget {
                   ],
                 ),
                 style: TextStyle(
-                  fontSize: fontSize,
-                  color: textColor,
+                  fontSize: widget.fontSize,
+                  color: widget.textColor,
                 ),
               ),
             ),
@@ -480,9 +532,9 @@ class HtmlMessage extends StatelessWidget {
                   ),
                 ),
                 style: TextStyle(
-                  fontSize: fontSize,
-                  color: textColor,
-                  backgroundColor: obscure ? textColor : null,
+                  fontSize: widget.fontSize,
+                  color: widget.textColor,
+                  backgroundColor: obscure ? widget.textColor : null,
                 ),
               ),
             ),
@@ -493,10 +545,10 @@ class HtmlMessage extends StatelessWidget {
         return TextSpan(
           style: switch (node.localName) {
             'body' => TextStyle(
-                fontSize: fontSize,
-                color: textColor,
+                fontSize: widget.fontSize,
+                color: widget.textColor,
               ),
-            'a' => linkStyle,
+            'a' => widget.linkStyle,
             'strong' => const TextStyle(fontWeight: FontWeight.bold),
             'em' || 'i' => const TextStyle(fontStyle: FontStyle.italic),
             'del' ||
@@ -504,16 +556,16 @@ class HtmlMessage extends StatelessWidget {
             'strikethrough' =>
               const TextStyle(decoration: TextDecoration.lineThrough),
             'u' => const TextStyle(decoration: TextDecoration.underline),
-            'h1' => TextStyle(fontSize: fontSize * 1.6, height: 2),
-            'h2' => TextStyle(fontSize: fontSize * 1.5, height: 2),
-            'h3' => TextStyle(fontSize: fontSize * 1.4, height: 2),
-            'h4' => TextStyle(fontSize: fontSize * 1.3, height: 1.75),
-            'h5' => TextStyle(fontSize: fontSize * 1.2, height: 1.75),
-            'h6' => TextStyle(fontSize: fontSize * 1.1, height: 1.5),
+            'h1' => TextStyle(fontSize: widget.fontSize * 1.6, height: 2),
+            'h2' => TextStyle(fontSize: widget.fontSize * 1.5, height: 2),
+            'h3' => TextStyle(fontSize: widget.fontSize * 1.4, height: 2),
+            'h4' => TextStyle(fontSize: widget.fontSize * 1.3, height: 1.75),
+            'h5' => TextStyle(fontSize: widget.fontSize * 1.2, height: 1.75),
+            'h6' => TextStyle(fontSize: widget.fontSize * 1.1, height: 1.5),
             'span' => TextStyle(
                 color: node.attributes['color']?.hexToColor ??
                     node.attributes['data-mx-color']?.hexToColor ??
-                    textColor,
+                    widget.textColor,
                 backgroundColor:
                     node.attributes['data-mx-bg-color']?.hexToColor,
               ),
@@ -533,14 +585,14 @@ class HtmlMessage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final element = _parseCached(html);
+    _updateCache(widget);
     return Text.rich(
-      _renderHtml(element, context),
-      style: textStyle ?? TextStyle(
-        fontSize: fontSize,
-        color: textColor,
+      _cachedSpan!,
+      style: widget.textStyle ?? TextStyle(
+        fontSize: widget.fontSize,
+        color: widget.textColor,
       ),
-      maxLines: limitHeight ? 64 : null,
+      maxLines: widget.limitHeight ? 64 : null,
       overflow: TextOverflow.fade,
     );
   }

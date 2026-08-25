@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import 'package:collection/collection.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:matrix/matrix.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -67,11 +66,10 @@ Future<void> startGui(List<Client> clients, SharedPreferences store) async {
     }
   }
 
-  // Preload first client
-  final firstClient = clients.firstOrNull;
-  await firstClient?.roomsLoading;
-  await firstClient?.accountDataLoading;
-
+  // Do not block the first frame on the full initial sync: the chat list and
+  // timeline already await `roomsLoading` / `accountDataLoading` themselves
+  // and render loading states until then. Previously cold starts on accounts
+  // with many rooms showed a blank screen for seconds.
   ErrorWidget.builder = (details) => YomiErrorWidget(details);
   runApp(YomiApp(clients: clients, pincode: pin, store: store));
 }

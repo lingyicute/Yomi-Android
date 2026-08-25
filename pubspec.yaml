@@ -65,7 +65,9 @@ dependencies:
   matrix:
     git:
       url: https://github.com/famedly/matrix-dart-sdk.git
-      ref: krille/add-markdown-checkboxes
+      # The old branch "krille/add-markdown-checkboxes" was deleted upstream;
+      # pin the exact commit that the lockfile resolved to instead.
+      ref: f3bb654ac2cda19bdd8a35fb46846018acd01a89
   mime: ^1.0.6
   native_imaging: ^0.2.0
   opus_caf_converter_dart: ^1.0.1

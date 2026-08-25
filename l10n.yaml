@@ -5,3 +5,4 @@ output-class: L10n
 preferred-supported-locales: ["zh"]
 use-deferred-loading: true
 nullable-getter: false
+synthetic-package: false
