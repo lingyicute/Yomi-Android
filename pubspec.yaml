@@ -64,7 +64,7 @@ dependencies:
   linkify: ^5.0.0
   matrix:
     git:
-      url: https://github.com/famedly/matrix-dart-sdk.git
+      url: https://github.com/lingyicute/matrix-dart-sdk.git
       # The old branch "krille/add-markdown-checkboxes" was deleted upstream;
       # pin the exact commit that the lockfile resolved to instead.
       ref: f3bb654ac2cda19bdd8a35fb46846018acd01a89
