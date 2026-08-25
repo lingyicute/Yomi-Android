@@ -131,6 +131,35 @@ Future<Event?> getEventByIdCached(Room room, String eventId) {
   return future;
 }
 
+/// Short-lived cache for [Event.receipts].
+///
+/// The SDK getter iterates over *all* receipts of the room and re-parses them
+/// from the account data on every access. The timeline rebuilds every visible
+/// message on each event update, so a room with a busy receipt stream used to
+/// pay O(receipts x own messages) per rebuild. A sub-second TTL keeps the UI
+/// fresh while collapsing the burst of reads inside one rebuild.
+class _ReceiptsCacheEntry {
+  final List<Receipt> receipts;
+  final DateTime at;
+
+  _ReceiptsCacheEntry(this.receipts, this.at);
+}
+
+final Expando<_ReceiptsCacheEntry> _receiptsCache = Expando('receipts');
+
+const Duration _receiptsCacheTtl = Duration(milliseconds: 1500);
+
+List<Receipt> receiptsCached(Event event) {
+  final now = DateTime.now();
+  final cached = _receiptsCache[event];
+  if (cached != null && now.difference(cached.at) < _receiptsCacheTtl) {
+    return cached.receipts;
+  }
+  final receipts = event.receipts;
+  _receiptsCache[event] = _ReceiptsCacheEntry(receipts, now);
+  return receipts;
+}
+
 final Expando<Future<EncryptionHealthState>> _encryptionHealthFutures =
     Expando('encryptionHealth');
 

@@ -1,5 +1,7 @@
 import 'dart:ui' as ui;
 
+import 'package:flutter/foundation.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -479,7 +481,9 @@ class Message extends StatelessWidget {
                                               bottom: -6,
                                               child: Builder(
                                                 builder: (context) {
-                                                  final receipts = event.receipts.where(
+                                                  // Cached with a short TTL: the uncached getter re-parses
+                                                  // the room's receipts for every own message on every rebuild.
+                                                  final receipts = receiptsCached(event).where(
                                                     (receipt) => receipt.user.id != event.senderId && receipt.user.id != event.room.client.userID
                                                   ).toList();
                                                   
@@ -602,7 +606,8 @@ class Message extends StatelessWidget {
       container = row;
     }
 
-    return Center(
+    return RepaintBoundary(
+      child: Center(
       child: Swipeable(
         key: ValueKey(event.eventId),
         background: const Padding(
@@ -627,6 +632,7 @@ class Message extends StatelessWidget {
           ),
           child: container,
         ),
+      ),
       ),
     );
   }
@@ -708,6 +714,9 @@ class BubblePainter extends CustomPainter {
     // 注册错误的依赖关系。
     _scrollable = null;
     _scrollableBox = null;
-    return oldDelegate.colors != colors;
+    // The caller creates a fresh List on every rebuild; identity comparison
+    // made every bubble repaint whenever the timeline rebuilt even though the
+    // colors never change.
+    return !listEquals(oldDelegate.colors, colors);
   }
 }

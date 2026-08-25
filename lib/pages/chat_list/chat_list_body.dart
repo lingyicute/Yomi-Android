@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -61,14 +63,14 @@ class ChatListViewBody extends StatelessWidget {
     final userSearchResult = controller.userSearchResult;
     const dummyChatCount = 4;
     final filter = controller.searchController.text.toLowerCase();
-    return StreamBuilder(
+    return _SyncAwareListView(
       key: ValueKey(
         client.userID.toString(),
       ),
       stream: client.onSync.stream
           .where((s) => s.hasRoomUpdate)
           .rateLimit(const Duration(seconds: 1)),
-      builder: (context, _) {
+      builder: (context) {
         final rooms = controller.filteredRooms;
 
         return SafeArea(
@@ -345,4 +347,75 @@ class _SearchItem extends StatelessWidget {
           ),
         ),
       );
+}
+
+/// Wraps the chat list in a sync-driven rebuild that is **paused while the
+/// page is hidden behind another route**.
+///
+/// On phones the chat list stays mounted below the chat page. Previously it
+/// re-rendered every second on every sync tick while the user was actually
+/// reading another room — wasted rebuilds of every list item (avatars,
+/// presence, displayname lookups, ...) that competed with the visible chat
+/// page for the UI thread. Updates resume as soon as the chat list is on
+/// screen again (the controller also refreshes on route changes).
+class _SyncAwareListView extends StatefulWidget {
+  final Stream<bool> stream;
+  final Widget Function(BuildContext) builder;
+
+  const _SyncAwareListView({
+    super.key,
+    required this.stream,
+    required this.builder,
+  });
+
+  @override
+  State<_SyncAwareListView> createState() => _SyncAwareListViewState();
+}
+
+class _SyncAwareListViewState extends State<_SyncAwareListView> {
+  StreamSubscription<bool>? _subscription;
+
+  @override
+  void initState() {
+    super.initState();
+    _subscription = widget.stream.listen((_) {
+      if (!mounted) return;
+      // On desktop/tablet layouts the chat list is always visible; on phone
+      // layouts skip rebuilds while an opaque route (e.g. an open chat)
+      // covers it.
+      if (!LyiThemes.isColumnMode(context) &&
+          ModalRoute.of(context)?.isCurrent == false) {
+        return;
+      }
+      setState(() {});
+    });
+  }
+
+  @override
+  void didUpdateWidget(_SyncAwareListView oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // The key includes the user id, so a client switch re-creates the state
+    // and re-subscribes with the new stream. This guard covers the remaining
+    // cases where the stream instance changes in place.
+    if (!identical(oldWidget.stream, widget.stream)) {
+      _subscription?.cancel();
+      _subscription = widget.stream.listen((_) {
+        if (!mounted) return;
+        if (!LyiThemes.isColumnMode(context) &&
+            ModalRoute.of(context)?.isCurrent == false) {
+          return;
+        }
+        setState(() {});
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _subscription?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => widget.builder(context);
 }

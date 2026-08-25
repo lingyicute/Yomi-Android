@@ -115,20 +115,16 @@ class ChatListController extends State<ChatList>
   // 添加强制刷新方法
   void forceRefresh() {
     if (!mounted) return;
-    
+
     // 检查客户端状态
     final client = Matrix.of(context).client;
     if (client.prevBatch != null) {
-      // 只有当同步已完成时才设置waitForFirstSync为true
+      // 只有当同步已完成时才设置waitForFirstSync为true。
+      // 注意：这里只触发一次 setState。此前每次刷新还会额外安排一个
+      // 300ms 的延迟 setState，而 forceRefresh 会在每次路由变化时被反复
+      // 调用，导致隐藏的聊天列表在被打开聊天页时仍然频繁重建。
       setState(() {
         waitForFirstSync = true;
-      });
-      
-      // 增加一个更可靠的延迟setState，确保UI完全更新
-      Future.delayed(const Duration(milliseconds: 300), () {
-        if (mounted) {
-          setState(() {});
-        }
       });
     } else {
       // 如果同步尚未完成，尝试启动同步
@@ -564,7 +560,8 @@ class ChatListController extends State<ChatList>
     if (mounted) {
       final route = ModalRoute.of(context);
       if (route?.isCurrent == true) {
-        // 延迟刷新以确保页面已完全加载
+        // 延迟刷新以确保页面已完全加载。延迟期间如果有多次路由变化，
+        // 重复的调用会在两次 setState 间被合并，因此这里不另做去重。
         Future.delayed(const Duration(milliseconds: 100), forceRefresh);
       }
     }
@@ -892,17 +889,10 @@ class ChatListController extends State<ChatList>
       }
       
       if (!mounted) return;
-      
+
       // 使用更安全的方式更新状态
       setState(() {
         waitForFirstSync = true;
-      });
-
-      // 添加更可靠的强制刷新机制
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) {
-          setState(() {});  // 额外的setState触发UI刷新
-        }
       });
     } catch (e, s) {
       // 处理同步过程中的错误

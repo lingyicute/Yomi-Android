@@ -12,6 +12,10 @@ extension RoomStatusExtension on Room {
     typingUsers.removeWhere((User u) => u.id == client.userID);
 
     if (AppConfig.hideTypingUsernames) {
+      // `typingUsers` can be empty; `.first` used to throw a StateError.
+      if (typingUsers.isEmpty) {
+        return '';
+      }
       typingText = L10n.of(context).isTyping;
       if (typingUsers.first.id != directChatMatrixID) {
         typingText = L10n.of(context).numUsersTyping(typingUsers.length);
