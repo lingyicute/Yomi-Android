@@ -1162,7 +1162,7 @@ packages:
       path: "."
       ref: "krille/add-markdown-checkboxes"
       resolved-ref: f3bb654ac2cda19bdd8a35fb46846018acd01a89
-      url: "https://github.com/famedly/matrix-dart-sdk.git"
+      url: "https://github.com/lingyicute/matrix-dart-sdk.git"
     source: git
     version: "0.40.0"
   meta:
