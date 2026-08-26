@@ -3,6 +3,9 @@ name: Ci
 on:
   push:
 
+permissions:   
+  contents: write
+
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
@@ -30,6 +33,22 @@ jobs:
       - run: flutter pub get
 
       - run: flutter build apk --release
+
+      - name: Delete old nightly release 
+        run: gh release delete nightly --yes --cleanup-tag || true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish nightly release 
+        run: |
+          gh release create nightly \
+            build/app/outputs/flutter-apk/app-release.apk \
+            --title "Nightly Build" \
+            --notes "auto build · ${GITHUB_SHA:0:7} · ${GITHUB_REF_NAME}" \
+            --prerelease \
+            --target "$GITHUB_SHA"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload APK as artifact
         uses: actions/upload-artifact@v4
