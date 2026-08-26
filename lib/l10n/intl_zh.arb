@@ -3376,7 +3376,7 @@
     "@roomNotificationSettings": {},
     "backgroundSyncKeepAlive": "后台消息同步",
     "@backgroundSyncKeepAlive": {},
-    "backgroundSyncKeepAliveDescription": "不依赖 Google 服务或 ntfy，有新消息时服务器会立即唤醒 Yomi；否则每 20 秒检查一次。国产魔改 Android 请关闭电池优化，并允许 Yomi 的自启动和后台运行权限，否则系统可能会在后台杀死 Yomi。",
+    "backgroundSyncKeepAliveDescription": "不依赖 Google 服务或 ntfy，但同样省电且优雅的推送机制。有新消息时服务器会立即唤醒 Yomi；否则每 20 秒检查一次。国产魔改 Android 请关闭电池优化，并允许 Yomi 的自启动和后台运行权限，否则系统可能会在后台杀死 Yomi。",
     "@backgroundSyncKeepAliveDescription": {},
     "disableBatteryOptimization": "关闭电池优化",
     "@disableBatteryOptimization": {},
@@ -3384,6 +3384,6 @@
     "@disableBatteryOptimizationDescription": {},
     "openAutostartSettings": "打开自启动设置",
     "@openAutostartSettings": {},
-    "openAutostartSettingsDescription": "在小米、华为、OPPO、vivo、一加等手机上，需要允许 Yomi 自启动和后台运行。",
+    "openAutostartSettingsDescription": "在小米、华为、OPPO、vivo、一加等手机上，需要允许 Yomi 的自启动和后台运行权限。",
     "@openAutostartSettingsDescription": {}
 }
