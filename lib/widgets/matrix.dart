@@ -341,30 +341,7 @@ class MatrixState extends State<Matrix> with WidgetsBindingObserver {
     }
 
     if (PlatformInfos.isMobile) {
-      backgroundPush = BackgroundPush(
-        this,
-        onFcmError: (errorMsg, {Uri? link}) async {
-          final result = await showOkCancelAlertDialog(
-            context: YomiApp
-                    .router.routerDelegate.navigatorKey.currentContext ??
-                context,
-            title: L10n.of(context).pushNotificationsNotAvailable,
-            message: errorMsg,
-            okLabel:
-                link == null ? L10n.of(context).ok : L10n.of(context).learnMore,
-            cancelLabel: L10n.of(context).doNotShowAgain,
-          );
-          if (result == OkCancelResult.ok && link != null) {
-            launchUrlString(
-              link.toString(),
-              mode: LaunchMode.externalApplication,
-            );
-          }
-          if (result == OkCancelResult.cancel) {
-            await store.setBool(SettingKeys.showNoGoogle, true);
-          }
-        },
-      );
+      backgroundPush = BackgroundPush(this);
     }
 
     createVoipPlugin();

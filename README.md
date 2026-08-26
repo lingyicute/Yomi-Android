@@ -39,6 +39,12 @@
 ... and much more.
 
 
+## Android background delivery
+
+Android builds do not use Firebase Cloud Messaging. After a user signs in, Yomi starts a visible `dataSync` foreground service and performs an authenticated Matrix sync every 20 seconds. This is the Android-supported way to keep delivery working on devices without Google Play services; the persistent “Background connection is active” notification is expected.
+
+For reliable delivery on aggressive Android variants, users should allow notifications and exclude Yomi from the vendor's battery optimisation settings. The service is restored after device reboot and stops itself when no account is logged in.
+
 # Installation
 
 Please visit the website for installation instructions:
