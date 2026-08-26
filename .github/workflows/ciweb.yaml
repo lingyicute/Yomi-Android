@@ -23,7 +23,7 @@ jobs:
       - name: ls
         run: tree -a build/
       - name: Create archive
-        run: tar -czf yomi-web.tar.gz build/
+        run: tar -czf yomi-web.tar.gz build/web/
       - name: Upload Web Build
         uses: actions/upload-artifact@v4
         with:
