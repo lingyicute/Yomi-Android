@@ -33,6 +33,7 @@ import 'package:yomi/l10n/l10n.dart';
 import 'package:yomi/utils/background_sync_host.dart';
 import 'package:yomi/utils/push_helper.dart';
 import 'package:yomi/widgets/lyi_chat_app.dart';
+import '../config/app_config.dart';
 import '../config/setting_keys.dart';
 import '../widgets/matrix.dart';
 import 'platform_infos.dart';
