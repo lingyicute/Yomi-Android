@@ -3112,7 +3112,7 @@
             }
         }
     },
-    "oneOfYourDevicesIsNotVerified": "发现一个未经验证的新设备，请检查～",
+    "oneOfYourDevicesIsNotVerified": "有新的登录活动，是你吗？",
     "@oneOfYourDevicesIsNotVerified": {},
     "noticeChatBackupDeviceVerification": "注意：当你连接某个设备到聊天备份时，这个设备将被自动验证。",
     "@noticeChatBackupDeviceVerification": {},
