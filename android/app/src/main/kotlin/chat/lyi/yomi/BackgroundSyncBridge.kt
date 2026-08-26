@@ -113,9 +113,9 @@ object BackgroundSyncBridge : MethodChannel.MethodCallHandler {
             component("com.letv.android.letvsafe", "com.letv.android.letvsafe.AutobootManageActivity"),
         )
 
-        for (component in candidates) {
+        for (target in candidates) {
             val intent = Intent().apply {
-                component = component
+                setComponent(target)
                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             }
             if (intent.resolveActivity(context.packageManager) != null) {
@@ -123,7 +123,7 @@ object BackgroundSyncBridge : MethodChannel.MethodCallHandler {
                     context.startActivity(intent)
                     return true
                 } catch (e: Exception) {
-                    Log.w(TAG, "Autostart activity $component failed", e)
+                    Log.w(TAG, "Autostart activity $target failed", e)
                 }
             }
         }
