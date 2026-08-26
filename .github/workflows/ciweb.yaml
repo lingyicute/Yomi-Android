@@ -19,9 +19,11 @@ jobs:
       - name: Prepare web
         run: ./scripts/prepare-web.sh
       - name: Build Release Web
-        run: flutter build web --dart-define=FLUTTER_WEB_CANVASKIT_URL=canvaskit/ --release --source-maps --base-href "/web/"
+        run: flutter build web --dart-define=FLUTTER_WEB_CANVASKIT_URL=canvaskit/ --release --source-maps --base-href "/"
+      - name: ls
+        run: tree -a build/
       - name: Create archive
-        run: tar -czf yomi-web.tar.gz build/web/
+        run: tar -czf yomi-web.tar.gz build/
       - name: Upload Web Build
         uses: actions/upload-artifact@v4
         with:
