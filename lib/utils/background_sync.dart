@@ -35,7 +35,7 @@ class BackgroundSync {
     if (!AppSettings.enableBackgroundSync.getItem(store)) return;
 
     FlutterForegroundTask.init(
-      androidNotificationOptions: const AndroidNotificationOptions(
+      androidNotificationOptions: AndroidNotificationOptions(
         channelId: 'yomi_background_sync',
         channelName: 'Yomi background connection',
         channelDescription: 'Keeps Yomi connected for new messages',
