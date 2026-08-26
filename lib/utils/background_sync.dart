@@ -39,7 +39,6 @@ class BackgroundSync {
         channelId: 'yomi_background_sync',
         channelName: 'Yomi background connection',
         channelDescription: 'Keeps Yomi connected for new messages',
-        onlyAlertOnce: true,
       ),
       iosNotificationOptions: const IOSNotificationOptions(),
       foregroundTaskOptions: ForegroundTaskOptions(
