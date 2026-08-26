@@ -23,7 +23,11 @@ class CustomHttpClient {
       }
     }
 
-    return HttpClient(context: context);
+    return HttpClient(context: context)
+      // Long-poll `/sync` holds the TCP connection for up to 20s. The default
+      // 15s idle timeout would otherwise recycle the socket between polls.
+      ..idleTimeout = const Duration(seconds: 90)
+      ..connectionTimeout = const Duration(seconds: 20);
   }
 
   static http.Client createHTTPClient() => IOClient(customHttpClient(ISRG_X1));

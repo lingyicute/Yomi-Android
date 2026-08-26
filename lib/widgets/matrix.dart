@@ -15,7 +15,6 @@ import 'package:matrix/matrix.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:universal_html/html.dart' as html;
-import 'package:url_launcher/url_launcher_string.dart';
 
 import 'package:yomi/l10n/l10n.dart';
 import 'package:yomi/utils/client_manager.dart';
@@ -341,30 +340,10 @@ class MatrixState extends State<Matrix> with WidgetsBindingObserver {
     }
 
     if (PlatformInfos.isMobile) {
-      backgroundPush = BackgroundPush(
-        this,
-        onFcmError: (errorMsg, {Uri? link}) async {
-          final result = await showOkCancelAlertDialog(
-            context: YomiApp
-                    .router.routerDelegate.navigatorKey.currentContext ??
-                context,
-            title: L10n.of(context).pushNotificationsNotAvailable,
-            message: errorMsg,
-            okLabel:
-                link == null ? L10n.of(context).ok : L10n.of(context).learnMore,
-            cancelLabel: L10n.of(context).doNotShowAgain,
-          );
-          if (result == OkCancelResult.ok && link != null) {
-            launchUrlString(
-              link.toString(),
-              mode: LaunchMode.externalApplication,
-            );
-          }
-          if (result == OkCancelResult.cancel) {
-            await store.setBool(SettingKeys.showNoGoogle, true);
-          }
-        },
-      );
+      backgroundPush = BackgroundPush(this);
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        backgroundPush?.setupPush();
+      });
     }
 
     createVoipPlugin();
@@ -381,14 +360,20 @@ class MatrixState extends State<Matrix> with WidgetsBindingObserver {
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     Logs().v('AppLifecycleState = $state');
-    final foreground = state != AppLifecycleState.inactive &&
-        state != AppLifecycleState.paused;
-    client.syncPresence =
-        state == AppLifecycleState.resumed ? null : PresenceType.unavailable;
-    if (PlatformInfos.isMobile) {
-      client.backgroundSync = foreground;
-      client.requestHistoryOnLimitedTimeline = !foreground;
-      Logs().v('Set background sync to', foreground);
+    final foreground = state == AppLifecycleState.resumed;
+    // Keep /sync running while the app is backgrounded. Local notifications
+    // are produced from Client.onNotification; we only flip presence so the
+    // user is not shown as "online" 24/7.
+    for (final c in widget.clients) {
+      if (!c.isLogged()) continue;
+      c.syncPresence =
+          foreground ? null : PresenceType.unavailable;
+      if (PlatformInfos.isMobile) {
+        c.requestHistoryOnLimitedTimeline = !foreground;
+      }
+    }
+    if (foreground) {
+      backgroundPush?.onResumed();
     }
   }
 

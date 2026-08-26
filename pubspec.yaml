@@ -24,7 +24,6 @@ dependencies:
   dynamic_color: ^1.7.0
   emoji_picker_flutter: ^3.1.0
   emojis: ^0.9.9
-  #fcm_shared_isolate: ^0.2.0
   file_picker: ^8.1.2
   file_selector: ^1.0.3
   flutter:
@@ -91,8 +90,6 @@ dependencies:
   sqlcipher_flutter_libs: ^0.6.1
   swipe_to_action: ^0.3.0
   tor_detector_web: ^1.1.0
-  unifiedpush: ^5.0.1
-  unifiedpush_ui: ^0.1.0
   universal_html: ^2.2.4
   url_launcher: ^6.2.5
   video_compress: ^3.1.4

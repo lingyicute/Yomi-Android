@@ -18,6 +18,11 @@
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.BIND_TELECOM_CONNECTION_SERVICE"/>
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
 
     <uses-permission android:name="android.permission.READ_PHONE_STATE"
                      android:maxSdkVersion="29" />
@@ -114,13 +119,6 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".FcmPushService"
-          android:exported="false">
-          <intent-filter>
-            <action android:name="com.google.firebase.MESSAGING_EVENT"/>
-          </intent-filter>
-        </service>
-
         <service android:name="com.pravera.flutter_foreground_task.service.ForegroundService"
              android:foregroundServiceType="camera|microphone|mediaProjection">
         </service>
@@ -135,19 +133,31 @@
           </intent-filter>
         </service>
 
-        <receiver android:name="org.unifiedpush.flutter.connector.UnifiedPushReceiver"
-            tools:replace="android:enabled"
-            android:enabled="false">
-        </receiver>
+        <!-- Persistent Matrix /sync without Firebase or ntfy. -->
+        <service
+            android:name=".BackgroundSyncService"
+            android:enabled="true"
+            android:exported="false"
+            android:stopWithTask="false"
+            android:foregroundServiceType="dataSync" />
 
-        <receiver android:exported="false"  android:enabled="true"  android:name=".UnifiedPushReceiver">
+        <receiver
+            android:name=".BootReceiver"
+            android:enabled="true"
+            android:exported="true">
             <intent-filter>
-                <action android:name="org.unifiedpush.flutter.connector.MESSAGE"/>
-                <action android:name="org.unifiedpush.flutter.connector.UNREGISTERED"/>
-                <action android:name="org.unifiedpush.flutter.connector.NEW_ENDPOINT"/>
-                <action android:name="org.unifiedpush.flutter.connector.REGISTRATION_FAILED" />
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.LOCKED_BOOT_COMPLETED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+                <action android:name="com.htc.intent.action.QUICKBOOT_POWERON" />
             </intent-filter>
         </receiver>
+
+        <receiver
+            android:name=".WatchdogReceiver"
+            android:enabled="true"
+            android:exported="false" />
 
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
