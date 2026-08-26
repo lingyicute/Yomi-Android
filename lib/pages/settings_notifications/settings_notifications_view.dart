@@ -5,6 +5,7 @@ import 'package:matrix/matrix.dart';
 import 'package:yomi/config/themes.dart';
 import 'package:yomi/l10n/l10n.dart';
 import 'package:yomi/pages/settings_notifications/push_rule_extensions.dart';
+import 'package:yomi/utils/platform_infos.dart';
 import 'package:yomi/widgets/layouts/max_width_body.dart';
 import '../../utils/localized_exception_extension.dart';
 import '../../widgets/matrix.dart';
@@ -48,6 +49,48 @@ class SettingsNotificationsView extends StatelessWidget {
             return SelectionArea(
               child: Column(
                 children: [
+                  if (PlatformInfos.isAndroid) ...[
+                    ListTile(
+                      title: Text(
+                        L10n.of(context).backgroundSyncKeepAlive,
+                        style: TextStyle(
+                          color: theme.colorScheme.secondary,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      subtitle: Text(
+                        L10n.of(context).backgroundSyncKeepAliveDescription,
+                      ),
+                    ),
+                    ListTile(
+                      leading: Icon(
+                        controller.ignoringBatteryOptimizations == true
+                            ? Icons.battery_charging_full
+                            : Icons.battery_alert_outlined,
+                      ),
+                      title: Text(L10n.of(context).disableBatteryOptimization),
+                      subtitle: Text(
+                        L10n.of(context).disableBatteryOptimizationDescription,
+                      ),
+                      trailing: controller.ignoringBatteryOptimizations == true
+                          ? Icon(
+                              Icons.check_circle,
+                              color: theme.colorScheme.primary,
+                            )
+                          : const Icon(Icons.chevron_right),
+                      onTap: controller.openBatteryOptimization,
+                    ),
+                    ListTile(
+                      leading: const Icon(Icons.rocket_launch_outlined),
+                      title: Text(L10n.of(context).openAutostartSettings),
+                      subtitle: Text(
+                        L10n.of(context).openAutostartSettingsDescription,
+                      ),
+                      trailing: const Icon(Icons.chevron_right),
+                      onTap: controller.openAutostartSettings,
+                    ),
+                    Divider(color: theme.dividerColor),
+                  ],
                   if (pushRules != null)
                     for (final category in pushCategories) ...[
                       ListTile(

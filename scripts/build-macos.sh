@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-git apply ./scripts/enable-android-google-services.patch
 YOMI_ORIG_GROUP="im.yomi"
 YOMI_ORIG_TEAM="4NXF6Z997G"
 #YOMI_NEW_GROUP="com.example.yomi"

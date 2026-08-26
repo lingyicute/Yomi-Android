@@ -7,7 +7,9 @@ import 'package:matrix/matrix.dart';
 import 'package:yomi/config/app_config.dart';
 import 'package:yomi/l10n/l10n.dart';
 import 'package:yomi/pages/settings_notifications/push_rule_extensions.dart';
+import 'package:yomi/utils/background_sync_host.dart';
 import 'package:yomi/utils/localized_exception_extension.dart';
+import 'package:yomi/utils/platform_infos.dart';
 import 'package:yomi/widgets/adaptive_dialogs/adaptive_dialog_action.dart';
 import 'package:yomi/widgets/adaptive_dialogs/show_modal_action_popup.dart';
 import 'package:yomi/widgets/adaptive_dialogs/show_ok_cancel_alert_dialog.dart';
@@ -25,6 +27,31 @@ class SettingsNotifications extends StatefulWidget {
 
 class SettingsNotificationsController extends State<SettingsNotifications> {
   bool isLoading = false;
+  bool? ignoringBatteryOptimizations;
+
+  @override
+  void initState() {
+    super.initState();
+    _refreshBatteryState();
+  }
+
+  Future<void> _refreshBatteryState() async {
+    if (!PlatformInfos.isAndroid) return;
+    final value = await BackgroundSyncHost.isIgnoringBatteryOptimizations();
+    if (!mounted) return;
+    setState(() {
+      ignoringBatteryOptimizations = value;
+    });
+  }
+
+  Future<void> openBatteryOptimization() async {
+    await BackgroundSyncHost.requestIgnoreBatteryOptimizations();
+    await Future<void>.delayed(const Duration(milliseconds: 400));
+    await _refreshBatteryState();
+  }
+
+  Future<void> openAutostartSettings() =>
+      BackgroundSyncHost.openAutostartSettings();
 
   void onPusherTap(Pusher pusher) async {
     final delete = await showModalActionPopup<bool>(

@@ -77,8 +77,6 @@ jobs:
         with:
           flutter-version: ${{ env.FLUTTER_VERSION }}
           cache: true
-      - name: Apply Google Services Patch
-        run: git apply ./scripts/enable-android-google-services.patch
       - run: flutter pub get
       - name: Prepare Android Release Build
         env:
@@ -144,8 +142,6 @@ jobs:
           ruby-version: '3.3'
       - name: Install Fastlane
         run: gem install fastlane -NV
-      - name: Apply Google Services Patch
-        run: git apply ./scripts/enable-android-google-services.patch
       - run: flutter pub get
       - name: Prepare Android Release Build
         env:

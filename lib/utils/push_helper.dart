@@ -115,10 +115,37 @@ Future<void> _tryPushHelper(
     return;
   }
   Logs().v('Push helper got notification event of type ${event.type}.');
+  await showEventNotification(
+    event,
+    client: client,
+    l10n: l10n,
+    activeRoomId: activeRoomId,
+    flutterLocalNotificationsPlugin: flutterLocalNotificationsPlugin,
+    unreadCount: notification.counts?.unread,
+  );
+}
+
+/// Display a local notification for a decrypted [Event].
+///
+/// Used both by the legacy push-gateway helper and by the local `/sync`
+/// long-poll path (`Client.onNotification`).
+Future<void> showEventNotification(
+  Event event, {
+  required Client client,
+  L10n? l10n,
+  String? activeRoomId,
+  required FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin,
+  int? unreadCount,
+}) async {
+  if (event.roomId != null &&
+      activeRoomId == event.roomId &&
+      WidgetsBinding.instance.lifecycleState == AppLifecycleState.resumed) {
+    Logs().v('Room is in foreground. Skip local notification.');
+    return;
+  }
 
   if (event.type.startsWith('m.call')) {
-    // make sure bg sync is on (needed to update hold, unhold events)
-    // prevent over write from app life cycle change
+    // Keep call signalling flowing even if we own the sync loop.
     client.backgroundSync = true;
   }
 
@@ -127,14 +154,14 @@ Future<void> _tryPushHelper(
   }
 
   if (event.type.startsWith('m.call') && event.type != EventTypes.CallInvite) {
-    Logs().v('Push message is a m.call but not invite. Do not display.');
+    Logs().v('Notification is a m.call but not invite. Do not display.');
     return;
   }
 
   if ((event.type.startsWith('m.call') &&
           event.type != EventTypes.CallInvite) ||
       event.type == 'org.matrix.call.sdp_stream_metadata_changed') {
-    Logs().v('Push message was for a call, but not call invite.');
+    Logs().v('Notification was for a call, but not call invite.');
     return;
   }
 
@@ -197,7 +224,7 @@ Future<void> _tryPushHelper(
     Logs().e('Unable to get avatar picture', e, s);
   }
 
-  final id = notification.roomId.hashCode;
+  final id = event.room.id.hashCode;
 
   final senderName = event.senderFromMemoryOrFallback.calcDisplayname();
   // Show notification
@@ -249,7 +276,7 @@ Future<void> _tryPushHelper(
   final androidPlatformChannelSpecifics = AndroidNotificationDetails(
     AppConfig.pushNotificationsChannelId,
     l10n.incomingMessages,
-    number: notification.counts?.unread,
+    number: unreadCount,
     category: AndroidNotificationCategory.message,
     shortcutId: event.room.id,
     styleInformation: messagingStyleInformation ??
