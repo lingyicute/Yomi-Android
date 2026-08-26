@@ -58,7 +58,10 @@ enum AppSettings<T> {
     'chat.lyi.display_chat_details_column',
     false,
   ),
-  enableSoftLogout<bool>('chat.lyi.enable_soft_logout', false);
+  enableSoftLogout<bool>('chat.lyi.enable_soft_logout', false),
+  // A foreground service is the only Android-supported way to sync every
+  // 20 seconds without depending on Google Firebase.
+  enableBackgroundSync<bool>('chat.lyi.enable_background_sync', true);
 
   final String key;
   final T defaultValue;

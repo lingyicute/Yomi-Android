@@ -32,6 +32,7 @@ import 'package:unifiedpush/unifiedpush.dart';
 import 'package:unifiedpush_ui/unifiedpush_ui.dart';
 
 import 'package:yomi/l10n/l10n.dart';
+import 'package:yomi/utils/background_sync.dart';
 import 'package:yomi/utils/push_helper.dart';
 import 'package:yomi/widgets/lyi_chat_app.dart';
 import '../config/app_config.dart';
@@ -39,20 +40,12 @@ import '../config/setting_keys.dart';
 import '../widgets/matrix.dart';
 import 'platform_infos.dart';
 
-//import 'package:fcm_shared_isolate/fcm_shared_isolate.dart';
-
-class NoTokenException implements Exception {
-  String get cause => 'Cannot get firebase token';
-}
-
 class BackgroundPush {
   static BackgroundPush? _instance;
   final FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
   Client client;
   MatrixState? matrix;
-  String? _fcmToken;
-  void Function(String errorMsg, {Uri? link})? onFcmError;
   L10n? l10n;
 
   Future<void> loadLocale() async {
@@ -63,8 +56,6 @@ class BackgroundPush {
   }
 
   final pendingTests = <String, Completer<void>>{};
-
-  final dynamic firebase = null; //FcmSharedIsolate();
 
   DateTime? lastReceivedPush;
 
@@ -80,17 +71,6 @@ class BackgroundPush {
         onDidReceiveNotificationResponse: goToRoom,
       );
       Logs().v('Flutter Local Notifications initialized');
-      firebase?.setListeners(
-        onMessage: (message) => pushHelper(
-          PushNotification.fromJson(
-            Map<String, dynamic>.from(message['data'] ?? message),
-          ),
-          client: client,
-          l10n: l10n,
-          activeRoomId: matrix?.activeRoomId,
-          flutterLocalNotificationsPlugin: _flutterLocalNotificationsPlugin,
-        ),
-      );
       if (Platform.isAndroid) {
         await UnifiedPush.initialize(
           onNewEndpoint: _newUpEndpoint,
@@ -112,14 +92,9 @@ class BackgroundPush {
     return _instance ??= BackgroundPush._(client);
   }
 
-  factory BackgroundPush(
-    MatrixState matrix, {
-    final void Function(String errorMsg, {Uri? link})? onFcmError,
-  }) {
+  factory BackgroundPush(MatrixState matrix) {
     final instance = BackgroundPush.clientOnly(matrix.client);
     instance.matrix = matrix;
-    // ignore: prefer_initializing_formals
-    instance.onFcmError = onFcmError;
     return instance;
   }
 
@@ -147,9 +122,6 @@ class BackgroundPush {
     Set<String?>? oldTokens,
     bool useDeviceSpecificAppId = false,
   }) async {
-    if (PlatformInfos.isIOS) {
-      await firebase?.requestPermission();
-    }
     if (PlatformInfos.isAndroid) {
       _flutterLocalNotificationsPlugin
           .resolvePlatformSpecificImplementation<
@@ -250,22 +222,24 @@ class BackgroundPush {
   static bool _wentToRoomOnStartup = false;
 
   Future<void> setupPush() async {
-    Logs().d("SetupPush");
+    Logs().d('Setup non-Google push');
     if (client.onLoginStateChanged.value != LoginState.loggedIn ||
         !PlatformInfos.isMobile ||
         matrix == null) {
       return;
     }
-    // Do not setup unifiedpush if this has been initialized by
-    // an unifiedpush action
-    if (upAction) {
-      return;
+
+    // Firebase is intentionally not used. On Android the foreground service
+    // below performs an authenticated Matrix sync every 20 seconds instead.
+    // UnifiedPush remains optional for users who have a distributor installed.
+    if (PlatformInfos.isAndroid) {
+      await removeLegacyFirebasePushers();
+      await BackgroundSync.startIfEnabled();
     }
-    if (!PlatformInfos.isIOS &&
+    if (!upAction &&
+        !PlatformInfos.isIOS &&
         (await UnifiedPush.getDistributors()).isNotEmpty) {
       await setupUp();
-    } else {
-      await setupFirebase();
     }
 
     // ignore: unawaited_futures
@@ -282,45 +256,21 @@ class BackgroundPush {
     });
   }
 
-  Future<void> _noFcmWarning() async {
-    if (matrix == null) {
-      return;
-    }
-    if ((matrix?.store.getBool(SettingKeys.showNoGoogle) ?? false) == true) {
-      return;
-    }
-    await loadLocale();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (PlatformInfos.isAndroid) {
-        onFcmError?.call(
-          l10n!.noGoogleServicesWarning,
-          link: Uri.parse(
-            AppConfig.enablePushTutorial,
-          ),
-        );
-        return;
+  /// Removes the HTTP pusher previously registered for FCM data messages.
+  /// The app no longer has an FCM receiver, so retaining it only wastes a
+  /// homeserver push attempt for every matching event.
+  Future<void> removeLegacyFirebasePushers() async {
+    try {
+      final pushers = await client.getPushers() ?? <Pusher>[];
+      for (final pusher in pushers) {
+        if (pusher.appId == '${AppConfig.pushNotificationsAppId}.data_message') {
+          await client.deletePusher(pusher);
+          Logs().i('[Push] Removed legacy Firebase pusher');
+        }
       }
-      onFcmError?.call(l10n!.oopsPushError);
-    });
-  }
-
-  Future<void> setupFirebase() async {
-    Logs().v('Setup firebase');
-    if (_fcmToken?.isEmpty ?? true) {
-      try {
-        _fcmToken = await firebase?.getToken();
-        if (_fcmToken == null) throw ('PushToken is null');
-      } catch (e, s) {
-        Logs().w('[Push] cannot get token', e, e is String ? null : s);
-        await _noFcmWarning();
-        return;
-      }
+    } catch (error, stackTrace) {
+      Logs().w('[Push] Unable to remove legacy Firebase pusher', error, stackTrace);
     }
-    await setupPusher(
-      gatewayUrl:
-          AppSettings.pushNotificationsGatewayUrl.getItem(matrix!.store),
-      token: _fcmToken,
-    );
   }
 
   Future<void> goToRoom(NotificationResponse? response) async {
@@ -382,15 +332,9 @@ class BackgroundPush {
       );
     }
     Logs().i('[Push] UnifiedPush using endpoint $endpoint');
-    final oldTokens = <String?>{};
-    try {
-      final fcmToken = await firebase?.getToken();
-      oldTokens.add(fcmToken);
-    } catch (_) {}
     await setupPusher(
       gatewayUrl: endpoint,
       token: newEndpoint,
-      oldTokens: oldTokens,
       useDeviceSpecificAppId: true,
     );
     await matrix?.store.setString(SettingKeys.unifiedPushEndpoint, newEndpoint);

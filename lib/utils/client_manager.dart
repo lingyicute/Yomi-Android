@@ -26,6 +26,7 @@ abstract class ClientManager {
 
   static Future<List<Client>> getClients({
     bool initialize = true,
+    bool backgroundSync = true,
     required SharedPreferences store,
   }) async {
     if (PlatformInfos.isLinux) {
@@ -47,6 +48,14 @@ abstract class ClientManager {
     }
     final clients =
         clientNames.map((name) => createClient(name, store)).toList();
+    if (!backgroundSync) {
+      // Set this before init: Client.init otherwise starts its regular,
+      // indefinite sync loop as soon as the restored session is available.
+      for (final client in clients) {
+        client.backgroundSync = false;
+        client.syncPresence = PresenceType.offline;
+      }
+    }
     if (initialize) {
       await Future.wait(
         clients.map(
