@@ -3112,9 +3112,9 @@
             }
         }
     },
-    "oneOfYourDevicesIsNotVerified": "发现一个未经验证的新设备，请检查～",
+    "oneOfYourDevicesIsNotVerified": "有新的登录活动，是你吗？",
     "@oneOfYourDevicesIsNotVerified": {},
-    "noticeChatBackupDeviceVerification": "注意：当你连接某个设备到聊天备份时，这个设备将被自动验证。",
+    "noticeChatBackupDeviceVerification": "tips：得益于 Yomi 出色的云同步机制，已登录的每个设备都可以实时同步您所有的聊天记录，因此请务必确保列表中所有的会话都是您所熟悉的！",
     "@noticeChatBackupDeviceVerification": {},
     "welcomeText": "你好呀 👋 欢迎来到 Yomi。你可以登录任意兼容 https://matrix.org 的 homeserver，然后和任何人聊天。这是个巨大的去中心化消息网络！",
     "@welcomeText": {},
