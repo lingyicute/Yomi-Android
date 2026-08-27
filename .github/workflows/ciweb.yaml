@@ -3,6 +3,9 @@ name: Web Version Ci
 on:
   push:
   
+permissions:   
+  contents: write
+
 jobs:
   build_web:
     runs-on: ubuntu-latest
@@ -29,3 +32,19 @@ jobs:
         with:
           name: Web Build
           path: yomi-web.tar.gz
+
+      - name: Delete old nightly release 
+        run: gh release delete nightly-web --yes --cleanup-tag || true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish nightly release 
+        run: |
+          gh release create nightly-web \
+            yomi-web.tar.gz \
+            --title "Nightly Web Build" \
+            --notes "auto build · ${GITHUB_SHA:0:7} · ${GITHUB_REF_NAME}" \
+            --prerelease \
+            --target "$GITHUB_SHA"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
