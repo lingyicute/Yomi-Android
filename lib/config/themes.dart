@@ -51,7 +51,8 @@ abstract class LyiThemes {
       useMaterial3: true,
       brightness: brightness,
       colorScheme: colorScheme,
-      fontFamily: 'Yomi-UI-Emoji',
+      fontFamily: 'Nebulove',
+      fontFamilyFallback: const ['Yomi-UI-Emoji'],
       dividerColor: brightness == Brightness.dark
           ? colorScheme.surfaceContainerHighest
           : colorScheme.surfaceContainer,

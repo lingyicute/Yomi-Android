@@ -83,11 +83,9 @@ abstract class AppConfig {
 
   // The TextStyle to use for emoji rendering
   static TextStyle emojiTextStyle({TextStyle? style}) {
-    return TextStyle(
-      fontFamily: 'Yomi-UI-Emoji',
-      fontSize: style?.fontSize,
-      color: style?.color,
-      fontWeight: style?.fontWeight,
+    return (style ?? const TextStyle()).copyWith(
+      fontFamily: 'Nebulove',
+      fontFamilyFallback: const ['Yomi-UI-Emoji'],
     );
   }
 
