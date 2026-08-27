@@ -79,20 +79,21 @@ class _LockScreenState extends State<LockScreen> {
                 const SizedBox(height: 24),
                 TextField(
                   controller: _textEditingController,
+                  textInputAction: TextInputAction.done,
                   keyboardType: TextInputType.number,
                   obscureText: true,
                   autofocus: true,
                   textAlign: TextAlign.center,
                   readOnly: _inputBlocked,
                   onChanged: tryUnlock,
+                  onSubmitted: tryUnlock,
                   style: TextStyle(
                     fontSize: 32,
-                    letterSpacing: 16,
+                    letterSpacing: 14,
                     fontWeight: FontWeight.w600,
                     color: colorScheme.onSurface,
                   ),
                   inputFormatters: [
-                    FilteringTextInputFormatter.digitsOnly,
                     LengthLimitingTextInputFormatter(4),
                   ],
                   decoration: InputDecoration(
@@ -102,7 +103,7 @@ class _LockScreenState extends State<LockScreen> {
                     hintText: '****',
                     hintStyle: TextStyle(
                       fontSize: 28,
-                      letterSpacing: 16,
+                      letterSpacing: 14,
                       color: colorScheme.onSurfaceVariant.withAlpha(100),
                     ),
                     contentPadding: const EdgeInsets.symmetric(
