@@ -1,5 +1,3 @@
-import com.android.build.api.variant.FilterType
-
 plugins {
     id "com.android.application"
     id "kotlin-android"
@@ -94,7 +92,7 @@ android {
                 'x86_64'     : 3,
             ]
             variant.outputs.each { output ->
-                def abiFilter = output.filters.find { it.filterType == FilterType.ABI }
+                def abiFilter = output.filters.find { it.filterType.name() == 'ABI' }
                 output.versionCode.set(
                     output.versionCode.get() * 1000 +
                         (abiCodes[abiFilter?.identifier] ?: 0)
