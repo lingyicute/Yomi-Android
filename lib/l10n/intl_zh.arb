@@ -2673,7 +2673,7 @@
     "@groupName": {},
     "databaseMigrationTitle": "数据库已优化",
     "@databaseMigrationTitle": {},
-    "searchChatsRooms": "搜索 #聊天，@用户…",
+    "searchChatsRooms": "搜索…",
     "@searchChatsRooms": {},
     "databaseMigrationBody": "请稍候。可能需要稍等片刻。",
     "@databaseMigrationBody": {},
