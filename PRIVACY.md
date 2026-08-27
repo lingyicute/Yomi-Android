@@ -5,7 +5,7 @@ Yomi 可在 Android、Windows、Linux 平台使用，并配套一个精美的网
 *   [Matrix 协议](#matrix)
 *   [数据库](#database)
 *   [加密机制](#encryption)
-* [应用权限](#app-permissions)
+*   [应用权限](#app-permissions)
 *   [推送通知](#push-notifications)
 
 ## Matrix 协议 <a id="matrix"/>
