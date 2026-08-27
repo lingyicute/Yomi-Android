@@ -308,14 +308,22 @@ class ChatListController extends State<ChatList>
 
   void _search() async {
     final client = Matrix.of(context).client;
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
     if (!isSearching) {
       setState(() {
         isSearching = true;
       });
     }
-    SearchUserDirectoryResponse? userSearchResult;
     QueryPublicRoomsResponse? roomSearchResult;
+    SearchUserDirectoryResponse? userSearchResult;
     final searchQuery = searchController.text.trim();
+
+    // Searching for public rooms and searching for users are two
+    // independent server APIs. They must not share one try/catch block:
+    // if querying the public room directory fails (or the server does not
+    // support / allow it), the user directory search would otherwise be
+    // skipped entirely, making it impossible to find any users while
+    // local rooms are still listed.
     try {
       roomSearchResult = await client.queryPublicRooms(
         server: searchServer,
@@ -343,21 +351,47 @@ class ChatListController extends State<ChatList>
           );
         }
       }
+    } catch (e, s) {
+      Logs().w('Searching for public rooms has crashed', e, s);
+    }
+
+    try {
       userSearchResult = await client.searchUserDirectory(
-        searchController.text,
+        searchQuery,
         limit: 20,
       );
-    } catch (e, s) {
-      Logs().w('Searching has crashed', e, s);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            e.toLocalizedString(context),
-          ),
-        ),
+      // If the user searched for an exact user ID which the directory
+      // did not return, fall back to a synthetic result so the profile
+      // can still be opened (matching the invite / new chat pages).
+      if (searchQuery.isValidMatrixId &&
+          searchQuery.sigil == '@' &&
+          !userSearchResult.results
+              .any((profile) => profile.userId == searchQuery)) {
+        userSearchResult.results.add(
+          Profile(userId: searchQuery),
+        );
+      }
+      // Never suggest ourselves or users we have ignored.
+      userSearchResult.results.removeWhere(
+        (profile) =>
+            profile.userId == client.userID ||
+            client.ignoredUsers.contains(profile.userId),
       );
+    } catch (e, s) {
+      Logs().w('Searching for users has crashed', e, s);
+      if (mounted) {
+        scaffoldMessenger.showSnackBar(
+          SnackBar(
+            content: Text(
+              e.toLocalizedString(context),
+            ),
+          ),
+        );
+      }
     }
+
     if (!isSearchMode) return;
+    if (!mounted) return;
     setState(() {
       isSearching = false;
       this.roomSearchResult = roomSearchResult;
