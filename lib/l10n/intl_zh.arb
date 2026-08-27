@@ -473,7 +473,7 @@
         },
         "description": "State that {command} is not a valid /command."
     },
-    "compareEmojiMatch": "请比较表情符号",
+    "compareEmojiMatch": "请比较 Emoji",
     "@compareEmojiMatch": {
         "type": "String",
         "placeholders": {}
@@ -699,7 +699,7 @@
         "type": "String",
         "placeholders": {}
     },
-    "emoteInvalid": "无效的表情快捷码！",
+    "emoteInvalid": "无效的表情快捷码。目前 Yomi 只支持 ASCII 字符哦。",
     "@emoteInvalid": {
         "type": "String",
         "placeholders": {}
@@ -719,7 +719,7 @@
         "type": "String",
         "placeholders": {}
     },
-    "emoteWarnNeedToPick": "你需要选择一个表情快捷码和一张图片！",
+    "emoteWarnNeedToPick": "你需要选择一个表情快捷码和一张图片",
     "@emoteWarnNeedToPick": {
         "type": "String",
         "placeholders": {}
@@ -729,7 +729,7 @@
         "type": "String",
         "placeholders": {}
     },
-    "enableEmotesGlobally": "在全局启用表情包",
+    "enableEmotesGlobally": "在其它会话中也使用此会话的贴纸",
     "@enableEmotesGlobally": {
         "type": "String",
         "placeholders": {}
@@ -1609,7 +1609,7 @@
         "type": "String",
         "placeholders": {}
     },
-    "setCustomEmotes": "设置自定义表情",
+    "setCustomEmotes": "上传贴纸以在聊天会话中快速发送。此列表特定于此房间，所有参与者均可使用，仅管理员可修改。",
     "@setCustomEmotes": {
         "type": "String",
         "placeholders": {}
@@ -2059,7 +2059,7 @@
             }
         }
     },
-    "autoplayImages": "自动播放动态贴纸和表情",
+    "autoplayImages": "自动播放动态贴纸",
     "@autoplayImages": {
         "type": "String",
         "placeholder": {}
@@ -2192,7 +2192,7 @@
     "@confirmEventUnpin": {},
     "pinMessage": "置顶到房间",
     "@pinMessage": {},
-    "emojis": "表情符号",
+    "emojis": "Emoji",
     "@emojis": {},
     "unsupportedAndroidVersionLong": "这个功能需要较新版本的 Android 系统。请检查更新。",
     "@unsupportedAndroidVersionLong": {},
@@ -2529,7 +2529,7 @@
     "@importFromZipFile": {},
     "replace": "替换",
     "@replace": {},
-    "exportEmotePack": "以 .zip 格式导出表情包",
+    "exportEmotePack": "以 .zip 格式导出",
     "@exportEmotePack": {},
     "sendTypingNotifications": "发送“正在输入”状态",
     "@sendTypingNotifications": {},
@@ -2673,7 +2673,7 @@
     "@groupName": {},
     "databaseMigrationTitle": "数据库已优化",
     "@databaseMigrationTitle": {},
-    "searchChatsRooms": "搜索…",
+    "searchChatsRooms": "搜索 #聊天，@用户…",
     "@searchChatsRooms": {},
     "databaseMigrationBody": "请稍候。可能需要稍等片刻。",
     "@databaseMigrationBody": {},
@@ -2753,7 +2753,7 @@
     "@formattedMessagesDescription": {},
     "verifyOtherUserDescription": "通过验证其他用户，你可以确定是谁正在和你聊天。\n\n当你开始验证时，Yomi 将向你和其他用户同时呈现一系列表情符号或数字，你和其他用户需要比较它们是否一致。\n\n对于此流程，最好的方式当然是线下见面喽。🥰",
     "@verifyOtherUserDescription": {},
-    "verifyOtherDeviceDescription": "当你验证另一个设备时，这些设备可以交换密钥，从而提高整体安全性。🔐\n\n当你开始验证时，两个设备上的 Yomi 将同时弹出提示。你会看到一系列表情符号或数字，你需要比较两个设备上显示的内容。\n\n在开始验证之前，最好把两个设备都放在手边。",
+    "verifyOtherDeviceDescription": "当你验证另一个设备时，这些设备可以交换密钥，从而提高整体安全性。🔐\n\n当你开始验证时，两个设备上的 Yomi 将同时弹出提示。你会看到一系列 Emoji 或数字，你需要比较两个设备上显示的内容。\n\n在开始验证之前，最好把两个设备都放在手边。",
     "@verifyOtherDeviceDescription": {},
     "canceledKeyVerification": "{sender} 取消了密钥验证",
     "@canceledKeyVerification": {
@@ -2878,11 +2878,11 @@
     "@globalChatId": {},
     "accessAndVisibility": "访问和可见性",
     "@accessAndVisibility": {},
-    "accessAndVisibilityDescription": "谁可以加入此聊天以及怎样发现该聊天。",
+    "accessAndVisibilityDescription": "谁可以加入此聊天以及怎样发现该聊天",
     "@accessAndVisibilityDescription": {},
     "calls": "通话",
     "@calls": {},
-    "customEmojisAndStickers": "自定义表情符号和贴纸",
+    "customEmojisAndStickers": "贴纸",
     "@customEmojisAndStickers": {},
     "hideRedactedMessages": "隐藏消息删除提示",
     "@hideRedactedMessages": {},
@@ -2930,7 +2930,7 @@
             }
         }
     },
-    "customEmojisAndStickersBody": "添加或分享可用于任何聊天的表情符号或贴纸。",
+    "customEmojisAndStickersBody": "上传贴纸以在所有聊天会话中快速发送。此列表仅你可见。",
     "@customEmojisAndStickersBody": {},
     "usersMustKnock": "用户必须请求加入",
     "@usersMustKnock": {},
@@ -2947,7 +2947,7 @@
             }
         }
     },
-    "publicChatAddresses": "公开聊天的地址",
+    "publicChatAddresses": "公开的聊天地址",
     "@publicChatAddresses": {},
     "createNewAddress": "新建地址",
     "@createNewAddress": {},
@@ -3014,7 +3014,7 @@
             }
         }
     },
-    "moderatorLevel": "{level} - 主持人",
+    "moderatorLevel": "{level} - 协管员",
     "@moderatorLevel": {
         "type": "String",
         "placeholders": {
@@ -3054,7 +3054,7 @@
             }
         }
     },
-    "chatPermissionsDescription": "定义聊天中的权限等级对特定操作是必需的。权限等级 0、50 和 100 通常代表用户、主持人和管理者，你也可以自定义任何等级。",
+    "chatPermissionsDescription": "定义聊天中的权限等级对特定操作是必需的。权限等级 0、50 和 100 代表用户、协管员和管理者，你也可以自定义任何等级。",
     "@chatPermissionsDescription": {},
     "changelog": "更新记录",
     "@changelog": {},
@@ -3339,7 +3339,7 @@
     "@approve": {},
     "youHaveKnocked": "你已请求加入",
     "@youHaveKnocked": {},
-    "pleaseWaitUntilInvited": "在来自该房间的某人邀请你之前请等待。",
+    "pleaseWaitUntilInvited": "在来自该房间的某人邀请你之前，请耐心等待。",
     "@pleaseWaitUntilInvited": {},
     "countInvited": "邀请了 {count}",
     "@countInvited": {
