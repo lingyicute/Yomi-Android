@@ -724,7 +724,7 @@
         "type": "String",
         "placeholders": {}
     },
-    "emptyChat": "空聊天",
+    "emptyChat": "空荡的房间",
     "@emptyChat": {
         "type": "String",
         "placeholders": {}
@@ -2272,7 +2272,7 @@
             }
         }
     },
-    "youKicked": "👞 你踢出了 {user}",
+    "youKicked": "🙅 你踢出了 {user}",
     "@youKicked": {
         "placeholders": {
             "user": {
@@ -2451,7 +2451,7 @@
             }
         }
     },
-    "wasDirectChatDisplayName": "空聊天（曾是 {oldDisplayName}）",
+    "wasDirectChatDisplayName": "空荡的房间（曾有 {oldDisplayName}）",
     "@wasDirectChatDisplayName": {
         "type": "String",
         "placeholders": {
