@@ -100,12 +100,6 @@ class _LockScreenState extends State<LockScreen> {
                     filled: true,
                     fillColor: colorScheme.surfaceContainerHighest,
                     errorText: _errorText,
-                    hintText: '****',
-                    hintStyle: TextStyle(
-                      fontSize: 28,
-                      letterSpacing: 14,
-                      color: colorScheme.onSurfaceVariant.withAlpha(100),
-                    ),
                     contentPadding: const EdgeInsets.symmetric(
                       horizontal: 24,
                       vertical: 20,
@@ -146,7 +140,6 @@ class _LockScreenState extends State<LockScreen> {
                     padding: const EdgeInsets.only(top: 16),
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(8),
-                      child: const LinearProgressIndicator(minHeight: 4),
                     ),
                   ),
               ],
