@@ -36,6 +36,4 @@
     <path
         android:fillColor="#FFFFFF"
         android:pathData="M 398.27,330.01 A 17.11,17.11 0 1,0 398.27,364.23 A 17.11,17.11 0 1,0 398.27,330.01 Z" />
-
 </vector>
-```
