@@ -115,7 +115,7 @@ class BackgroundSyncService : Service() {
             "后台消息同步",
             NotificationManager.IMPORTANCE_LOW,
         ).apply {
-            description = "Yomi 在后台接收新消息"
+            description = "Yomi 会在后台持续为你接收新消息"
             setShowBadge(false)
             enableVibration(false)
             setSound(null, null)
@@ -150,8 +150,8 @@ class BackgroundSyncService : Service() {
         val contentIntent = PendingIntent.getActivity(this, 0, launchIntent, flags)
 
         return NotificationCompat.Builder(this, CHANNEL_ID)
-            .setContentTitle("Yomi 正在运行")
-            .setContentText("后台接收新消息")
+            .setContentTitle("推送服务")
+            .setContentText("Yomi 会在后台持续为你接收新消息")
             .setSmallIcon(R.drawable.notifications_icon)
             .setContentIntent(contentIntent)
             .setOngoing(true)
