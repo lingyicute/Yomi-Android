@@ -8,6 +8,7 @@ import 'package:html/dom.dart' as dom;
 import 'package:html/parser.dart' as parser;
 import 'package:matrix/matrix.dart';
 
+import 'package:yomi/l10n/l10n.dart';
 import 'package:yomi/utils/event_checkbox_extension.dart';
 import 'package:yomi/widgets/avatar.dart';
 import 'package:yomi/widgets/future_loading_dialog.dart';
@@ -60,6 +61,7 @@ class _HtmlMessageState extends State<HtmlMessage> {
   /// message is scrolled out of view and back in.
   InlineSpan? _cachedSpan;
   String? _cachedHtml;
+  String? _cachedPlainText;
   double? _cachedFontSize;
   Color? _cachedTextColor;
   TextStyle? _cachedLinkStyle;
@@ -84,7 +86,9 @@ class _HtmlMessageState extends State<HtmlMessage> {
             _cachedCheckboxFingerprint) {
       return;
     }
-    _cachedSpan = _renderHtml(_parseCached(w.html), context);
+    final parsed = _parseCached(w.html);
+    _cachedSpan = _renderHtml(parsed, context);
+    _cachedPlainText = _extractPlainText(parsed);
     _cachedHtml = w.html;
     _cachedFontSize = w.fontSize;
     _cachedTextColor = w.textColor;
@@ -113,6 +117,45 @@ class _HtmlMessageState extends State<HtmlMessage> {
       _parsedHtmlCache.remove(_parsedHtmlCache.keys.first);
     }
     return parsed;
+  }
+
+  /// Text equivalent of the rendered message: mirrors the line breaks that
+  /// [_renderWithLineBreaks] inserts around block elements and additionally
+  /// keeps the text content that ends up inside [WidgetSpan]s (code blocks,
+  /// spoilers, details, ...) which [InlineSpan.toPlainText] would drop.
+  ///
+  /// Only used to measure whether a message exceeds [collapsedMaxLines], so
+  /// small deviations from the actually rendered text are acceptable.
+  static String _extractPlainText(dom.Element body) {
+    final buffer = StringBuffer();
+
+    void walkNodes(dom.NodeList nodes, {int depth = 1}) {
+      // Same protection against pathological nesting as _renderHtml:
+      if (depth >= 100) return;
+      final onlyElements = nodes.whereType<dom.Element>().toList();
+      for (final node in nodes) {
+        if (node is! dom.Element) {
+          final text = node.text ?? '';
+          // Single linebreak nodes between Elements are ignored:
+          if (text != '\n') buffer.write(text);
+        } else if (allowedHtmlTags.contains(node.localName)) {
+          if (node.localName == 'br') {
+            buffer.write('\n');
+          } else {
+            walkNodes(node.nodes, depth: depth + 1);
+          }
+        }
+        // Keep in sync with _renderWithLineBreaks:
+        if (node is dom.Element &&
+            onlyElements.indexOf(node) < onlyElements.length - 1) {
+          if (blockHtmlTags.contains(node.localName)) buffer.write('\n\n');
+          if (fullLineHtmlTag.contains(node.localName)) buffer.write('\n');
+        }
+      }
+    }
+
+    walkNodes(body.nodes);
+    return buffer.toString();
   }
 
   /// Keep in sync with: https://spec.matrix.org/latest/client-server-api/#mroommessage-msgtypes
@@ -583,17 +626,108 @@ class _HtmlMessageState extends State<HtmlMessage> {
     }
   }
 
+  /// A message longer than this many lines is collapsed in the timeline and
+  /// flagged with a "message too long, long-press to view" marker.
+  static const int collapsedMaxLines = 10;
+
+  /// Whether the message needs more than [collapsedMaxLines] lines at the
+  /// given [maxWidth].
+  ///
+  /// Runs on the cheap plain-text reconstruction from [_extractPlainText]
+  /// instead of the real span tree so it cannot throw on the [WidgetSpan]s
+  /// (pills, code blocks, ...) which `TextPainter` cannot lay out without
+  /// pre-computed placeholder dimensions.
+  bool _exceedsCollapsedHeight(
+    BuildContext context,
+    double maxWidth,
+    TextStyle textStyle,
+  ) {
+    final plainText = _cachedPlainText!;
+    // Every '\n' forces a line break, so more hard line breaks than the limit
+    // guarantee an overflow without any measuring:
+    final forcedLines = '\n'.allMatches(plainText).length + 1;
+    if (forcedLines > collapsedMaxLines) return true;
+    // Cheap bail-out for the (vast majority of) short messages: even if every
+    // glyph occupied a full em square (worst case, e.g. CJK glyphs), the text
+    // could still not fill the remaining lines. Avoids running a whole second
+    // text layout for every rendered message. The system text scale enlarges
+    // the rendered glyphs, so it has to be part of this pessimistic estimate.
+    final textScaler = MediaQuery.textScalerOf(context);
+    final fontSize = textScaler.scale(textStyle.fontSize ?? widget.fontSize);
+    if (forcedLines + (plainText.length * fontSize) / maxWidth <=
+        collapsedMaxLines) {
+      return false;
+    }
+    final textPainter = TextPainter(
+      text: TextSpan(text: plainText, style: textStyle),
+      textDirection: Directionality.of(context),
+      textScaler: textScaler,
+      maxLines: collapsedMaxLines,
+    )..layout(maxWidth: maxWidth);
+    final exceeded = textPainter.didExceedMaxLines;
+    textPainter.dispose();
+    return exceeded;
+  }
+
   @override
   Widget build(BuildContext context) {
     _updateCache(widget);
-    return Text.rich(
+    final textStyle = widget.textStyle ??
+        TextStyle(
+          fontSize: widget.fontSize,
+          color: widget.textColor,
+        );
+    final textWidget = Text.rich(
       _cachedSpan!,
-      style: widget.textStyle ?? TextStyle(
-        fontSize: widget.fontSize,
-        color: widget.textColor,
-      ),
-      maxLines: widget.limitHeight ? 64 : null,
-      overflow: TextOverflow.fade,
+      style: textStyle,
+      maxLines: widget.limitHeight ? collapsedMaxLines : null,
+      // Hard-cut with an ellipsis rather than TextOverflow.fade: the fade is
+      // drawn as a modulated gradient layer which renders as an opaque black
+      // gradient covering the last visible line as soon as the span tree
+      // contains WidgetSpans (pills, code blocks, quotes, ...).
+      // See https://github.com/flutter/flutter/issues/128107
+      overflow: TextOverflow.ellipsis,
+    );
+    if (!widget.limitHeight) return textWidget;
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        if (!_exceedsCollapsedHeight(
+          context,
+          constraints.maxWidth,
+          textStyle,
+        )) {
+          return textWidget;
+        }
+        // Same subtle style as the "message was edited" marker, see
+        // message.dart:
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            textWidget,
+            const SizedBox(height: 4),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              spacing: 4.0,
+              children: [
+                Icon(
+                  Icons.unfold_more,
+                  size: 14,
+                  color: widget.textColor.withAlpha(164),
+                ),
+                Text(
+                  L10n.of(context).messageTooLongLongPressToView,
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: widget.textColor.withAlpha(164),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        );
+      },
     );
   }
 }
