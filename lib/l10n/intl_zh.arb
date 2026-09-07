@@ -2124,6 +2124,8 @@
     "@openGallery": {},
     "messageInfo": "消息信息",
     "@messageInfo": {},
+    "messageTooLongLongPressToView": "消息超长，长按查看",
+    "@messageTooLongLongPressToView": {},
     "time": "时间",
     "@time": {},
     "addToSpaceDescription": "选择一个空间以添加此聊天。",
