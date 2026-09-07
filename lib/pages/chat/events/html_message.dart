@@ -614,7 +614,7 @@ class _HtmlMessageState extends State<HtmlMessage> {
       if (!mounted) return;
       final renderObject = _textKey.currentContext?.findRenderObject();
       if (renderObject is! RenderParagraph) return;
-      final exceeded = renderObject.textPainter.didExceedMaxLines;
+      final exceeded = renderObject.didExceedMaxLines;
       if (exceeded != _exceededMaxLines) {
         setState(() => _exceededMaxLines = exceeded);
       }
