@@ -61,7 +61,6 @@ class _HtmlMessageState extends State<HtmlMessage> {
   /// message is scrolled out of view and back in.
   InlineSpan? _cachedSpan;
   String? _cachedHtml;
-  String? _cachedPlainText;
   double? _cachedFontSize;
   Color? _cachedTextColor;
   TextStyle? _cachedLinkStyle;
@@ -86,14 +85,15 @@ class _HtmlMessageState extends State<HtmlMessage> {
             _cachedCheckboxFingerprint) {
       return;
     }
-    final parsed = _parseCached(w.html);
-    _cachedSpan = _renderHtml(parsed, context);
-    _cachedPlainText = _extractPlainText(parsed);
+    _cachedSpan = _renderHtml(_parseCached(w.html), context);
     _cachedHtml = w.html;
     _cachedFontSize = w.fontSize;
     _cachedTextColor = w.textColor;
     _cachedLinkStyle = w.linkStyle;
     _cachedCheckboxFingerprint = _checkboxFingerprint(w.checkboxCheckedEvents);
+    // The overflow marker reflects the laid-out text, so it has to be
+    // re-measured for the new content:
+    _checkedConstraints = null;
   }
 
   /// LRU cache for parsed HTML documents.
@@ -117,45 +117,6 @@ class _HtmlMessageState extends State<HtmlMessage> {
       _parsedHtmlCache.remove(_parsedHtmlCache.keys.first);
     }
     return parsed;
-  }
-
-  /// Text equivalent of the rendered message: mirrors the line breaks that
-  /// [_renderWithLineBreaks] inserts around block elements and additionally
-  /// keeps the text content that ends up inside [WidgetSpan]s (code blocks,
-  /// spoilers, details, ...) which [InlineSpan.toPlainText] would drop.
-  ///
-  /// Only used to measure whether a message exceeds [collapsedMaxLines], so
-  /// small deviations from the actually rendered text are acceptable.
-  static String _extractPlainText(dom.Element body) {
-    final buffer = StringBuffer();
-
-    void walkNodes(dom.NodeList nodes, {int depth = 1}) {
-      // Same protection against pathological nesting as _renderHtml:
-      if (depth >= 100) return;
-      final onlyElements = nodes.whereType<dom.Element>().toList();
-      for (final node in nodes) {
-        if (node is! dom.Element) {
-          final text = node.text ?? '';
-          // Single linebreak nodes between Elements are ignored:
-          if (text != '\n') buffer.write(text);
-        } else if (allowedHtmlTags.contains(node.localName)) {
-          if (node.localName == 'br') {
-            buffer.write('\n');
-          } else {
-            walkNodes(node.nodes, depth: depth + 1);
-          }
-        }
-        // Keep in sync with _renderWithLineBreaks:
-        if (node is dom.Element &&
-            onlyElements.indexOf(node) < onlyElements.length - 1) {
-          if (blockHtmlTags.contains(node.localName)) buffer.write('\n\n');
-          if (fullLineHtmlTag.contains(node.localName)) buffer.write('\n');
-        }
-      }
-    }
-
-    walkNodes(body.nodes);
-    return buffer.toString();
   }
 
   /// Keep in sync with: https://spec.matrix.org/latest/client-server-api/#mroommessage-msgtypes
@@ -630,43 +591,34 @@ class _HtmlMessageState extends State<HtmlMessage> {
   /// flagged with a "message too long, long-press to view" marker.
   static const int collapsedMaxLines = 10;
 
-  /// Whether the message needs more than [collapsedMaxLines] lines at the
-  /// given [maxWidth].
-  ///
-  /// Runs on the cheap plain-text reconstruction from [_extractPlainText]
-  /// instead of the real span tree so it cannot throw on the [WidgetSpan]s
-  /// (pills, code blocks, ...) which `TextPainter` cannot lay out without
-  /// pre-computed placeholder dimensions.
-  bool _exceedsCollapsedHeight(
-    BuildContext context,
-    double maxWidth,
-    TextStyle textStyle,
-  ) {
-    final plainText = _cachedPlainText!;
-    // Every '\n' forces a line break, so more hard line breaks than the limit
-    // guarantee an overflow without any measuring:
-    final forcedLines = '\n'.allMatches(plainText).length + 1;
-    if (forcedLines > collapsedMaxLines) return true;
-    // Cheap bail-out for the (vast majority of) short messages: even if every
-    // glyph occupied a full em square (worst case, e.g. CJK glyphs), the text
-    // could still not fill the remaining lines. Avoids running a whole second
-    // text layout for every rendered message. The system text scale enlarges
-    // the rendered glyphs, so it has to be part of this pessimistic estimate.
-    final textScaler = MediaQuery.textScalerOf(context);
-    final fontSize = textScaler.scale(textStyle.fontSize ?? widget.fontSize);
-    if (forcedLines + (plainText.length * fontSize) / maxWidth <=
-        collapsedMaxLines) {
-      return false;
-    }
-    final textPainter = TextPainter(
-      text: TextSpan(text: plainText, style: textStyle),
-      textDirection: Directionality.of(context),
-      textScaler: textScaler,
-      maxLines: collapsedMaxLines,
-    )..layout(maxWidth: maxWidth);
-    final exceeded = textPainter.didExceedMaxLines;
-    textPainter.dispose();
-    return exceeded;
+  /// Key of the rendered [Text], used to ask its [RenderParagraph] whether
+  /// the text actually overflowed [collapsedMaxLines].
+  final GlobalKey _textKey = GlobalKey();
+
+  /// The overflow state of the laid-out message text. Always - and only -
+  /// mirrors the result of the real text layout, so the marker and the
+  /// folding can never disagree.
+  bool _exceededMaxLines = false;
+
+  /// The width and text scale the last overflow check was performed at. Any
+  /// change in width, scale or content triggers a re-check after the next
+  /// layout pass.
+  (double, double)? _checkedConstraints;
+
+  void _scheduleOverflowCheck(double maxWidth, double textScale) {
+    if (_checkedConstraints == (maxWidth, textScale)) return;
+    _checkedConstraints = (maxWidth, textScale);
+    // The text layout of the current frame is the single source of truth, so
+    // the answer is only available once this frame is laid out:
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final renderObject = _textKey.currentContext?.findRenderObject();
+      if (renderObject is! RenderParagraph) return;
+      final exceeded = renderObject.textPainter.didExceedMaxLines;
+      if (exceeded != _exceededMaxLines) {
+        setState(() => _exceededMaxLines = exceeded);
+      }
+    });
   }
 
   @override
@@ -679,6 +631,7 @@ class _HtmlMessageState extends State<HtmlMessage> {
         );
     final textWidget = Text.rich(
       _cachedSpan!,
+      key: _textKey,
       style: textStyle,
       maxLines: widget.limitHeight ? collapsedMaxLines : null,
       // Hard-cut with an ellipsis rather than TextOverflow.fade: the fade is
@@ -692,13 +645,11 @@ class _HtmlMessageState extends State<HtmlMessage> {
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        if (!_exceedsCollapsedHeight(
-          context,
-          constraints.maxWidth,
-          textStyle,
-        )) {
-          return textWidget;
-        }
+        // Also registers a MediaQuery dependency so this builder re-runs on
+        // system font scale changes:
+        final textScale = MediaQuery.textScalerOf(context).scale(1);
+        _scheduleOverflowCheck(constraints.maxWidth, textScale);
+        if (!_exceededMaxLines) return textWidget;
         // Same subtle style as the "message was edited" marker, see
         // message.dart:
         return Column(
