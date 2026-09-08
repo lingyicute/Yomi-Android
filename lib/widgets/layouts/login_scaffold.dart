@@ -23,8 +23,7 @@ class LoginScaffold extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    final isMobileMode =
-        enforceMobileMode || !LyiThemes.isColumnMode(context);
+    final isMobileMode = enforceMobileMode || !LyiThemes.isColumnMode(context);
     if (isMobileMode) {
       return Scaffold(
         key: const Key('LoginScaffold'),

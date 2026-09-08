@@ -254,7 +254,8 @@ class _HtmlMessageState extends State<HtmlMessage> {
             ?.primaryIdentifier;
         if (matrixId != null) {
           if (matrixId.sigil == '@') {
-            final user = widget.room.unsafeGetUserFromMemoryOrFallback(matrixId);
+            final user =
+                widget.room.unsafeGetUserFromMemoryOrFallback(matrixId);
             return WidgetSpan(
               child: MatrixPill(
                 key: Key('user_pill_$matrixId'),
@@ -380,7 +381,10 @@ class _HtmlMessageState extends State<HtmlMessage> {
                     depth: depth,
                   ),
                 ],
-                style: TextStyle(fontSize: widget.fontSize, color: widget.textColor),
+                style: TextStyle(
+                  fontSize: widget.fontSize,
+                  color: widget.textColor,
+                ),
               ),
             ),
           ),

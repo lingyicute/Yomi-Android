@@ -136,8 +136,7 @@ class PublicRoomDialog extends StatelessWidget {
                                       padding:
                                           const EdgeInsets.only(right: 4.0),
                                       child: AnimatedScale(
-                                        duration:
-                                            LyiThemes.animationDuration,
+                                        duration: LyiThemes.animationDuration,
                                         curve: LyiThemes.animationCurve,
                                         scale: hovered
                                             ? 1.33

@@ -92,7 +92,7 @@ class BootstrapDialogState extends State<BootstrapDialog> {
     final theme = Theme.of(context);
     _wipe ??= widget.wipe;
     final buttons = <Widget>[];
-    Widget body = const Center(
+    var body = const Center(
       child: SizedBox(
         width: 50,
         height: 50,

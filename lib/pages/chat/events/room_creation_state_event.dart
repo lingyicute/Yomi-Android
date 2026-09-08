@@ -57,7 +57,10 @@ class RoomCreationStateEvent extends StatelessWidget {
                           style: theme.textTheme.labelSmall,
                         ),
                         Text(
-                          l10n.countParticipants((event.room.summary.mJoinedMemberCount ?? 1) + (event.room.summary.mInvitedMemberCount ?? 0)),
+                          l10n.countParticipants(
+                            (event.room.summary.mJoinedMemberCount ?? 1) +
+                                (event.room.summary.mInvitedMemberCount ?? 0),
+                          ),
                           style: theme.textTheme.labelSmall,
                         ),
                       ],

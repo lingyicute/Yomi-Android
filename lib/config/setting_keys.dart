@@ -16,16 +16,14 @@ abstract class SettingKeys {
   static const String showNoPid = 'chat.lyi.show_no_pid';
   static const String databasePassword = 'database-password';
   static const String appLockKey = 'chat.lyi.app_lock';
-  static const String unifiedPushRegistered =
-      'chat.lyi.unifiedpush.registered';
+  static const String unifiedPushRegistered = 'chat.lyi.unifiedpush.registered';
   static const String unifiedPushEndpoint = 'chat.lyi.unifiedpush.endpoint';
   static const String backgroundSyncEnabled =
       'chat.lyi.background_sync.enabled';
   static const String askedBatteryOptimization =
       'chat.lyi.asked_battery_optimization';
   static const String ownStatusMessage = 'chat.lyi.status_msg';
-  static const String dontAskForBootstrapKey =
-      'chat.yomi.dont_ask_bootstrap';
+  static const String dontAskForBootstrapKey = 'chat.yomi.dont_ask_bootstrap';
   static const String autoplayImages = 'chat.lyi.autoplay_images';
   static const String sendTypingNotifications =
       'chat.lyi.send_typing_notifications';

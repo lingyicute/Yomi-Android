@@ -77,7 +77,9 @@ class MatrixState extends State<Matrix> with WidgetsBindingObserver {
       widget.clients.add(getLoginClient());
     }
     if (_activeClient < 0 || _activeClient >= widget.clients.length) {
-      if (currentBundle == null || currentBundle!.isEmpty || currentBundle!.first == null) {
+      if (currentBundle == null ||
+          currentBundle!.isEmpty ||
+          currentBundle!.first == null) {
         return getLoginClient();
       }
       return currentBundle!.first!;
@@ -278,8 +280,7 @@ class MatrixState extends State<Matrix> with WidgetsBindingObserver {
       request.onUpdate = null;
       hidPopup = true;
       await KeyVerificationDialog(request: request).show(
-        YomiApp.router.routerDelegate.navigatorKey.currentContext ??
-            context,
+        YomiApp.router.routerDelegate.navigatorKey.currentContext ?? context,
       );
     });
     onLoginStateChanged[name] ??= c.onLoginStateChanged.stream.listen((state) {
@@ -292,8 +293,7 @@ class MatrixState extends State<Matrix> with WidgetsBindingObserver {
         widget.clients.remove(c);
         ClientManager.removeClientNameFromStore(c.clientName, store);
         ScaffoldMessenger.of(
-          YomiApp.router.routerDelegate.navigatorKey.currentContext ??
-              context,
+          YomiApp.router.routerDelegate.navigatorKey.currentContext ?? context,
         ).showSnackBar(
           SnackBar(
             content: Text(L10n.of(context).oneClientLoggedOut),
@@ -304,8 +304,7 @@ class MatrixState extends State<Matrix> with WidgetsBindingObserver {
           YomiApp.router.go('/rooms');
         }
       } else {
-        YomiApp.router
-            .go(state == LoginState.loggedIn ? '/rooms' : '/home');
+        YomiApp.router.go(state == LoginState.loggedIn ? '/rooms' : '/home');
       }
     });
     onUiaRequest[name] ??= c.onUiaRequest.stream.listen(uiaRequestHandler);
@@ -366,8 +365,7 @@ class MatrixState extends State<Matrix> with WidgetsBindingObserver {
     // user is not shown as "online" 24/7.
     for (final c in widget.clients) {
       if (!c.isLogged()) continue;
-      c.syncPresence =
-          foreground ? null : PresenceType.unavailable;
+      c.syncPresence = foreground ? null : PresenceType.unavailable;
       if (PlatformInfos.isMobile) {
         c.requestHistoryOnLimitedTimeline = !foreground;
       }
