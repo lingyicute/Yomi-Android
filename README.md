@@ -2,7 +2,7 @@
 
 ![image](https://github.com/lingyicute/Yomi-Web/blob/main/icons/Icon-192.png)
 
-[Yomi](https://yomi.92li.uk) is an open source [matrix](https://matrix.org) client written in [Flutter](https://flutter.dev). The goal of the app is to create an easy to use instant messenger which is libre and accessible for everyone.
+[Yomi](https://yomi.92li.uk) is an open source [matrix](https://matrix.org) client written in [Flutter](https://flutter.dev). Carrying forward [Fluffychat](https://github.com/krille-chan/fluffychat)'s vision, Yomi is striving to create an easy-to-use instant messenger which is libre and accessible for everyone.
 
 ## Features
 
