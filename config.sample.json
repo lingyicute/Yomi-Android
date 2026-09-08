@@ -2,8 +2,8 @@
   "application_name": "Yomi",
   "application_welcome_message": null,
   "default_homeserver": "chat.92li.uk",
-  "web_base_url": "https://yomi.92li.uk/web",
-  "privacy_url": "https://yomi.92li.uk/en/privacy.html",
+  "web_base_url": "https://yomi.92li.uk/",
+  "privacy_url": "https://github.com/lingyicute/yomi-android/blob/main/PRIVACY.md",
   "render_html": false,
   "hide_redacted_events": false,
   "hide_unknown_events": false
