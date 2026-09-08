@@ -97,7 +97,9 @@ class HomeserverPickerView extends StatelessWidget {
                   Container(
                     alignment: Alignment.center,
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 8.0, vertical: 16.0),
+                      horizontal: 8.0,
+                      vertical: 16.0,
+                    ),
                     child: Hero(
                       tag: 'info-logo',
                       child: Image.asset(
@@ -149,7 +151,8 @@ class HomeserverPickerView extends StatelessWidget {
                                     height: 20,
                                     width: 20,
                                     child: CircularProgressIndicator(
-                                        strokeWidth: 2),
+                                      strokeWidth: 2,
+                                    ),
                                   )
                                 : const Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
