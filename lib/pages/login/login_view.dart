@@ -12,15 +12,7 @@ class LoginView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    final homeserver = Matrix.of(context)
-        .getLoginClient()
-        .homeserver
-        .toString()
-        .replaceFirst('https://', '');
     final title = L10n.of(context).login;
-    final titleParts = title.split(homeserver);
 
     return LoginScaffold(
       enforceMobileMode: Matrix.of(context).client.isLogged(),
@@ -43,7 +35,8 @@ class LoginView extends StatelessWidget {
                 Center(
                   child: Hero(
                     tag: 'info-logo',
-                    child: Image.asset('assets/logo.png',
+                    child: Image.asset(
+                      'assets/logo.png',
                       width: 120,
                       height: 120,
                       fit: BoxFit.contain,

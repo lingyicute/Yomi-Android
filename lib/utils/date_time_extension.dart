@@ -31,7 +31,7 @@ extension DateTimeExtension on DateTime {
   String localizedTimeOfDay(BuildContext context) {
     final locale = Localizations.localeOf(context);
     final is24HourFormat = L10n.of(context).alwaysUse24HourFormat == 'true';
-    
+
     if (is24HourFormat) {
       return DateFormat('HH:mm', locale.languageCode).format(this);
     } else {
@@ -40,7 +40,7 @@ extension DateTimeExtension on DateTime {
         final hour = this.hour;
         final minute = this.minute.toString().padLeft(2, '0');
         String period;
-        
+
         // 根据小时确定时间段
         if (hour >= 0 && hour < 6) {
           period = '凌晨';
@@ -57,10 +57,10 @@ extension DateTimeExtension on DateTime {
         } else {
           period = '晚上';
         }
-        
+
         // 转换为12小时制
         final hour12 = hour % 12 == 0 ? 12 : hour % 12;
-        
+
         return '$period $hour12:$minute';
       } else {
         // 其他语言使用标准格式
@@ -99,14 +99,14 @@ extension DateTimeExtension on DateTime {
     } else if (sameYear) {
       if (isZhLocale) {
         // 中文环境下使用 "M月d日" 格式
-        return '${month}月${day}日';
+        return '$month月$day日';
       } else {
         return DateFormat.MMMd(locale.languageCode).format(this);
       }
     }
     if (isZhLocale) {
       // 中文环境下使用 "yyyy年M月d日" 格式
-      return '${year}年${month}月${day}日';
+      return '$year年$month月$day日';
     } else {
       return DateFormat.yMMMd(locale.languageCode).format(this);
     }
@@ -123,7 +123,7 @@ extension DateTimeExtension on DateTime {
     final sameDay = sameYear && now.month == month && now.day == day;
 
     if (sameDay) return localizedTimeOfDay(context);
-    
+
     if (isZhLocale) {
       // 中文环境下日期和时间的组合方式
       return '${localizedTimeShort(context)} ${localizedTimeOfDay(context)}';

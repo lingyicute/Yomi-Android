@@ -79,7 +79,9 @@ class EmotesSettingsView extends StatelessWidget {
                       maxLines: 1,
                       decoration: InputDecoration(
                         filled: true,
-                        fillColor: Theme.of(context).colorScheme.surfaceVariant,
+                        fillColor: Theme.of(context)
+                            .colorScheme
+                            .surfaceContainerHighest,
                         hintText: L10n.of(context).emoteShortcode,
                         prefixText: ': ',
                         prefixStyle: TextStyle(
@@ -90,7 +92,8 @@ class EmotesSettingsView extends StatelessWidget {
                           borderRadius: BorderRadius.circular(16),
                           borderSide: BorderSide.none,
                         ),
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 8),
                       ),
                     ),
                   ),
@@ -176,7 +179,8 @@ class EmotesSettingsView extends StatelessWidget {
                                 maxLines: 1,
                                 decoration: InputDecoration(
                                   filled: true,
-                                  fillColor: theme.colorScheme.surfaceVariant,
+                                  fillColor:
+                                      theme.colorScheme.surfaceContainerHighest,
                                   hintText: L10n.of(context).emoteShortcode,
                                   prefixText: ': ',
                                   prefixStyle: TextStyle(
@@ -187,7 +191,8 @@ class EmotesSettingsView extends StatelessWidget {
                                     borderRadius: BorderRadius.circular(16),
                                     borderSide: BorderSide.none,
                                   ),
-                                  contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                                  contentPadding: const EdgeInsets.symmetric(
+                                      horizontal: 12, vertical: 8),
                                 ),
                                 onSubmitted: (s) =>
                                     controller.submitImageAction(

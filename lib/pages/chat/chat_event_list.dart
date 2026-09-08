@@ -6,7 +6,6 @@ import 'package:scroll_to_index/scroll_to_index.dart';
 import 'package:yomi/config/themes.dart';
 import 'package:yomi/pages/chat/chat.dart';
 import 'package:yomi/pages/chat/events/message.dart';
-import 'package:yomi/pages/chat/seen_by_row.dart';
 import 'package:yomi/pages/chat/typing_indicators.dart';
 import 'package:yomi/utils/account_config.dart';
 import 'package:yomi/utils/matrix_sdk_extensions/filtered_timeline_extension.dart';

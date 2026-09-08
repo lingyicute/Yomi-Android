@@ -268,11 +268,13 @@ class Message extends StatelessWidget {
                                     child: ownMessage || event.room.isDirectChat
                                         ? const SizedBox(height: 12)
                                         : FutureBuilder<User?>(
-                                            future: fetchSenderUserCached(event),
+                                            future:
+                                                fetchSenderUserCached(event),
                                             builder: (context, snapshot) {
                                               final displayname = snapshot.data
                                                       ?.calcDisplayname() ??
-                                                  event.senderFromMemoryOrFallback
+                                                  event
+                                                      .senderFromMemoryOrFallback
                                                       .calcDisplayname();
                                               return Text(
                                                 displayname,
@@ -306,7 +308,7 @@ class Message extends StatelessWidget {
                                 Container(
                                   alignment: alignment,
                                   padding: EdgeInsets.only(
-                                    left: 8, 
+                                    left: 8,
                                     right: ownMessage ? 0 : 12,
                                   ),
                                   child: GestureDetector(
@@ -320,7 +322,8 @@ class Message extends StatelessWidget {
                                       opacity: animateIn
                                           ? 0
                                           : event.messageType ==
-                                                      MessageTypes.BadEncrypted ||
+                                                      MessageTypes
+                                                          .BadEncrypted ||
                                                   event.status.isSending
                                               ? 0.5
                                               : 1,
@@ -340,18 +343,23 @@ class Message extends StatelessWidget {
                                             child: BubbleBackground(
                                               colors: colors,
                                               ignore: noBubble || !ownMessage,
-                                              scrollController: scrollController,
+                                              scrollController:
+                                                  scrollController,
                                               child: Container(
                                                 decoration: BoxDecoration(
-                                                  borderRadius: BorderRadius.circular(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
                                                     AppConfig.borderRadius,
                                                   ),
                                                 ),
                                                 constraints: BoxConstraints(
-                                                  maxWidth: LyiThemes.columnWidth * (ownMessage ? 1.5 : 1.7),
+                                                  maxWidth: LyiThemes
+                                                          .columnWidth *
+                                                      (ownMessage ? 1.5 : 1.7),
                                                 ),
                                                 child: Column(
-                                                  mainAxisSize: MainAxisSize.min,
+                                                  mainAxisSize:
+                                                      MainAxisSize.min,
                                                   crossAxisAlignment:
                                                       CrossAxisAlignment.start,
                                                   children: <Widget>[
@@ -362,43 +370,50 @@ class Message extends StatelessWidget {
                                                       event.relationshipType,
                                                     ))
                                                       FutureBuilder<Event?>(
-                                                        future: event
-                                                            .getReplyEvent(timeline),
+                                                        future:
+                                                            event.getReplyEvent(
+                                                                timeline),
                                                         builder: (
                                                           BuildContext context,
                                                           snapshot,
                                                         ) {
-                                                          final replyEvent = snapshot
-                                                                  .hasData
-                                                              ? snapshot.data!
-                                                              : Event(
-                                                                  eventId: event
-                                                                      .relationshipEventId!,
-                                                                  content: {
-                                                                    'msgtype':
-                                                                        'm.text',
-                                                                    'body': '...',
-                                                                  },
-                                                                  senderId:
-                                                                      event.senderId,
-                                                                  type:
-                                                                      'm.room.message',
-                                                                  room: event.room,
-                                                                  status: EventStatus
-                                                                      .sent,
-                                                                  originServerTs:
-                                                                      DateTime.now(),
-                                                                );
+                                                          final replyEvent =
+                                                              snapshot.hasData
+                                                                  ? snapshot
+                                                                      .data!
+                                                                  : Event(
+                                                                      eventId: event
+                                                                          .relationshipEventId!,
+                                                                      content: {
+                                                                        'msgtype':
+                                                                            'm.text',
+                                                                        'body':
+                                                                            '...',
+                                                                      },
+                                                                      senderId:
+                                                                          event
+                                                                              .senderId,
+                                                                      type:
+                                                                          'm.room.message',
+                                                                      room: event
+                                                                          .room,
+                                                                      status: EventStatus
+                                                                          .sent,
+                                                                      originServerTs:
+                                                                          DateTime
+                                                                              .now(),
+                                                                    );
                                                           return Padding(
                                                             padding:
-                                                                const EdgeInsets.only(
+                                                                const EdgeInsets
+                                                                    .only(
                                                               left: 16,
                                                               right: 16,
                                                               top: 8,
                                                             ),
                                                             child: Material(
-                                                              color:
-                                                                  Colors.transparent,
+                                                              color: Colors
+                                                                  .transparent,
                                                               borderRadius:
                                                                   ReplyContent
                                                                       .borderRadius,
@@ -408,10 +423,13 @@ class Message extends StatelessWidget {
                                                                         .borderRadius,
                                                                 onTap: () =>
                                                                     scrollToEventId(
-                                                                  replyEvent.eventId,
+                                                                  replyEvent
+                                                                      .eventId,
                                                                 ),
-                                                                child: AbsorbPointer(
-                                                                  child: ReplyContent(
+                                                                child:
+                                                                    AbsorbPointer(
+                                                                  child:
+                                                                      ReplyContent(
                                                                     replyEvent,
                                                                     ownMessage:
                                                                         ownMessage,
@@ -429,17 +447,20 @@ class Message extends StatelessWidget {
                                                       textColor: textColor,
                                                       linkColor: linkColor,
                                                       onInfoTab: onInfoTab,
-                                                      borderRadius: borderRadius,
+                                                      borderRadius:
+                                                          borderRadius,
                                                       timeline: timeline,
                                                       selected: selected,
                                                     ),
-                                                    if (event.hasAggregatedEvents(
+                                                    if (event
+                                                        .hasAggregatedEvents(
                                                       timeline,
                                                       RelationshipTypes.edit,
                                                     ))
                                                       Padding(
                                                         padding:
-                                                            const EdgeInsets.only(
+                                                            const EdgeInsets
+                                                                .only(
                                                           bottom: 8.0,
                                                           left: 16.0,
                                                           right: 16.0,
@@ -450,9 +471,11 @@ class Message extends StatelessWidget {
                                                           spacing: 4.0,
                                                           children: [
                                                             Icon(
-                                                              Icons.edit_outlined,
+                                                              Icons
+                                                                  .edit_outlined,
                                                               color: textColor
-                                                                  .withAlpha(164),
+                                                                  .withAlpha(
+                                                                      164),
                                                               size: 14,
                                                             ),
                                                             Text(
@@ -463,7 +486,8 @@ class Message extends StatelessWidget {
                                                               ),
                                                               style: TextStyle(
                                                                 color: textColor
-                                                                    .withAlpha(164),
+                                                                    .withAlpha(
+                                                                        164),
                                                                 fontSize: 11,
                                                               ),
                                                             ),
@@ -477,23 +501,38 @@ class Message extends StatelessWidget {
                                           ),
                                           if (ownMessage && event.status.isSent)
                                             Positioned(
-                                              left: -6, 
+                                              left: -6,
                                               bottom: -6,
                                               child: Builder(
                                                 builder: (context) {
                                                   // Cached with a short TTL: the uncached getter re-parses
                                                   // the room's receipts for every own message on every rebuild.
-                                                  final receipts = receiptsCached(event).where(
-                                                    (receipt) => receipt.user.id != event.senderId && receipt.user.id != event.room.client.userID
-                                                  ).toList();
-                                                  
+                                                  final receipts =
+                                                      receiptsCached(event)
+                                                          .where(
+                                                            (receipt) =>
+                                                                receipt.user
+                                                                        .id !=
+                                                                    event
+                                                                        .senderId &&
+                                                                receipt.user
+                                                                        .id !=
+                                                                    event
+                                                                        .room
+                                                                        .client
+                                                                        .userID,
+                                                          )
+                                                          .toList();
+
                                                   return ReadReceipt(
-                                                    hasReadReceipts: receipts.isNotEmpty,
+                                                    hasReadReceipts:
+                                                        receipts.isNotEmpty,
                                                     ownMessage: ownMessage,
-                                                    receiptsCount: receipts.length,
+                                                    receiptsCount:
+                                                        receipts.length,
                                                     receipts: receipts,
                                                   );
-                                                }
+                                                },
                                               ),
                                             ),
                                         ],
@@ -608,31 +647,31 @@ class Message extends StatelessWidget {
 
     return RepaintBoundary(
       child: Center(
-      child: Swipeable(
-        key: ValueKey(event.eventId),
-        background: const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 12.0),
-          child: Center(
-            child: Icon(Icons.check_outlined),
+        child: Swipeable(
+          key: ValueKey(event.eventId),
+          background: const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 12.0),
+            child: Center(
+              child: Icon(Icons.check_outlined),
+            ),
+          ),
+          direction: AppConfig.swipeRightToLeftToReply
+              ? SwipeDirection.endToStart
+              : SwipeDirection.startToEnd,
+          onSwipe: (_) => onSwipe(),
+          child: Container(
+            constraints: const BoxConstraints(
+              maxWidth: LyiThemes.columnWidth * 2.5,
+            ),
+            padding: EdgeInsets.only(
+              left: 8.0,
+              right: 8.0,
+              top: nextEventSameSender ? 1.0 : 4.0,
+              bottom: previousEventSameSender ? 1.0 : 4.0,
+            ),
+            child: container,
           ),
         ),
-        direction: AppConfig.swipeRightToLeftToReply
-            ? SwipeDirection.endToStart
-            : SwipeDirection.startToEnd,
-        onSwipe: (_) => onSwipe(),
-        child: Container(
-          constraints: const BoxConstraints(
-            maxWidth: LyiThemes.columnWidth * 2.5,
-          ),
-          padding: EdgeInsets.only(
-            left: 8.0,
-            right: 8.0,
-            top: nextEventSameSender ? 1.0 : 4.0,
-            bottom: previousEventSameSender ? 1.0 : 4.0,
-          ),
-          child: container,
-        ),
-      ),
       ),
     );
   }

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 import 'package:matrix/matrix.dart';
 
-import 'package:yomi/config/app_config.dart';
 import 'package:yomi/config/themes.dart';
 import 'package:yomi/utils/matrix_sdk_extensions/cached_futures.dart';
 import 'package:yomi/utils/stream_extension.dart';
@@ -38,7 +37,7 @@ class StatusMessageList extends StatelessWidget {
     if (client.userID == null) {
       return const SizedBox.shrink();
     }
-    
+
     final interestingPresences = client.interestingPresences;
 
     return StreamBuilder(
@@ -48,14 +47,14 @@ class StatusMessageList extends StatelessWidget {
           duration: LyiThemes.animationDuration,
           curve: Curves.easeInOut,
           child: FutureBuilder<List<CachedPresence>>(
-            initialData: client.userID != null 
+            initialData: client.userID != null
                 ? interestingPresences
                     // ignore: deprecated_member_use
                     .map((userId) => client.presences[userId])
                     .whereType<CachedPresence>()
                     .toList()
                 : <CachedPresence>[],
-            future: client.userID != null 
+            future: client.userID != null
                 ? Future.wait(
                     interestingPresences.map(
                       (userId) => client.fetchCurrentPresence(
@@ -63,12 +62,11 @@ class StatusMessageList extends StatelessWidget {
                         fetchOnlyFromCached: true,
                       ),
                     ),
-                  ) 
+                  )
                 : Future.value(<CachedPresence>[]),
             builder: (context, snapshot) {
-              final presences = snapshot.data
-                  ?.where(isInterestingPresence)
-                  .toList();
+              final presences =
+                  snapshot.data?.where(isInterestingPresence).toList();
 
               // If no other presences than the own entry is interesting, we
               // hide the presence header.
@@ -125,17 +123,17 @@ class PresenceAvatar extends StatelessWidget {
     if (text == null || text.isEmpty) {
       return null;
     }
-    
+
     // 匹配Unicode emoji的正则表达式
     final emojiRegex = RegExp(
       r'(\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])',
     );
-    
+
     final matches = emojiRegex.allMatches(text);
     if (matches.isNotEmpty) {
       return matches.first.group(0);
     }
-    
+
     return null;
   }
 
@@ -220,10 +218,11 @@ class PresenceAvatar extends StatelessWidget {
                                     width: 22,
                                     height: 22,
                                     decoration: BoxDecoration(
-                                      color: theme.colorScheme.primary.withOpacity(0.9),
+                                      color: theme.colorScheme.primary
+                                          .withValues(alpha: 0.9),
                                       borderRadius: BorderRadius.circular(11),
                                       border: Border.all(
-                                        color: theme.colorScheme.background,
+                                        color: theme.colorScheme.surface,
                                         width: 1.5,
                                       ),
                                     ),

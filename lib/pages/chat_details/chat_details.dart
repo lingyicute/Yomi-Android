@@ -8,7 +8,8 @@ import 'package:matrix/matrix.dart';
 import 'package:yomi/l10n/l10n.dart';
 import 'package:yomi/pages/chat_details/chat_details_view.dart';
 import 'package:yomi/pages/settings/settings.dart';
-import 'package:yomi/utils/client_download_content_extension.dart' as cache_utils;
+import 'package:yomi/utils/client_download_content_extension.dart'
+    as cache_utils;
 import 'package:yomi/utils/file_selector.dart';
 import 'package:yomi/utils/matrix_sdk_extensions/matrix_locals.dart';
 import 'package:yomi/utils/platform_infos.dart';
@@ -139,20 +140,20 @@ class ChatDetailsController extends State<ChatDetails> {
           );
     if (action == null) return;
     final oldAvatar = room?.avatar;
-    
+
     if (action == AvatarAction.remove) {
       final success = await showFutureLoadingDialog(
         context: context,
         future: () async {
           await room!.setAvatar(null);
-          
+
           // 清除旧头像缓存
           if (oldAvatar != null) {
             await Matrix.of(context).client.clearAvatarCache(oldAvatar);
           }
-          
+
           // 等待一小段时间以确保服务器端处理完成
-          await Future.delayed(Duration(milliseconds: 300));
+          await Future.delayed(const Duration(milliseconds: 300));
         },
       );
       if (success.error == null) {
@@ -186,28 +187,30 @@ class ChatDetailsController extends State<ChatDetails> {
         name: pickedFile.name,
       );
     }
-    
+
     final success = await showFutureLoadingDialog(
       context: context,
       future: () async {
         await room!.setAvatar(file);
-        
+
         // 清除旧头像缓存
         if (oldAvatar != null) {
           await Matrix.of(context).client.clearAvatarCache(oldAvatar);
         }
-        
+
         // 等待一小段时间以确保服务器端处理完成
-        await Future.delayed(Duration(milliseconds: 300));
-        
+        await Future.delayed(const Duration(milliseconds: 300));
+
         // 获取并刷新新头像
         final updatedRoom = Matrix.of(context).client.getRoomById(room.id);
         if (updatedRoom != null && updatedRoom.avatar != null) {
-          await Matrix.of(context).client.forceRefreshAvatar(updatedRoom.avatar);
+          await Matrix.of(context)
+              .client
+              .forceRefreshAvatar(updatedRoom.avatar);
         }
       },
     );
-    
+
     if (success.error == null) {
       setState(() {}); // 刷新界面
     }

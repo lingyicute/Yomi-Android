@@ -17,7 +17,6 @@ void showMemberActionsPopupMenu({
 }) async {
   final theme = Theme.of(context);
   final displayname = user.calcDisplayname();
-  final isMe = user.room.client.userID == user.id;
 
   final overlay = Overlay.of(context).context.findRenderObject() as RenderBox;
 

@@ -13,7 +13,6 @@ import 'package:yomi/pages/chat/chat.dart';
 import 'package:yomi/pages/chat/chat_app_bar_list_tile.dart';
 import 'package:yomi/pages/chat/chat_app_bar_title.dart';
 import 'package:yomi/pages/chat/chat_event_list.dart';
-import 'package:yomi/pages/chat/encryption_button.dart';
 import 'package:yomi/pages/chat/pinned_events.dart';
 import 'package:yomi/pages/chat/reactions_picker.dart';
 import 'package:yomi/pages/chat/reply_display.dart';

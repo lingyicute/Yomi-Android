@@ -69,7 +69,7 @@ class HomeserverPickerController extends State<HomeserverPicker> {
     final l10n = L10n.of(context);
 
     try {
-      var homeserver = Uri.https('chat.92li.uk', '');
+      final homeserver = Uri.https('chat.92li.uk', '');
       final client = Matrix.of(context).getLoginClient();
       final (_, _, loginFlows) = await client.checkHomeserver(homeserver);
       this.loginFlows = loginFlows;

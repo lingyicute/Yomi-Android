@@ -3,12 +3,10 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 
 import 'package:dynamic_color/dynamic_color.dart';
-import 'package:matrix/matrix.dart';
 
 import 'package:yomi/config/setting_keys.dart';
 import 'package:yomi/config/themes.dart';
 import 'package:yomi/l10n/l10n.dart';
-import 'package:yomi/pages/chat/events/state_message.dart';
 import 'package:yomi/utils/account_config.dart';
 import 'package:yomi/utils/color_value.dart';
 import 'package:yomi/widgets/avatar.dart';

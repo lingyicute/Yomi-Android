@@ -23,7 +23,6 @@ class SettingsView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final showChatBackupBanner = controller.showChatBackupBanner;
     final activeRoute =
         GoRouter.of(context).routeInformationProvider.value.uri.path;
     final accountManageUrl = Matrix.of(context)
@@ -81,7 +80,8 @@ class SettingsView extends StatelessWidget {
                                   mxContent: avatar,
                                   name: displayname,
                                   size: Avatar.defaultSize * 2.5,
-                                  key: ValueKey('avatar_${controller.avatarUpdateTimestamp}'),
+                                  key: ValueKey(
+                                      'avatar_${controller.avatarUpdateTimestamp}'),
                                   onTap: avatar != null
                                       ? () => showDialog(
                                             context: context,
