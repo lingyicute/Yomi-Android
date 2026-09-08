@@ -235,8 +235,8 @@ class MessageContent extends StatelessWidget {
             if (event.redacted) {
               return FutureBuilder<User?>(
                 future: event.redactedBecause == null
-                  ? null
-                  : fetchSenderUserCached(event.redactedBecause!),
+                    ? null
+                    : fetchSenderUserCached(event.redactedBecause!),
                 builder: (context, snapshot) {
                   final reason =
                       event.redactedBecause?.content.tryGet<String>('reason');
@@ -283,7 +283,9 @@ class MessageContent extends StatelessWidget {
                 textStyle: AppConfig.emojiTextStyle(
                   style: TextStyle(
                     color: textColor,
-                    fontSize: AppConfig.fontSizeFactor * AppConfig.messageFontSize * (bigEmotes ? 5 : 1),
+                    fontSize: AppConfig.fontSizeFactor *
+                        AppConfig.messageFontSize *
+                        (bigEmotes ? 5 : 1),
                   ),
                 ),
                 limitHeight: !selected,

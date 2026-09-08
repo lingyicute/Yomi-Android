@@ -13,8 +13,7 @@ extension UiaRequestManager on MatrixState {
   Future uiaRequestHandler(UiaRequest uiaRequest) async {
     final l10n = L10n.of(context);
     final navigatorContext =
-        YomiApp.router.routerDelegate.navigatorKey.currentContext ??
-            context;
+        YomiApp.router.routerDelegate.navigatorKey.currentContext ?? context;
     try {
       if (uiaRequest.state != UiaRequestState.waitForUser ||
           uiaRequest.nextStages.isEmpty) {

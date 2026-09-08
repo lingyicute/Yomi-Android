@@ -46,8 +46,7 @@ class YomiApp extends StatelessWidget {
         title: AppConfig.applicationName,
         themeMode: themeMode,
         theme: LyiThemes.buildTheme(context, Brightness.light, primaryColor),
-        darkTheme:
-            LyiThemes.buildTheme(context, Brightness.dark, primaryColor),
+        darkTheme: LyiThemes.buildTheme(context, Brightness.dark, primaryColor),
         scrollBehavior: CustomScrollBehavior(),
         localizationsDelegates: L10n.localizationsDelegates,
         supportedLocales: L10n.supportedLocales,

@@ -877,7 +877,7 @@ class ChatController extends State<ChatPageWithRoom>
     if (isArchived) return false;
     final clients = Matrix.of(context).currentBundle;
     if (clients == null) return false;
-    
+
     for (final event in selectedEvents) {
       if (!event.status.isSent) return false;
       if (event.canRedact == false &&
@@ -906,8 +906,9 @@ class ChatController extends State<ChatPageWithRoom>
     }
     final bundle = currentRoomBundle;
     if (bundle.isEmpty) return false;
-    
-    return bundle.any((cl) => cl != null && selectedEvents.first.senderId == cl.userID);
+
+    return bundle
+        .any((cl) => cl != null && selectedEvents.first.senderId == cl.userID);
   }
 
   void forwardEventsAction() async {

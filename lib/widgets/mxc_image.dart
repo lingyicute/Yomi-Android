@@ -214,24 +214,26 @@ class _MxcImageState extends State<MxcImage> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback(_tryLoad);
   }
-  
+
   @override
   void didUpdateWidget(MxcImage oldWidget) {
     super.didUpdateWidget(oldWidget);
-    
+
     // 当URI变化时，重新加载图片（包括从null到有值，或从有值到null的情况）
     final oldUri = oldWidget.uri;
     final newUri = widget.uri;
-    
+
     // 检查URI是否发生变化（包括从null到有值或从有值到null）
-    final uriChanged = (oldUri == null && newUri != null) || 
-                       (oldUri != null && newUri == null) ||
-                       (oldUri != null && newUri != null && oldUri.toString() != newUri.toString());
-                       
+    final uriChanged = (oldUri == null && newUri != null) ||
+        (oldUri != null && newUri == null) ||
+        (oldUri != null &&
+            newUri != null &&
+            oldUri.toString() != newUri.toString());
+
     // 检查key或缓存键是否发生变化
     final keyChanged = widget.key != oldWidget.key;
     final cacheKeyChanged = widget.cacheKey != oldWidget.cacheKey;
-    
+
     if (uriChanged || keyChanged || cacheKeyChanged) {
       // 注意：不再在此处清除缓存。缓存是多个组件共享的（例如同一尺寸的同
       // 一头像），随意清除会导致其他组件被迫重新下载/解码，反而造成卡顿。

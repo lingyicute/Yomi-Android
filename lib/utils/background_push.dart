@@ -331,7 +331,9 @@ class BackgroundPush {
     if (_polling) return;
     _polling = true;
     var backoff = _minBackoff;
-    Logs().i('[Push] Starting local /sync loop (timeout=${syncTimeout.inSeconds}s)');
+    Logs().i(
+      '[Push] Starting local /sync loop (timeout=${syncTimeout.inSeconds}s)',
+    );
     try {
       while (_wantPolling) {
         if (matrix != null) {

@@ -32,8 +32,9 @@ Future<void> _clearAvatarCacheImpl(Client client, Uri? mxc) async {
 
     for (final size in thumbnailSizes) {
       try {
-        // ignore: deprecated_member_use -- 必须与 downloadMxcCached 的 legacy 存 key 保持一致，
+        // 必须与 downloadMxcCached 的 legacy 存 key 保持一致，
         // 新的 getThumbnailUri 在 authenticated-media 服务器上返回 v1 路径，会导致删错 key
+        // ignore: deprecated_member_use
         final thumbnailKey = mxc.getThumbnail(
           client,
           width: size[0],

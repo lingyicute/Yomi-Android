@@ -5,11 +5,13 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:yomi/config/themes.dart';
 import 'package:yomi/l10n/l10n.dart';
 import 'package:yomi/widgets/app_lock.dart';
+
 class LockScreen extends StatefulWidget {
   const LockScreen({super.key});
   @override
   State<LockScreen> createState() => _LockScreenState();
 }
+
 class _LockScreenState extends State<LockScreen> {
   String? _errorText;
   int _coolDownSeconds = 5;
@@ -50,6 +52,7 @@ class _LockScreenState extends State<LockScreen> {
     });
     _textEditingController.clear();
   }
+
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
