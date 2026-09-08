@@ -2,6 +2,8 @@
 
 ![image](https://github.com/lingyicute/Yomi-Web/blob/main/icons/Icon-192.png)
 
+[English] | [简体中文](./README.zh.md) 
+
 [Yomi](https://yomi.92li.uk) is an open source [matrix](https://matrix.org) client written in [Flutter](https://flutter.dev). Carrying forward [Fluffychat](https://github.com/krille-chan/fluffychat)'s vision, Yomi is striving to create an easy-to-use instant messenger which is libre and accessible for everyone.
 
 ## Features
@@ -32,7 +34,7 @@
 ## 🗂️ License
 
 Yomi is released under the GNU Affero General Public License v3.0 (AGPLv3).
-Copyright (C) 2024-2026 lingyicute.
+Copyright (C) 2025-2026 lingyicute.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
