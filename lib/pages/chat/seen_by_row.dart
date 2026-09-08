@@ -24,9 +24,8 @@ class SeenByRow extends StatelessWidget {
         constraints:
             const BoxConstraints(maxWidth: LyiThemes.columnWidth * 2.5),
         height: seenByUsers.isEmpty ? 0 : 24,
-        duration: seenByUsers.isEmpty
-            ? Duration.zero
-            : LyiThemes.animationDuration,
+        duration:
+            seenByUsers.isEmpty ? Duration.zero : LyiThemes.animationDuration,
         curve: LyiThemes.animationCurve,
         alignment: controller.timeline!.events.isNotEmpty &&
                 controller.timeline!.events.first.senderId ==
@@ -74,7 +73,7 @@ class ReadReceipt extends StatelessWidget {
   final bool ownMessage;
   final int receiptsCount;
   final List<Receipt> receipts;
-  
+
   const ReadReceipt({
     super.key,
     required this.hasReadReceipts,
@@ -86,9 +85,9 @@ class ReadReceipt extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (!hasReadReceipts) return const SizedBox.shrink();
-    
+
     final theme = Theme.of(context);
-    
+
     return Material(
       type: MaterialType.transparency,
       child: InkWell(
@@ -104,12 +103,12 @@ class ReadReceipt extends StatelessWidget {
             shape: BoxShape.circle,
             color: theme.colorScheme.primary,
             border: Border.all(
-              color: theme.colorScheme.background,
+              color: theme.colorScheme.surface,
               width: 1.5,
             ),
             boxShadow: [
               BoxShadow(
-                color: theme.colorScheme.shadow.withOpacity(0.3),
+                color: theme.colorScheme.shadow.withValues(alpha: 0.3),
                 blurRadius: 2,
                 spreadRadius: 0.5,
                 offset: const Offset(0, 1),
@@ -136,13 +135,13 @@ class ReadReceipt extends StatelessWidget {
       ),
     );
   }
-  
+
   void _showReadReceiptUsers(BuildContext context) {
     showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text('已读用户'),
+          title: const Text('已读用户'),
           content: SizedBox(
             width: double.maxFinite,
             child: ListView.builder(
@@ -164,7 +163,7 @@ class ReadReceipt extends StatelessWidget {
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: Text('关闭'),
+              child: const Text('关闭'),
             ),
           ],
         );

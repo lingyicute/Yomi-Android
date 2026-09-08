@@ -536,7 +536,7 @@ class ChatListController extends State<ChatList>
     waitForFirstSync = false;
     _waitForFirstSync();
     _hackyWebRTCFixForWeb();
-    
+
     // 确保在组件挂载后尝试刷新
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (mounted) {
@@ -544,7 +544,7 @@ class ChatListController extends State<ChatList>
             Matrix.of(context).store.getString(_serverStoreNamespace);
         Matrix.of(context).backgroundPush?.setupPush();
         UpdateNotifier.showUpdateSnackBar(context);
-        
+
         // 组件挂载后延迟500ms尝试刷新，确保即使_waitForFirstSync出问题也能显示列表
         Future.delayed(const Duration(milliseconds: 500), () {
           if (mounted) forceRefresh();
@@ -563,24 +563,10 @@ class ChatListController extends State<ChatList>
   }
 
   RouteInformationProvider? _listenedRouteProvider;
-  bool _willPopCallbackRegistered = false;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    // 使用更安全的方式注册路由监听。
-    // 注意：didChangeDependencies 会被多次调用，原实现每次都会重复注册
-    // willPop 回调和路由监听，导致 forceRefresh 越积越多（setState 风暴）。
-    if (!_willPopCallbackRegistered) {
-      final route = ModalRoute.of(context);
-      if (route != null) {
-        _willPopCallbackRegistered = true;
-        route.addScopedWillPopCallback(() async {
-          if (mounted) forceRefresh();
-          return true;
-        });
-      }
-    }
 
     final routeProvider = GoRouter.of(context).routeInformationProvider;
     if (!identical(routeProvider, _listenedRouteProvider)) {
@@ -896,19 +882,19 @@ class ChatListController extends State<ChatList>
   Future<void> _waitForFirstSync() async {
     final router = GoRouter.of(context);
     final client = Matrix.of(context).client;
-    
+
     // 退出登录后重新登录需要重置状态
     if (mounted) {
       setState(() {
         waitForFirstSync = false;
       });
     }
-    
+
     try {
       await client.roomsLoading;
       await client.accountDataLoading;
       await client.userDeviceKeysLoading;
-      
+
       if (client.prevBatch == null) {
         await client.onSync.stream.first;
 
@@ -921,7 +907,7 @@ class ChatListController extends State<ChatList>
           }
         }
       }
-      
+
       if (!mounted) return;
 
       // 使用更安全的方式更新状态
@@ -941,7 +927,7 @@ class ChatListController extends State<ChatList>
     }
 
     if (!mounted) return;
-    
+
     if (client.userDeviceKeys[client.userID!]?.deviceKeys.values
             .any((device) => !device.verified && !device.blocked) ??
         false) {
@@ -995,7 +981,8 @@ class ChatListController extends State<ChatList>
       Matrix.of(context).activeBundle = bundle;
       // 添加安全检查，确保currentBundle不为null且不为空
       final currentBundle = Matrix.of(context).currentBundle;
-      if (currentBundle != null && currentBundle.isNotEmpty && 
+      if (currentBundle != null &&
+          currentBundle.isNotEmpty &&
           !currentBundle.any((client) => client == Matrix.of(context).client)) {
         if (currentBundle.first != null) {
           Matrix.of(context).setActiveClient(currentBundle.first);
@@ -1071,7 +1058,13 @@ class ChatListController extends State<ChatList>
   }
 
   @override
-  Widget build(BuildContext context) => ChatListView(this);
+  Widget build(BuildContext context) => PopScope(
+        canPop: true,
+        onPopInvokedWithResult: (didPop, result) {
+          if (didPop && mounted) forceRefresh();
+        },
+        child: ChatListView(this),
+      );
 
   void _hackyWebRTCFixForWeb() {
     ChatList.contextForVoip = context;

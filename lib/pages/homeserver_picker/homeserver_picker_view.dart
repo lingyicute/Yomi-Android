@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
 
 import 'package:flutter_linkify/flutter_linkify.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
-import 'package:yomi/config/app_config.dart';
 import 'package:yomi/l10n/l10n.dart';
-import 'package:yomi/widgets/adaptive_dialogs/adaptive_dialog_action.dart';
 import 'package:yomi/widgets/layouts/login_scaffold.dart';
 import 'package:yomi/widgets/matrix.dart';
 import '../../config/themes.dart';
@@ -99,7 +96,8 @@ class HomeserverPickerView extends StatelessWidget {
                   const SizedBox(height: 48),
                   Container(
                     alignment: Alignment.center,
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 16.0),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 8.0, vertical: 16.0),
                     child: Hero(
                       tag: 'info-logo',
                       child: Image.asset(
@@ -133,7 +131,9 @@ class HomeserverPickerView extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         SizedBox(
-                          width: MediaQuery.of(context).size.width > 400 ? 200 : double.infinity,
+                          width: MediaQuery.of(context).size.width > 400
+                              ? 200
+                              : double.infinity,
                           child: FilledButton(
                             style: FilledButton.styleFrom(
                               shape: RoundedRectangleBorder(
@@ -148,9 +148,10 @@ class HomeserverPickerView extends StatelessWidget {
                                 ? const SizedBox(
                                     height: 20,
                                     width: 20,
-                                    child: CircularProgressIndicator(strokeWidth: 2),
+                                    child: CircularProgressIndicator(
+                                        strokeWidth: 2),
                                   )
-                                : Row(
+                                : const Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       Text(
@@ -160,8 +161,11 @@ class HomeserverPickerView extends StatelessWidget {
                                           fontWeight: FontWeight.w500,
                                         ),
                                       ),
-                                      const SizedBox(width: 8),
-                                      const Icon(Icons.arrow_forward_rounded, size: 18),
+                                      SizedBox(width: 8),
+                                      Icon(
+                                        Icons.arrow_forward_rounded,
+                                        size: 18,
+                                      ),
                                     ],
                                   ),
                           ),

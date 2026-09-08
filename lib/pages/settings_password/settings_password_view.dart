@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-import 'package:go_router/go_router.dart';
-
 import 'package:yomi/l10n/l10n.dart';
 import 'package:yomi/pages/settings_password/settings_password.dart';
 import 'package:yomi/widgets/layouts/max_width_body.dart';

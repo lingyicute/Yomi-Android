@@ -7,7 +7,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:matrix/matrix.dart';
 
 import 'package:yomi/l10n/l10n.dart';
-import 'package:yomi/utils/client_download_content_extension.dart' as cache_utils;
+import 'package:yomi/utils/client_download_content_extension.dart'
+    as cache_utils;
 import 'package:yomi/utils/file_selector.dart';
 import 'package:yomi/utils/matrix_sdk_extensions/cached_futures.dart';
 import 'package:yomi/utils/platform_infos.dart';
@@ -30,7 +31,7 @@ class SettingsController extends State<Settings> {
   Future<Profile>? profileFuture;
   bool profileUpdated = false;
   int _avatarUpdateTimestamp = DateTime.now().millisecondsSinceEpoch;
-  
+
   // 公共访问器
   int get avatarUpdateTimestamp => _avatarUpdateTimestamp;
 
@@ -123,20 +124,20 @@ class SettingsController extends State<Settings> {
     if (action == null) return;
     final matrix = Matrix.of(context);
     final oldAvatarUrl = profile?.avatarUrl;
-    
+
     if (action == AvatarAction.remove) {
       final success = await showFutureLoadingDialog(
         context: context,
         future: () async {
           await matrix.client.setAvatar(null);
-          
+
           if (oldAvatarUrl != null) {
             await matrix.client.clearAvatarCache(oldAvatarUrl);
           }
-          
+
           // 等待一小段时间以确保服务器端处理完成
-          await Future.delayed(Duration(milliseconds: 300));
-          
+          await Future.delayed(const Duration(milliseconds: 300));
+
           return;
         },
       );
@@ -170,32 +171,31 @@ class SettingsController extends State<Settings> {
         name: pickedFile.name,
       );
     }
-    
+
     final success = await showFutureLoadingDialog(
       context: context,
       future: () async {
         await matrix.client.setAvatar(file);
-        
+
         if (oldAvatarUrl != null) {
           await matrix.client.clearAvatarCache(oldAvatarUrl);
         }
-        
+
         // 等待一小段时间以确保服务器端处理完成
         await Future.delayed(Duration(milliseconds: 300));
-        
+
         final newProfile = await matrix.client.getProfileFromUserId(
           matrix.client.userID!,
-          getFromRooms: false,
         );
-        
+
         if (newProfile.avatarUrl != null) {
           await matrix.client.forceRefreshAvatar(newProfile.avatarUrl);
         }
-        
+
         return;
       },
     );
-    
+
     if (success.error == null) {
       updateProfile();
     }

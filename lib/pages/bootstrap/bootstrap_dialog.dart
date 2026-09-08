@@ -511,10 +511,12 @@ class BootstrapDialogState extends State<BootstrapDialog> {
             children: [
               body,
               if (buttons.isNotEmpty) const SizedBox(height: 16),
-              ...buttons.map((button) => SizedBox(
-                    width: min(MediaQuery.of(context).size.width * 0.8, 320),
-                    child: button,
-                  )),
+              ...buttons.map(
+                (button) => SizedBox(
+                  width: min(MediaQuery.of(context).size.width * 0.8, 320),
+                  child: button,
+                ),
+              ),
             ],
           ),
         ),

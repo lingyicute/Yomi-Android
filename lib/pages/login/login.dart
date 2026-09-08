@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:matrix/matrix.dart';
 
 import 'package:yomi/l10n/l10n.dart';
-import 'package:yomi/utils/localized_exception_extension.dart';
 import 'package:yomi/widgets/adaptive_dialogs/show_ok_cancel_alert_dialog.dart';
 import 'package:yomi/widgets/adaptive_dialogs/show_text_input_dialog.dart';
 import 'package:yomi/widgets/future_loading_dialog.dart';
@@ -38,7 +37,7 @@ class LoginController extends State<Login> {
     } else {
       // 验证用户名格式
       validateUsername(usernameController.text);
-      
+
       // 如果有错误，直接返回
       if (usernameError != null) {
         return;
@@ -50,7 +49,9 @@ class LoginController extends State<Login> {
       setState(() => passwordError = null);
     }
 
-    if (usernameController.text.isEmpty || passwordController.text.isEmpty || usernameError != null) {
+    if (usernameController.text.isEmpty ||
+        passwordController.text.isEmpty ||
+        usernameError != null) {
       return;
     }
 
@@ -61,13 +62,13 @@ class LoginController extends State<Login> {
     try {
       // 构建正确的用户名格式 @username:92li.uk
       // 移除可能的前导@符号
-      String cleanUsername = usernameController.text;
+      var cleanUsername = usernameController.text;
       if (cleanUsername.startsWith('@')) {
         cleanUsername = cleanUsername.substring(1);
       }
-      final username = "@${cleanUsername}:92li.uk";
-      AuthenticationIdentifier identifier = AuthenticationUserIdentifier(user: username);
-      
+      final username = '@$cleanUsername:92li.uk';
+      final identifier = AuthenticationUserIdentifier(user: username);
+
       await matrix.getLoginClient().login(
             LoginType.mLoginPassword,
             identifier: identifier,
@@ -100,7 +101,7 @@ class LoginController extends State<Login> {
   void validateUsername(String userId) {
     // 检查用户名是否包含非法字符
     final hasInvalidChars = userId.contains(':') || userId.contains('@');
-    
+
     setState(() {
       if (hasInvalidChars) {
         usernameError = '用户名不应包含 @ 或 : 字符';
@@ -108,10 +109,6 @@ class LoginController extends State<Login> {
         usernameError = null;
       }
     });
-  }
-
-  void _checkWellKnown(String userId) async {
-    // 同样不再需要检查 well-known
   }
 
   void passwordForgotten() async {
@@ -196,11 +193,7 @@ class LoginController extends State<Login> {
 }
 
 extension on String {
-  static final RegExp _phoneRegex =
-      RegExp(r'^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\./0-9]*$');
   static final RegExp _emailRegex = RegExp(r'(.+)@(.+)\.(.+)');
 
   bool get isEmail => _emailRegex.hasMatch(this);
-
-  bool get isPhoneNumber => _phoneRegex.hasMatch(this);
 }

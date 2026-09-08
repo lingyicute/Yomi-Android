@@ -198,14 +198,14 @@ class ChatListViewBody extends StatelessWidget {
                       Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          SizedBox(height: 50),
+                          const SizedBox(height: 50),
                           Stack(
                             alignment: Alignment.center,
                             children: [
                               Icon(
-                                  CupertinoIcons.bubble_left_bubble_right,
-                                  size: 77,
-                                  color: theme.colorScheme.primary,
+                                CupertinoIcons.bubble_left_bubble_right,
+                                size: 77,
+                                color: theme.colorScheme.primary,
                               ),
                             ],
                           ),
@@ -240,7 +240,9 @@ class ChatListViewBody extends StatelessWidget {
                     childCount: dummyChatCount,
                   ),
                 ),
-              if (client.prevBatch != null && (controller.waitForFirstSync || (rooms.isNotEmpty && !rooms.first.partial)))
+              if (client.prevBatch != null &&
+                  (controller.waitForFirstSync ||
+                      (rooms.isNotEmpty && !rooms.first.partial)))
                 SliverList.builder(
                   itemCount: rooms.length,
                   itemBuilder: (BuildContext context, int i) {

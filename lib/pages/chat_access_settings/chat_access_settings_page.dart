@@ -45,19 +45,26 @@ class ChatAccessSettingsPageView extends StatelessWidget {
                     ),
                   ),
                 ),
-                for (final historyVisibility in HistoryVisibility.values)
-                  RadioListTile<HistoryVisibility>.adaptive(
-                    title: Text(
-                      historyVisibility
-                          .getLocalizedString(MatrixLocals(L10n.of(context))),
-                    ),
-                    value: historyVisibility,
-                    groupValue: room.historyVisibility,
-                    onChanged: controller.historyVisibilityLoading ||
-                            !room.canChangeHistoryVisibility
-                        ? null
-                        : controller.setHistoryVisibility,
+                RadioGroup<HistoryVisibility>(
+                  groupValue: room.historyVisibility,
+                  onChanged: controller.setHistoryVisibility,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      for (final historyVisibility in HistoryVisibility.values)
+                        RadioListTile<HistoryVisibility>.adaptive(
+                          title: Text(
+                            historyVisibility.getLocalizedString(
+                              MatrixLocals(L10n.of(context)),
+                            ),
+                          ),
+                          value: historyVisibility,
+                          enabled: !controller.historyVisibilityLoading &&
+                              room.canChangeHistoryVisibility,
+                        ),
+                    ],
                   ),
+                ),
                 Divider(color: theme.dividerColor),
                 ListTile(
                   title: Text(
@@ -68,19 +75,25 @@ class ChatAccessSettingsPageView extends StatelessWidget {
                     ),
                   ),
                 ),
-                for (final joinRule in controller.availableJoinRules)
-                  if (joinRule != JoinRules.private)
-                    RadioListTile<JoinRules>.adaptive(
-                      title: Text(
-                        joinRule.localizedString(L10n.of(context)),
-                      ),
-                      value: joinRule,
-                      groupValue: room.joinRules,
-                      onChanged: controller.joinRulesLoading ||
-                              !room.canChangeJoinRules
-                          ? null
-                          : controller.setJoinRule,
-                    ),
+                RadioGroup<JoinRules>(
+                  groupValue: room.joinRules,
+                  onChanged: controller.setJoinRule,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      for (final joinRule in controller.availableJoinRules)
+                        if (joinRule != JoinRules.private)
+                          RadioListTile<JoinRules>.adaptive(
+                            title: Text(
+                              joinRule.localizedString(L10n.of(context)),
+                            ),
+                            value: joinRule,
+                            enabled: !controller.joinRulesLoading &&
+                                room.canChangeJoinRules,
+                          ),
+                    ],
+                  ),
+                ),
                 Divider(color: theme.dividerColor),
                 if ({JoinRules.public, JoinRules.knock}
                     .contains(room.joinRules)) ...[
@@ -93,20 +106,26 @@ class ChatAccessSettingsPageView extends StatelessWidget {
                       ),
                     ),
                   ),
-                  for (final guestAccess in GuestAccess.values)
-                    RadioListTile<GuestAccess>.adaptive(
-                      title: Text(
-                        guestAccess.getLocalizedString(
-                          MatrixLocals(L10n.of(context)),
-                        ),
-                      ),
-                      value: guestAccess,
-                      groupValue: room.guestAccess,
-                      onChanged: controller.guestAccessLoading ||
-                              !room.canChangeGuestAccess
-                          ? null
-                          : controller.setGuestAccess,
+                  RadioGroup<GuestAccess>(
+                    groupValue: room.guestAccess,
+                    onChanged: controller.setGuestAccess,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        for (final guestAccess in GuestAccess.values)
+                          RadioListTile<GuestAccess>.adaptive(
+                            title: Text(
+                              guestAccess.getLocalizedString(
+                                MatrixLocals(L10n.of(context)),
+                              ),
+                            ),
+                            value: guestAccess,
+                            enabled: !controller.guestAccessLoading &&
+                                room.canChangeGuestAccess,
+                          ),
+                      ],
                     ),
+                  ),
                   Divider(color: theme.dividerColor),
                   ListTile(
                     title: Text(
@@ -165,18 +184,16 @@ class ChatAccessSettingsPageView extends StatelessWidget {
                       );
                     },
                   ),
-                    Divider(color: theme.dividerColor),
-                    FutureBuilder(
+                  Divider(color: theme.dividerColor),
+                  FutureBuilder(
                     future: room.client.getRoomVisibilityOnDirectory(room.id),
                     builder: (context, snapshot) => SwitchListTile.adaptive(
                       value: snapshot.data == Visibility.public,
-                      title: Text(
-                      '允许通过搜索找到该房间',
-                      ),
+                      title: const Text('允许通过搜索找到该房间'),
                       onChanged: controller.setChatVisibilityOnDirectory,
                     ),
-                    ),
-                  ],
+                  ),
+                ],
                 ListTile(
                   title: Text(L10n.of(context).globalChatId),
                   subtitle: SelectableText(room.id),
