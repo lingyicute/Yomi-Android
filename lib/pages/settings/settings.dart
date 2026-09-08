@@ -182,7 +182,7 @@ class SettingsController extends State<Settings> {
         }
 
         // 等待一小段时间以确保服务器端处理完成
-        await Future.delayed(Duration(milliseconds: 300));
+        await Future.delayed(const Duration(milliseconds: 300));
 
         final newProfile = await matrix.client.getProfileFromUserId(
           matrix.client.userID!,

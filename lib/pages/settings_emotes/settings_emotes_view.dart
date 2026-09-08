@@ -192,7 +192,9 @@ class EmotesSettingsView extends StatelessWidget {
                                     borderSide: BorderSide.none,
                                   ),
                                   contentPadding: const EdgeInsets.symmetric(
-                                      horizontal: 12, vertical: 8),
+                                    horizontal: 12,
+                                    vertical: 8,
+                                  ),
                                 ),
                                 onSubmitted: (s) =>
                                     controller.submitImageAction(

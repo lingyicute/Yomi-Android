@@ -113,8 +113,11 @@ Future<void> clearAvatarCache(Client client, Uri? mxc) async {
 }
 
 // 为了向后兼容，保留原始的全局函数
-Future<Uint8List?> forceRefreshAvatar(Client client, Uri? mxc,
-    {double size = 110}) async {
+Future<Uint8List?> forceRefreshAvatar(
+  Client client,
+  Uri? mxc, {
+  double size = 110,
+}) async {
   return await _forceRefreshAvatarImpl(client, mxc, size: size);
 }
 

@@ -81,7 +81,8 @@ class SettingsView extends StatelessWidget {
                                   name: displayname,
                                   size: Avatar.defaultSize * 2.5,
                                   key: ValueKey(
-                                      'avatar_${controller.avatarUpdateTimestamp}'),
+                                    'avatar_${controller.avatarUpdateTimestamp}',
+                                  ),
                                   onTap: avatar != null
                                       ? () => showDialog(
                                             context: context,

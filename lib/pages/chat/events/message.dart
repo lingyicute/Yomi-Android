@@ -372,7 +372,8 @@ class Message extends StatelessWidget {
                                                       FutureBuilder<Event?>(
                                                         future:
                                                             event.getReplyEvent(
-                                                                timeline),
+                                                          timeline,
+                                                        ),
                                                         builder: (
                                                           BuildContext context,
                                                           snapshot,
@@ -475,7 +476,8 @@ class Message extends StatelessWidget {
                                                                   .edit_outlined,
                                                               color: textColor
                                                                   .withAlpha(
-                                                                      164),
+                                                                164,
+                                                              ),
                                                               size: 14,
                                                             ),
                                                             Text(
@@ -487,7 +489,8 @@ class Message extends StatelessWidget {
                                                               style: TextStyle(
                                                                 color: textColor
                                                                     .withAlpha(
-                                                                        164),
+                                                                  164,
+                                                                ),
                                                                 fontSize: 11,
                                                               ),
                                                             ),
