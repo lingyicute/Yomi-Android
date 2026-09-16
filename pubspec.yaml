@@ -2,7 +2,7 @@ name: yomi
 description: Chat with your friends.
 publish_to: none
 # On version bump also increase the build number for F-Droid
-version: 2.0.9+7796
+version: 2.1.0+7799
 
 environment:
   sdk: ">=3.0.0 <4.0.0"
