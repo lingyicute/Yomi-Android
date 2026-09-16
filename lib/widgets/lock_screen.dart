@@ -364,6 +364,10 @@ class PinFieldState extends State<PinField> with TextInputClient {
     final colorScheme = Theme.of(context).colorScheme;
     const pillRadius = BorderRadius.all(Radius.circular(32));
     final text = _value.text;
+    // Empty: one star per slot as the placeholder; typing: one dot per
+    // accepted digit (slots disappear as before).
+    final displayedChars =
+        text.isEmpty ? '✱' * widget.pinLength : '•' * text.length;
     final hasError = widget.errorText != null;
     final focused = isAttached && !widget.blocked;
     return Column(
@@ -394,17 +398,27 @@ class PinFieldState extends State<PinField> with TextInputClient {
                           : Colors.transparent,
                 ),
               ),
-              child: Text(
-                text.isEmpty ? '✱✱✱✱' : '•' * text.length,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: text.isEmpty ? 28 : 32,
-                  letterSpacing: 14,
-                  fontWeight: text.isEmpty ? null : FontWeight.w600,
-                  color: text.isEmpty
-                      ? colorScheme.onSurfaceVariant.withAlpha(100)
-                      : colorScheme.onSurface,
-                ),
+              // Render each glyph in its own Text instead of one string
+              // with letterSpacing: Flutter measures the line box with
+              // trailing spacing after the LAST glyph too, so the visible
+              // ink ends up letterSpacing / 2 to the left of center.
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  for (var i = 0; i < displayedChars.length; i++) ...[
+                    if (i > 0) const SizedBox(width: 14),
+                    Text(
+                      displayedChars[i],
+                      style: TextStyle(
+                        fontSize: text.isEmpty ? 28 : 32,
+                        fontWeight: text.isEmpty ? null : FontWeight.w600,
+                        color: text.isEmpty
+                            ? colorScheme.onSurfaceVariant.withAlpha(100)
+                            : colorScheme.onSurface,
+                      ),
+                    ),
+                  ],
+                ],
               ),
             ),
           ),
