@@ -29,6 +29,63 @@ class _LockScreenState extends State<LockScreen> {
   Timer? _coolDownTimer;
   final TextEditingController _textEditingController = TextEditingController();
 
+  // TODO-DIAG(v2): throwaway on-screen diagnostics — delete this block.
+  String _diag = 'DIAG-v2 · 尚未收到 onChanged';
+  String _ctrlDiag = 'CTRL · 值未变化';
+  final List<String> _probeLog = <String>['—— 探针日志（新事件在上）——'];
+  late final _InputProbe _probeDelta = _InputProbe(
+    label: 'A·delta',
+    enableDeltaModel: true,
+    log: _probeLogLine,
+  );
+  late final _InputProbe _probePlain = _InputProbe(
+    label: 'B·plain',
+    enableDeltaModel: false,
+    log: _probeLogLine,
+  );
+
+  @override
+  void initState() {
+    super.initState();
+    _textEditingController.addListener(_diagControllerChanged);
+  }
+
+  void _diagControllerChanged() {
+    final value = _textEditingController.value;
+    setState(() {
+      _ctrlDiag =
+          'CTRL len=${value.text.length} comp=${value.composing} sel=${value.selection}';
+    });
+  }
+
+  void _probeLogLine(String line) {
+    setState(() {
+      _probeLog.insert(1, line);
+      if (_probeLog.length > 13) _probeLog.removeLast();
+    });
+  }
+
+  Widget _probeBox(_InputProbe probe, String hint) {
+    final obscured = probe.obscuredText;
+    return InkWell(
+      onTap: () => setState(probe.attach),
+      child: Container(
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          border: Border.all(color: Colors.redAccent),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Text(
+          obscured.isEmpty
+              ? '$hint\n点这里→用键盘输PIN'
+              : '$hint\n$obscured (len=${probe.textLength})',
+          textAlign: TextAlign.center,
+          style: const TextStyle(fontSize: 12),
+        ),
+      ),
+    );
+  }
+
   /// Compares [text] against the stored pin and unlocks the app.
   ///
   /// The pin is compared as a plain string and is never converted to a
@@ -43,6 +100,14 @@ class _LockScreenState extends State<LockScreen> {
   Future<void> tryUnlock(String text) async {
     text = text.trim();
 
+    // TODO-DIAG(v1): throwaway
+    if (mounted) {
+      setState(
+        () => _diag = 'tryUnlock("$text") '
+            'blocked=$_inputBlocked regex=${_pinRegExp.hasMatch(text)}',
+      );
+    }
+
     // While the cool down runs, the field is read only and the countdown
     // below it is the only feedback worth showing.
     if (_inputBlocked) return;
@@ -52,7 +117,10 @@ class _LockScreenState extends State<LockScreen> {
       return;
     }
 
-    if (AppLock.of(context).unlock(text)) {
+    final unlocked = AppLock.of(context).unlock(text);
+    // TODO-DIAG(v1): throwaway
+    setState(() => _diag += ' unlock=$unlocked');
+    if (unlocked) {
       _textEditingController.clear();
       return;
     }
@@ -103,6 +171,10 @@ class _LockScreenState extends State<LockScreen> {
   @override
   void dispose() {
     _coolDownTimer?.cancel();
+    // TODO-DIAG(v2): throwaway
+    _textEditingController.removeListener(_diagControllerChanged);
+    _probeDelta.detach();
+    _probePlain.detach();
     _textEditingController.dispose();
     super.dispose();
   }
@@ -146,9 +218,14 @@ class _LockScreenState extends State<LockScreen> {
                     autofocus: true,
                     textAlign: TextAlign.center,
                     readOnly: _inputBlocked,
-                    // Unlock as soon as the fourth digit is typed; before
-                    // that the user is still entering the pin.
                     onChanged: (text) {
+                      // TODO-DIAG(v1): throwaway
+                      setState(
+                        () => _diag = 'onChanged("$text") '
+                            'len=${text.length} cu=${text.codeUnits}',
+                      );
+                      // Unlock as soon as the fourth digit is typed; before
+                      // that the user is still entering the pin.
                       if (text.trim().length >= _pinLength) tryUnlock(text);
                     },
                     onSubmitted: tryUnlock,
@@ -207,6 +284,18 @@ class _LockScreenState extends State<LockScreen> {
                       ),
                     ),
                   ),
+                  // TODO-DIAG(v1): throwaway
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8),
+                    child: Text(
+                      _diag,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: Colors.redAccent,
+                      ),
+                    ),
+                  ),
                   if (_inputBlocked)
                     Padding(
                       padding: const EdgeInsets.only(top: 16),
@@ -243,6 +332,40 @@ class _LockScreenState extends State<LockScreen> {
                         ],
                       ),
                     ),
+                  // TODO-DIAG(v2): throwaway
+                  Text(
+                    _ctrlDiag,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(fontSize: 12, color: Colors.blue),
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      Expanded(child: _probeBox(_probeDelta, '探针A delta=开')),
+                      const SizedBox(width: 8),
+                      Expanded(child: _probeBox(_probePlain, '探针B delta=关')),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Container(
+                    constraints: const BoxConstraints(maxHeight: 180),
+                    width: double.infinity,
+                    color: Colors.black.withAlpha(13),
+                    padding: const EdgeInsets.all(6),
+                    child: ListView(
+                      shrinkWrap: true,
+                      children: [
+                        for (final line in _probeLog)
+                          Text(
+                            line,
+                            style: const TextStyle(
+                              fontSize: 10,
+                              fontFamily: 'monospace',
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -250,5 +373,128 @@ class _LockScreenState extends State<LockScreen> {
         ),
       ),
     );
+  }
+}
+
+// TODO-DIAG(v2): throwaway raw input probe — delete with the other blocks.
+/// A minimal [TextInputClient] that logs everything the IME actually sends,
+/// bypassing [EditableText] entirely, so the probe shows the raw event
+/// stream no matter what the framework's text widget does with it.
+class _InputProbe with TextInputClient, DeltaTextInputClient {
+  _InputProbe({
+    required this.label,
+    required this.enableDeltaModel,
+    required this.log,
+  });
+
+  final String label;
+  final bool enableDeltaModel;
+  final void Function(String line) log;
+
+  TextInputConnection? _connection;
+  TextEditingValue _value = TextEditingValue.empty;
+
+  String get obscuredText => '•' * _value.text.length;
+  int get textLength => _value.text.length;
+
+  void attach() {
+    if (_connection?.attached ?? false) {
+      _connection!.show();
+      log('[$label] show() again');
+      return;
+    }
+    _connection = TextInput.attach(
+      this,
+      TextInputConfiguration(
+        inputType: TextInputType.number,
+        inputAction: TextInputAction.done,
+        obscureText: true,
+        autocorrect: false,
+        enableSuggestions: false,
+        enableDeltaModel: enableDeltaModel,
+      ),
+    );
+    _connection!
+      ..setEditingState(_value)
+      ..show();
+    log('[$label] attached+show');
+  }
+
+  void detach() {
+    _connection?.close();
+    _connection = null;
+  }
+
+  @override
+  TextEditingValue? get currentTextEditingValue => _value;
+
+  @override
+  AutofillScope? get currentAutofillScope => null;
+
+  @override
+  void updateEditingValue(TextEditingValue value) {
+    _value = value;
+    log('[$label] set: len=${value.text.length} '
+        'comp=${value.composing} sel=${value.selection}');
+  }
+
+  @override
+  void updateEditingValueWithDeltas(List<TextEditingDelta> deltas) {
+    for (final delta in deltas) {
+      _value = delta.apply(_value);
+      log('[$label] Δ ${delta.toStringShort()} → len=${_value.text.length}');
+    }
+  }
+
+  @override
+  void performAction(TextInputAction action) {
+    log('[$label] action=$action len=${_value.text.length}');
+  }
+
+  @override
+  void connectionClosed() {
+    log('[$label] connectionClosed');
+  }
+
+  @override
+  void performPrivateCommand(String action, Map<String, dynamic> data) {
+    log('[$label] privateCommand($action)');
+  }
+
+  @override
+  void updateFloatingCursor(RawFloatingCursorPoint point) {}
+
+  @override
+  void showAutocorrectionPromptRect(int start, int end) {}
+
+  @override
+  bool onFocusReceived() {
+    log('[$label] onFocusReceived');
+    return false;
+  }
+
+  @override
+  void didChangeInputControl(
+    TextInputControl? oldControl,
+    TextInputControl? newControl,
+  ) {
+    log('[$label] inputControlChanged');
+  }
+
+  @override
+  void showToolbar() {}
+
+  @override
+  void insertContent(KeyboardInsertedContent content) {}
+
+  @override
+  void insertTextPlaceholder(Size size) {}
+
+  @override
+  void removeTextPlaceholder() {}
+
+  @override
+  void performSelector(String selectorName) {
+    log('[$label] selector($selectorName)');
   }
 }
