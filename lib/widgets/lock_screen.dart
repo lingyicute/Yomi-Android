@@ -74,12 +74,17 @@ class _LockScreenState extends State<LockScreen> {
   void _startCoolDown() {
     _coolDownTimer?.cancel();
     _coolDownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      // The countdown can outlive the lock screen on the frame it is
+      // removed, so every tick has to re-check mounted before setState.
+      if (!mounted) {
+        timer.cancel();
+        return;
+      }
       if (timer.tick >= _coolDownSeconds) {
         timer.cancel();
         _coolDownTimer = null;
         // Doubles the penalty after every finished cool down, like upstream.
         _coolDownSeconds *= 2;
-        if (!mounted) return;
         setState(() {
           _inputBlocked = false;
           _coolDownRemainingSeconds = 0;

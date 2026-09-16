@@ -160,11 +160,6 @@ void main() {
     expect(pinFieldText(tester), isEmpty);
     expect(pinField(tester).readOnly, true);
     expect(pinField(tester).decoration!.errorText, contains('5'));
-    // The unlock button is disabled while the cool down runs.
-    expect(
-      tester.widget<IconButton>(find.byType(IconButton)).onPressed,
-      null,
-    );
     expect(find.byType(LinearProgressIndicator), findsOneWidget);
 
     // A second attempt while blocked must not restart or extend the
@@ -186,10 +181,6 @@ void main() {
     await tester.pump(const Duration(seconds: 6));
     expect(pinField(tester).readOnly, false);
     expect(pinField(tester).decoration!.errorText, null);
-    expect(
-      tester.widget<IconButton>(find.byType(IconButton)).onPressed,
-      isNotNull,
-    );
 
     // The second failure is punished twice as hard as the first one.
     await tester.enterText(find.byType(TextField), '9999');
@@ -197,7 +188,7 @@ void main() {
     expect(pinField(tester).decoration!.errorText, contains('10'));
   });
 
-  testWidgets('the manual unlock button reports an unfinished pin', (
+  testWidgets('the IME action key reports an unfinished pin', (
     WidgetTester tester,
   ) async {
     await pumpLockedApp(tester, pincode: '1234');
@@ -206,10 +197,12 @@ void main() {
     await tester.pump();
     expect(pinField(tester).decoration!.errorText, null);
 
-    await tester.tap(find.byType(IconButton));
+    // The IME action key is the manual way out while the field carries no
+    // unlock button; an explicit submit must answer the user instead of
+    // silently ignoring a malformed pin, and must not start a cool down.
+    await tester.testTextInput.receiveAction(TextInputAction.done);
     await tester.pump();
     expect(pinField(tester).decoration!.errorText, isNotNull);
-    // A malformed pin must not start a cool down.
     expect(pinField(tester).readOnly, false);
   });
 
