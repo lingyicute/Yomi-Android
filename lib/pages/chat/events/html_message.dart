@@ -16,6 +16,10 @@ import 'package:yomi/widgets/mxc_image.dart';
 import '../../../utils/url_launcher.dart';
 
 class HtmlMessage extends StatefulWidget {
+  /// A message that needs more than this many lines is folded in the timeline
+  /// and flagged with a "message too long, long-press to view" marker.
+  static const int collapsedMaxLines = 10;
+
   final String html;
   final Room room;
   final Color textColor;
@@ -91,9 +95,6 @@ class _HtmlMessageState extends State<HtmlMessage> {
     _cachedTextColor = w.textColor;
     _cachedLinkStyle = w.linkStyle;
     _cachedCheckboxFingerprint = _checkboxFingerprint(w.checkboxCheckedEvents);
-    // The overflow marker reflects the laid-out text, so it has to be
-    // re-measured for the new content:
-    _checkedConstraints = null;
   }
 
   /// LRU cache for parsed HTML documents.
@@ -591,37 +592,57 @@ class _HtmlMessageState extends State<HtmlMessage> {
     }
   }
 
-  /// A message longer than this many lines is collapsed in the timeline and
-  /// flagged with a "message too long, long-press to view" marker.
-  static const int collapsedMaxLines = 10;
-
-  /// Key of the rendered [Text], used to ask its [RenderParagraph] whether
-  /// the text actually overflowed [collapsedMaxLines].
+  /// Key of the message [Text]. Its [RenderParagraph] is the only component
+  /// that knows whether the message had to be cut off, because that depends on
+  /// the wrapping, the font metrics and the system text scale.
   final GlobalKey _textKey = GlobalKey();
 
-  /// The overflow state of the laid-out message text. Always - and only -
-  /// mirrors the result of the real text layout, so the marker and the
-  /// folding can never disagree.
-  bool _exceededMaxLines = false;
+  /// Whether the last layout cut the message off at
+  /// [HtmlMessage.collapsedMaxLines], i.e. whether the marker is shown. Only
+  /// ever set from the real text layout, so the marker cannot disagree with
+  /// what is on screen.
+  bool _isFolded = false;
 
-  /// The width and text scale the last overflow check was performed at. Any
-  /// change in width, scale or content triggers a re-check after the next
-  /// layout pass.
-  (double, double)? _checkedConstraints;
+  /// The [RenderParagraph] the message [Text] painted with.
+  ///
+  /// The paragraph is not necessarily the first render object below the text:
+  /// the chat wraps its messages in a [SelectionArea], and a [Text] in a
+  /// selection area builds a MouseRegion around the paragraph, so it has to be
+  /// looked up instead of assumed.
+  RenderParagraph? _findParagraph() {
+    final renderObject = _textKey.currentContext?.findRenderObject();
+    if (renderObject == null) return null;
+    if (renderObject is RenderParagraph) return renderObject;
+    RenderParagraph? found;
+    void visit(RenderObject child) {
+      if (found != null) return;
+      if (child is RenderParagraph) {
+        found = child;
+        return;
+      }
+      child.visitChildren(visit);
+    }
 
-  void _scheduleOverflowCheck(double maxWidth, double textScale) {
-    if (_checkedConstraints == (maxWidth, textScale)) return;
-    _checkedConstraints = (maxWidth, textScale);
-    // The text layout of the current frame is the single source of truth, so
-    // the answer is only available once this frame is laid out:
+    renderObject.visitChildren(visit);
+    return found;
+  }
+
+  /// Mirrors the result of the current layout of the folded message into
+  /// [_isFolded].
+  ///
+  /// A layout pass can only be asked for its result once it has run, so the
+  /// answer is read in its post frame callback and the marker appears one
+  /// frame after the text was folded. Asking after every layout keeps the
+  /// marker in sync with the message, no matter why its line count changed.
+  void _syncFoldingState() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
-      final renderObject = _textKey.currentContext?.findRenderObject();
-      if (renderObject is! RenderParagraph) return;
-      final exceeded = renderObject.didExceedMaxLines;
-      if (exceeded != _exceededMaxLines) {
-        setState(() => _exceededMaxLines = exceeded);
-      }
+      // A paragraph that was never laid out has no result to report and would
+      // throw when asked:
+      final paragraph = _findParagraph();
+      if (paragraph == null || !paragraph.hasSize) return;
+      final isFolded = paragraph.didExceedMaxLines;
+      if (isFolded != _isFolded) setState(() => _isFolded = isFolded);
     });
   }
 
@@ -633,29 +654,41 @@ class _HtmlMessageState extends State<HtmlMessage> {
           fontSize: widget.fontSize,
           color: widget.textColor,
         );
+    // Messages in the timeline are folded, the message the user long-pressed
+    // (and therefore selected) is not:
+    final folded = widget.limitHeight;
     final textWidget = Text.rich(
       _cachedSpan!,
       key: _textKey,
       style: textStyle,
-      maxLines: widget.limitHeight ? collapsedMaxLines : null,
-      // Hard-cut with an ellipsis rather than TextOverflow.fade: the fade is
-      // drawn as a modulated gradient layer which renders as an opaque black
-      // gradient covering the last visible line as soon as the span tree
-      // contains WidgetSpans (pills, code blocks, quotes, ...).
+      maxLines: folded ? HtmlMessage.collapsedMaxLines : null,
+      // An ellipsis is only defined together with a line limit: with
+      // `maxLines: null` the framework treats the first line that overflows
+      // as the last one and cuts the whole message down to a single line,
+      // which is what folded an expanded long message to one line.
+      // Without a line limit nothing has to be ellipsized away anyway.
+      // `TextOverflow.fade` is no alternative: it paints an opaque black
+      // gradient over widgets such as pills or code blocks.
       // See https://github.com/flutter/flutter/issues/128107
-      overflow: TextOverflow.ellipsis,
+      overflow: folded ? TextOverflow.ellipsis : TextOverflow.clip,
     );
-    if (!widget.limitHeight) return textWidget;
+    if (!folded) return textWidget;
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        // Also registers a MediaQuery dependency so this builder re-runs on
-        // system font scale changes:
-        final textScale = MediaQuery.textScalerOf(context).scale(1);
-        _scheduleOverflowCheck(constraints.maxWidth, textScale);
-        if (!_exceededMaxLines) return textWidget;
+        // Reading the text scale registers a dependency on the system font
+        // scale: the message needs a different number of lines at a different
+        // scale, so this builder has to run again after such a change. The
+        // value itself is not needed, the layout states the line count.
+        MediaQuery.textScalerOf(context);
+        // The builder is the hook into the layout phase: it re-runs whenever
+        // the message is rebuilt or its constraints change, which is exactly
+        // when the folding has to be read again.
+        _syncFoldingState();
+        if (!_isFolded) return textWidget;
         // Same subtle style as the "message was edited" marker, see
         // message.dart:
+        final markerColor = widget.textColor.withAlpha(164);
         return Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -669,13 +702,13 @@ class _HtmlMessageState extends State<HtmlMessage> {
                 Icon(
                   Icons.unfold_more,
                   size: 14,
-                  color: widget.textColor.withAlpha(164),
+                  color: markerColor,
                 ),
                 Text(
                   L10n.of(context).messageTooLongLongPressToView,
                   style: TextStyle(
                     fontSize: 11,
-                    color: widget.textColor.withAlpha(164),
+                    color: markerColor,
                   ),
                 ),
               ],
