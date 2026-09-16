@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart' show CupertinoPageTransitionsBuilder;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -36,6 +37,23 @@ abstract class LyiThemes {
   static const Duration animationDuration = Duration(milliseconds: 150);
   static const Curve animationCurve = Curves.easeInOut;
 
+  /// Flutter 3.38 changed the default Android page transition from
+  /// ZoomPageTransitionsBuilder (slide + fade, 300ms) to
+  /// PredictiveBackPageTransitionsBuilder, which falls back to
+  /// FadeForwardsPageTransitionsBuilder (450ms) when predictive back is not
+  /// used. Pin the previous behaviour so route changes keep their old feel.
+  static const PageTransitionsTheme pageTransitionsTheme =
+      PageTransitionsTheme(
+        builders: {
+          TargetPlatform.android: ZoomPageTransitionsBuilder(),
+          TargetPlatform.fuchsia: ZoomPageTransitionsBuilder(),
+          TargetPlatform.linux: FadeUpwardsPageTransitionsBuilder(),
+          TargetPlatform.windows: FadeUpwardsPageTransitionsBuilder(),
+          TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+          TargetPlatform.macOS: CupertinoPageTransitionsBuilder(),
+        },
+      );
+
   static ThemeData buildTheme(
     BuildContext context,
     Brightness brightness, [
@@ -51,6 +69,7 @@ abstract class LyiThemes {
       useMaterial3: true,
       brightness: brightness,
       colorScheme: colorScheme,
+      pageTransitionsTheme: pageTransitionsTheme,
       fontFamily: 'Nebulove',
       fontFamilyFallback: const ['Yomi-UI-Emoji'],
       dividerColor: brightness == Brightness.dark
