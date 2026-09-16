@@ -27,64 +27,7 @@ class _LockScreenState extends State<LockScreen> {
   int _coolDownRemainingSeconds = 0;
   bool _inputBlocked = false;
   Timer? _coolDownTimer;
-  final TextEditingController _textEditingController = TextEditingController();
-
-  // TODO-DIAG(v2): throwaway on-screen diagnostics — delete this block.
-  String _diag = 'DIAG-v2 · 尚未收到 onChanged';
-  String _ctrlDiag = 'CTRL · 值未变化';
-  final List<String> _probeLog = <String>['—— 探针日志（新事件在上）——'];
-  late final _InputProbe _probeDelta = _InputProbe(
-    label: 'A·delta',
-    enableDeltaModel: true,
-    log: _probeLogLine,
-  );
-  late final _InputProbe _probePlain = _InputProbe(
-    label: 'B·plain',
-    enableDeltaModel: false,
-    log: _probeLogLine,
-  );
-
-  @override
-  void initState() {
-    super.initState();
-    _textEditingController.addListener(_diagControllerChanged);
-  }
-
-  void _diagControllerChanged() {
-    final value = _textEditingController.value;
-    setState(() {
-      _ctrlDiag =
-          'CTRL len=${value.text.length} comp=${value.composing} sel=${value.selection}';
-    });
-  }
-
-  void _probeLogLine(String line) {
-    setState(() {
-      _probeLog.insert(1, line);
-      if (_probeLog.length > 13) _probeLog.removeLast();
-    });
-  }
-
-  Widget _probeBox(_InputProbe probe, String hint) {
-    final obscured = probe.obscuredText;
-    return InkWell(
-      onTap: () => setState(probe.attach),
-      child: Container(
-        padding: const EdgeInsets.all(10),
-        decoration: BoxDecoration(
-          border: Border.all(color: Colors.redAccent),
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Text(
-          obscured.isEmpty
-              ? '$hint\n点这里→用键盘输PIN'
-              : '$hint\n$obscured (len=${probe.textLength})',
-          textAlign: TextAlign.center,
-          style: const TextStyle(fontSize: 12),
-        ),
-      ),
-    );
-  }
+  final GlobalKey<PinFieldState> _pinFieldKey = GlobalKey();
 
   /// Compares [text] against the stored pin and unlocks the app.
   ///
@@ -100,14 +43,6 @@ class _LockScreenState extends State<LockScreen> {
   Future<void> tryUnlock(String text) async {
     text = text.trim();
 
-    // TODO-DIAG(v1): throwaway
-    if (mounted) {
-      setState(
-        () => _diag = 'tryUnlock("$text") '
-            'blocked=$_inputBlocked regex=${_pinRegExp.hasMatch(text)}',
-      );
-    }
-
     // While the cool down runs, the field is read only and the countdown
     // below it is the only feedback worth showing.
     if (_inputBlocked) return;
@@ -117,17 +52,14 @@ class _LockScreenState extends State<LockScreen> {
       return;
     }
 
-    final unlocked = AppLock.of(context).unlock(text);
-    // TODO-DIAG(v1): throwaway
-    setState(() => _diag += ' unlock=$unlocked');
-    if (unlocked) {
-      _textEditingController.clear();
+    if (AppLock.of(context).unlock(text)) {
+      _pinFieldKey.currentState?.clear();
       return;
     }
 
     setState(() {
       _errorText = L10n.of(context).wrongPinEntered(_coolDownSeconds);
-      _textEditingController.clear();
+      _pinFieldKey.currentState?.clear();
       _inputBlocked = true;
       _coolDownRemainingSeconds = _coolDownSeconds;
     });
@@ -171,18 +103,12 @@ class _LockScreenState extends State<LockScreen> {
   @override
   void dispose() {
     _coolDownTimer?.cancel();
-    // TODO-DIAG(v2): throwaway
-    _textEditingController.removeListener(_diagControllerChanged);
-    _probeDelta.detach();
-    _probePlain.detach();
-    _textEditingController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    const pillRadius = BorderRadius.all(Radius.circular(32));
     // Own ScaffoldMessenger: the lock screen is an overlay above the whole
     // app, so a message must not be delivered to a deactivated Scaffold of
     // the page hidden below it.
@@ -210,91 +136,16 @@ class _LockScreenState extends State<LockScreen> {
                     ),
                   ),
                   const SizedBox(height: 24),
-                  TextField(
-                    controller: _textEditingController,
-                    textInputAction: TextInputAction.done,
-                    keyboardType: TextInputType.number,
-                    obscureText: true,
-                    autofocus: true,
-                    textAlign: TextAlign.center,
-                    readOnly: _inputBlocked,
-                    onChanged: (text) {
-                      // TODO-DIAG(v1): throwaway
-                      setState(
-                        () => _diag = 'onChanged("$text") '
-                            'len=${text.length} cu=${text.codeUnits}',
-                      );
-                      // Unlock as soon as the fourth digit is typed; before
-                      // that the user is still entering the pin.
-                      if (text.trim().length >= _pinLength) tryUnlock(text);
-                    },
+                  PinField(
+                    key: _pinFieldKey,
+                    pinLength: _pinLength,
+                    blocked: _inputBlocked,
+                    errorText: _errorText,
+                    // Unlock as soon as the last digit is typed; before
+                    // that the user is still entering the pin. The IME
+                    // action key stays the manual way out.
+                    onCompleted: tryUnlock,
                     onSubmitted: tryUnlock,
-                    style: TextStyle(
-                      fontSize: 32,
-                      letterSpacing: 14,
-                      fontWeight: FontWeight.w600,
-                      color: colorScheme.onSurface,
-                    ),
-                    inputFormatters: [
-                      FilteringTextInputFormatter.digitsOnly,
-                      LengthLimitingTextInputFormatter(_pinLength),
-                    ],
-                    decoration: InputDecoration(
-                      filled: true,
-                      fillColor: colorScheme.surfaceContainerHighest,
-                      errorText: _errorText,
-                      hintText: '✱✱✱✱',
-                      hintStyle: TextStyle(
-                        fontSize: 28,
-                        letterSpacing: 14,
-                        color: colorScheme.onSurfaceVariant.withAlpha(100),
-                      ),
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 24,
-                        vertical: 20,
-                      ),
-                      border: const OutlineInputBorder(
-                        borderRadius: pillRadius,
-                        borderSide: BorderSide.none,
-                      ),
-                      enabledBorder: const OutlineInputBorder(
-                        borderRadius: pillRadius,
-                        borderSide: BorderSide.none,
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: pillRadius,
-                        borderSide: BorderSide(
-                          color: colorScheme.primary,
-                          width: 2,
-                        ),
-                      ),
-                      errorBorder: OutlineInputBorder(
-                        borderRadius: pillRadius,
-                        borderSide: BorderSide(
-                          color: colorScheme.error,
-                          width: 2,
-                        ),
-                      ),
-                      focusedErrorBorder: OutlineInputBorder(
-                        borderRadius: pillRadius,
-                        borderSide: BorderSide(
-                          color: colorScheme.error,
-                          width: 2,
-                        ),
-                      ),
-                    ),
-                  ),
-                  // TODO-DIAG(v1): throwaway
-                  Padding(
-                    padding: const EdgeInsets.only(top: 8),
-                    child: Text(
-                      _diag,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: Colors.redAccent,
-                      ),
-                    ),
                   ),
                   if (_inputBlocked)
                     Padding(
@@ -332,40 +183,6 @@ class _LockScreenState extends State<LockScreen> {
                         ],
                       ),
                     ),
-                  // TODO-DIAG(v2): throwaway
-                  Text(
-                    _ctrlDiag,
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(fontSize: 12, color: Colors.blue),
-                  ),
-                  const SizedBox(height: 8),
-                  Row(
-                    children: [
-                      Expanded(child: _probeBox(_probeDelta, '探针A delta=开')),
-                      const SizedBox(width: 8),
-                      Expanded(child: _probeBox(_probePlain, '探针B delta=关')),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  Container(
-                    constraints: const BoxConstraints(maxHeight: 180),
-                    width: double.infinity,
-                    color: Colors.black.withAlpha(13),
-                    padding: const EdgeInsets.all(6),
-                    child: ListView(
-                      shrinkWrap: true,
-                      children: [
-                        for (final line in _probeLog)
-                          Text(
-                            line,
-                            style: const TextStyle(
-                              fontSize: 10,
-                              fontFamily: 'monospace',
-                            ),
-                          ),
-                      ],
-                    ),
-                  ),
                 ],
               ),
             ),
@@ -376,53 +193,111 @@ class _LockScreenState extends State<LockScreen> {
   }
 }
 
-// TODO-DIAG(v2): throwaway raw input probe — delete with the other blocks.
-/// A minimal [TextInputClient] that logs everything the IME actually sends,
-/// bypassing [EditableText] entirely, so the probe shows the raw event
-/// stream no matter what the framework's text widget does with it.
-class _InputProbe with TextInputClient, DeltaTextInputClient {
-  _InputProbe({
-    required this.label,
-    required this.enableDeltaModel,
-    required this.log,
+/// A one-line pin entry that talks to the IME through a hand-rolled
+/// [TextInputClient] instead of [EditableText] / [TextField].
+///
+/// Incoming values go straight from the platform into [text]: there is no
+/// composing-region bookkeeping, no input-formatter round trip and a plain
+/// non-delta connection, so an IME that keeps a ghost buffer (echoing keys
+/// on screen without ever committing them to a real [TextEditingValue],
+/// which leaves a [TextField] looking alive while starving its `onChanged`)
+/// cannot break the full-pin callback here. After every accepted change the
+/// authoritative value is echoed back to the IME, so the keyboard's buffer
+/// can not desync from what the app actually holds either.
+class PinField extends StatefulWidget {
+  const PinField({
+    super.key,
+    required this.onCompleted,
+    required this.onSubmitted,
+    this.pinLength = 4,
+    this.blocked = false,
+    this.errorText,
+    this.autofocus = true,
   });
 
-  final String label;
-  final bool enableDeltaModel;
-  final void Function(String line) log;
+  /// Number of digits the pin consists of; input is capped at this length.
+  final int pinLength;
 
-  TextInputConnection? _connection;
+  /// Fired exactly when the pin reaches [pinLength] digits (and again when
+  /// it is completed anew after a deletion). Never fires for partial input.
+  final ValueChanged<String> onCompleted;
+
+  /// Fired with the current pin when the IME action key is pressed, so an
+  /// explicit submit is always answered even for an unfinished pin.
+  final ValueChanged<String> onSubmitted;
+
+  /// While blocked, the keyboard is dismissed and the field is inert (the
+  /// cool down is running).
+  final bool blocked;
+
+  /// Error shown below the field; also switches the frame to the error
+  /// color while present.
+  final String? errorText;
+
+  /// Whether to open the keyboard as soon as the field appears.
+  final bool autofocus;
+
+  @override
+  State<PinField> createState() => PinFieldState();
+}
+
+class PinFieldState extends State<PinField> with TextInputClient {
   TextEditingValue _value = TextEditingValue.empty;
+  TextInputConnection? _connection;
 
-  String get obscuredText => '•' * _value.text.length;
-  int get textLength => _value.text.length;
+  /// The currently held (sanitized) pin.
+  String get text => _value.text;
 
-  void attach() {
-    if (_connection?.attached ?? false) {
+  /// Whether the input connection to the IME is open.
+  bool get isAttached => _connection?.attached ?? false;
+
+  static const _config = TextInputConfiguration(
+    inputType: TextInputType.number,
+    inputAction: TextInputAction.done,
+    obscureText: true,
+    autocorrect: false,
+    enableSuggestions: false,
+  );
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.autofocus && !widget.blocked) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => openKeyboard());
+    }
+  }
+
+  @override
+  void didUpdateWidget(PinField oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.blocked && !oldWidget.blocked) {
+      _closeConnection();
+    } else if (!widget.blocked && oldWidget.blocked && widget.autofocus) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => openKeyboard());
+    }
+  }
+
+  void openKeyboard() {
+    if (widget.blocked || !mounted) return;
+    if (isAttached) {
       _connection!.show();
-      log('[$label] show() again');
       return;
     }
-    _connection = TextInput.attach(
-      this,
-      TextInputConfiguration(
-        inputType: TextInputType.number,
-        inputAction: TextInputAction.done,
-        obscureText: true,
-        autocorrect: false,
-        enableSuggestions: false,
-        enableDeltaModel: enableDeltaModel,
-      ),
-    );
+    _connection = TextInput.attach(this, _config);
     _connection!
       ..setEditingState(_value)
       ..show();
-    log('[$label] attached+show');
   }
 
-  void detach() {
+  void _closeConnection() {
     _connection?.close();
     _connection = null;
+  }
+
+  /// Clears the pin (after a failed attempt); cancels any pending
+  /// completion callbacks by resetting the value first.
+  void clear() {
+    _apply(TextEditingValue.empty);
   }
 
   @override
@@ -433,33 +308,44 @@ class _InputProbe with TextInputClient, DeltaTextInputClient {
 
   @override
   void updateEditingValue(TextEditingValue value) {
-    _value = value;
-    log('[$label] set: len=${value.text.length} '
-        'comp=${value.composing} sel=${value.selection}');
+    _apply(value);
   }
 
-  @override
-  void updateEditingValueWithDeltas(List<TextEditingDelta> deltas) {
-    for (final delta in deltas) {
-      _value = delta.apply(_value);
-      log('[$label] Δ ${delta.toStringShort()} → len=${_value.text.length}');
+  void _apply(TextEditingValue value) {
+    // Sanitize locally instead of input formatters: digits only, capped at
+    // the pin length no matter what the IME sends (bulk pastes included).
+    var text = value.text.replaceAll(RegExp(r'\D'), '');
+    if (text.length > widget.pinLength) {
+      text = text.substring(0, widget.pinLength);
+    }
+    final wasComplete = _value.text.length == widget.pinLength;
+    setState(() {
+      _value = TextEditingValue(
+        text: text,
+        selection: TextSelection.collapsed(offset: text.length),
+      );
+    });
+    // Echo the authoritative value back so the IME's own buffer stays in
+    // sync with what the app accepted.
+    if (isAttached) _connection!.setEditingState(_value);
+    if (text.length == widget.pinLength && !wasComplete) {
+      widget.onCompleted(text);
     }
   }
 
   @override
   void performAction(TextInputAction action) {
-    log('[$label] action=$action len=${_value.text.length}');
+    widget.onSubmitted(_value.text);
   }
 
   @override
   void connectionClosed() {
-    log('[$label] connectionClosed');
+    _connection = null;
+    if (mounted) setState(() {});
   }
 
   @override
-  void performPrivateCommand(String action, Map<String, dynamic> data) {
-    log('[$label] privateCommand($action)');
-  }
+  void performPrivateCommand(String action, Map<String, dynamic> data) {}
 
   @override
   void updateFloatingCursor(RawFloatingCursorPoint point) {}
@@ -468,33 +354,74 @@ class _InputProbe with TextInputClient, DeltaTextInputClient {
   void showAutocorrectionPromptRect(int start, int end) {}
 
   @override
-  bool onFocusReceived() {
-    log('[$label] onFocusReceived');
-    return false;
+  void dispose() {
+    _closeConnection();
+    super.dispose();
   }
 
   @override
-  void didChangeInputControl(
-    TextInputControl? oldControl,
-    TextInputControl? newControl,
-  ) {
-    log('[$label] inputControlChanged');
-  }
-
-  @override
-  void showToolbar() {}
-
-  @override
-  void insertContent(KeyboardInsertedContent content) {}
-
-  @override
-  void insertTextPlaceholder(Size size) {}
-
-  @override
-  void removeTextPlaceholder() {}
-
-  @override
-  void performSelector(String selectorName) {
-    log('[$label] selector($selectorName)');
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    const pillRadius = BorderRadius.all(Radius.circular(32));
+    final text = _value.text;
+    final hasError = widget.errorText != null;
+    final focused = isAttached && !widget.blocked;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Semantics(
+          textField: true,
+          obscured: true,
+          label: 'PIN',
+          child: InkWell(
+            onTap: widget.blocked ? null : openKeyboard,
+            borderRadius: pillRadius,
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 150),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 24,
+                vertical: 20,
+              ),
+              decoration: BoxDecoration(
+                color: colorScheme.surfaceContainerHighest,
+                borderRadius: pillRadius,
+                border: Border.all(
+                  width: 2,
+                  color: hasError
+                      ? colorScheme.error
+                      : focused
+                          ? colorScheme.primary
+                          : Colors.transparent,
+                ),
+              ),
+              child: Text(
+                text.isEmpty ? '✱✱✱✱' : '•' * text.length,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: text.isEmpty ? 28 : 32,
+                  letterSpacing: 14,
+                  fontWeight: text.isEmpty ? null : FontWeight.w600,
+                  color: text.isEmpty
+                      ? colorScheme.onSurfaceVariant.withAlpha(100)
+                      : colorScheme.onSurface,
+                ),
+              ),
+            ),
+          ),
+        ),
+        if (hasError)
+          Padding(
+            padding: const EdgeInsets.only(top: 12, left: 16, right: 16),
+            child: Text(
+              widget.errorText!,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 12,
+                color: colorScheme.error,
+              ),
+            ),
+          ),
+      ],
+    );
   }
 }
