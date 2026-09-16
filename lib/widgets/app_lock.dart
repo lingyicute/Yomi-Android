@@ -53,10 +53,7 @@ class AppLock extends State<AppLockWidget> with WidgetsBindingObserver {
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (isActive &&
-        state == AppLifecycleState.hidden &&
-        !_isLocked &&
-        isActive) {
+    if (isActive && state == AppLifecycleState.hidden && !_isLocked) {
       showLockScreen();
     }
   }
