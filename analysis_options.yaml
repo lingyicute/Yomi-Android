@@ -18,6 +18,11 @@ analyzer:
   exclude:
     - lib/generated_plugin_registrant.dart
     - lib/l10n/*.dart
+    - build/**
+    - android/**
+    - web/**
+    - windows/**
+    - linux/**
 
 dart_code_metrics:
   metrics:
