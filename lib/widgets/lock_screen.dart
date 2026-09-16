@@ -29,6 +29,9 @@ class _LockScreenState extends State<LockScreen> {
   Timer? _coolDownTimer;
   final TextEditingController _textEditingController = TextEditingController();
 
+  // TODO-DIAG(v1): throwaway on-screen diagnostics — delete this block.
+  String _diag = 'DIAG-v1 · 尚未收到 onChanged';
+
   /// Compares [text] against the stored pin and unlocks the app.
   ///
   /// The pin is compared as a plain string and is never converted to a
@@ -43,6 +46,12 @@ class _LockScreenState extends State<LockScreen> {
   Future<void> tryUnlock(String text) async {
     text = text.trim();
 
+    // TODO-DIAG(v1): throwaway
+    if (mounted) {
+      setState(() => _diag = 'tryUnlock("$text") '
+          'blocked=$_inputBlocked regex=${_pinRegExp.hasMatch(text)}');
+    }
+
     // While the cool down runs, the field is read only and the countdown
     // below it is the only feedback worth showing.
     if (_inputBlocked) return;
@@ -52,7 +61,10 @@ class _LockScreenState extends State<LockScreen> {
       return;
     }
 
-    if (AppLock.of(context).unlock(text)) {
+    final unlocked = AppLock.of(context).unlock(text);
+    // TODO-DIAG(v1): throwaway
+    setState(() => _diag += ' unlock=$unlocked');
+    if (unlocked) {
       _textEditingController.clear();
       return;
     }
@@ -146,9 +158,12 @@ class _LockScreenState extends State<LockScreen> {
                     autofocus: true,
                     textAlign: TextAlign.center,
                     readOnly: _inputBlocked,
-                    // Unlock as soon as the fourth digit is typed; before
-                    // that the user is still entering the pin.
                     onChanged: (text) {
+                      // TODO-DIAG(v1): throwaway
+                      setState(() => _diag = 'onChanged("$text") '
+                          'len=${text.length} cu=${text.codeUnits}');
+                      // Unlock as soon as the fourth digit is typed; before
+                      // that the user is still entering the pin.
                       if (text.trim().length >= _pinLength) tryUnlock(text);
                     },
                     onSubmitted: tryUnlock,
@@ -204,6 +219,18 @@ class _LockScreenState extends State<LockScreen> {
                           color: colorScheme.error,
                           width: 2,
                         ),
+                      ),
+                    ),
+                  ),
+                  // TODO-DIAG(v1): throwaway
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8),
+                    child: Text(
+                      _diag,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: Colors.redAccent,
                       ),
                     ),
                   ),
