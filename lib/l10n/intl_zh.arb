@@ -2124,7 +2124,7 @@
     "@openGallery": {},
     "messageInfo": "消息信息",
     "@messageInfo": {},
-    "messageTooLongLongPressToView": "消息超长，长按查看",
+    "messageTooLongLongPressToView": "消息过长，请长按查看",
     "@messageTooLongLongPressToView": {},
     "time": "时间",
     "@time": {},
